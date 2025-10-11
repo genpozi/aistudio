@@ -23,7 +23,7 @@ const App: React.FC = () => {
     const [initialSettingsTab, setInitialSettingsTab] = useState('general');
 
     // Centralized state management using constants
-    const [name, setName] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_NAME, 'User');
+    const [name, setName] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_NAME, 'My Liege 🙇');
     const [location, setLocation] = useLocalStorage(LOCAL_STORAGE_KEYS.WEATHER_LOCATION, '');
     const [links, setLinks] = useLocalStorage<Link[]>(LOCAL_STORAGE_KEYS.USER_LINKS, []);
     const [focusPrompt, setFocusPrompt] = useLocalStorage(LOCAL_STORAGE_KEYS.FOCUS_PROMPT, 'What is your goal for today?');

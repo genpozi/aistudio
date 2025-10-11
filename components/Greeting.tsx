@@ -11,9 +11,9 @@ const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focu
 
   const greetingText = useMemo(() => {
     const hour = time.getHours();
-    if (hour < 12) return `Good morning, ${name}.`;
-    if (hour < 18) return `Good afternoon, ${name}.`;
-    return `Good evening, ${name}.`;
+    if (hour < 12) return `Good morning, ${name}`;
+    if (hour < 18) return `Good afternoon, ${name}`;
+    return `Good evening, ${name}`;
   }, [name, time.getHours()]);
   
   const handleFocusSubmit = (e: React.FormEvent<HTMLFormElement>) => {

@@ -58,7 +58,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     const [feedError, setFeedError] = useState('');
 
     const handleSave = () => {
-        setName(tempName.trim() || 'User');
+        setName(tempName.trim() || 'My Liege 🙇');
         setLocation(tempLocation.trim());
         setFocusPrompt(tempFocusPrompt.trim() || 'What is your goal for today?');
         setTheme(tempTheme);
