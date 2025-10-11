@@ -4,7 +4,7 @@ import type { ServiceGroup } from '../types';
 
 const ServiceGroupCard: React.FC<{ group: ServiceGroup }> = ({ group }) => (
   <div className="bg-black/20 backdrop-blur-md rounded-xl p-6 border border-white/10 shadow-lg">
-    <h3 className="text-white font-bold text-lg mb-4 uppercase tracking-wider">{group.category}</h3>
+    <h3 className="text-[var(--text-highlight)] font-bold text-lg mb-4 uppercase tracking-wider">{group.category}</h3>
     <div className="grid grid-cols-2 gap-4">
       {group.services.map((service) => (
         <a

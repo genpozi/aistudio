@@ -60,7 +60,7 @@ const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focu
             className="flex flex-col items-center group cursor-pointer"
             onClick={() => setIsEditing(true)}
           >
-            <p className="text-white/80 text-lg uppercase tracking-widest">TODAY</p>
+            <p className="text-[var(--text-highlight)] text-lg uppercase tracking-widest font-semibold">TODAY</p>
             <p className="text-white text-2xl md:text-3xl font-medium transition-transform group-hover:scale-105">
               {focus}
             </p>

@@ -15,8 +15,8 @@ const SearchWidget: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSearch} className="relative w-full max-w-md">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-white/60">
+    <form onSubmit={handleSearch} className="relative w-full">
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/60">
         {ICONS.Search}
       </div>
       <input
@@ -24,7 +24,7 @@ const SearchWidget: React.FC = () => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search Google..."
-        className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg py-2 pl-10 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)] transition-all"
+        className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg py-4 pl-14 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)] transition-all text-lg"
         aria-label="Search Google"
       />
     </form>

@@ -77,7 +77,7 @@ const App: React.FC = () => {
                     <main className="w-full flex-grow flex flex-col items-center justify-center text-center my-8">
                         <Clock />
                         <Greeting name={name} focusPrompt={focusPrompt} />
-                        <div className="mt-8 w-full max-w-xl">
+                        <div className="mt-8 w-full max-w-2xl">
                             <SearchWidget />
                         </div>
                     </main>
