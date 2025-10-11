@@ -73,7 +73,10 @@ const TodoWidget: React.FC = () => {
                   tabIndex={0}
                   aria-labelledby={`todo-label-${todo.id}`}
                 >
-                  <div className={`w-5 h-5 border-2 rounded ${todo.completed ? 'bg-blue-500 border-blue-500' : 'border-white/50'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                  <div 
+                    className={`w-5 h-5 border-2 rounded ${todo.completed ? 'border-[var(--text-highlight)]' : 'border-white/50'} flex items-center justify-center mr-3 flex-shrink-0 transition-colors`}
+                    style={{ backgroundColor: todo.completed ? 'var(--text-highlight)' : 'transparent' }}
+                  >
                     {todo.completed && (
                         <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
@@ -104,7 +107,7 @@ const TodoWidget: React.FC = () => {
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
               onKeyDown={handleInputKeyDown}
-              className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
+              className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]"
             />
           </form>
         </div>

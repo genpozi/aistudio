@@ -54,7 +54,48 @@
   .animate-add-todo {
     animation: fadeInAndScale 0.3s ease-out forwards;
   }
+
+  /* --- THEME DEFINITIONS --- */
+  :root, .theme-chroma {
+    --color-primary-rgb: 22, 163, 74; /* Green-600 as a fallback, will be customized by themes */
+    --color-primary: rgb(var(--color-primary-rgb));
+    --color-backdrop-start: rgba(255, 255, 255, 0.03);
+    --color-backdrop-end: rgba(255, 255, 255, 0.05);
+    --color-border-hover: rgba(22, 163, 175, 0.5);
+    --color-glow: rgba(22, 163, 175, 0.25);
+    --text-highlight: #16a3af; /* cyan-500 */
+  }
+
+  .theme-cyberwave {
+    --color-primary-rgb: 192, 132, 252; /* purple-400 */
+    --color-backdrop-start: rgba(192, 132, 252, 0.04);
+    --color-backdrop-end: rgba(99, 102, 241, 0.06); /* indigo-500 */
+    --color-border-hover: rgba(192, 132, 252, 0.5);
+    --color-glow: rgba(124, 58, 237, 0.3); /* violet-600 */
+    --text-highlight: #c084fc; /* purple-400 */
+  }
+
+  .theme-solstice {
+    --color-primary-rgb: 251, 146, 60; /* orange-400 */
+    --color-backdrop-start: rgba(251, 146, 60, 0.04);
+    --color-backdrop-end: rgba(234, 179, 8, 0.06); /* yellow-500 */
+    --color-border-hover: rgba(251, 146, 60, 0.6);
+    --color-glow: rgba(249, 115, 22, 0.3); /* orange-500 */
+    --text-highlight: #fb923c; /* orange-400 */
+  }
 </style>
+<script>
+  // Immediately set the theme on the <html> element to prevent FOUC
+  (function() {
+    try {
+      const themeId = JSON.parse(localStorage.getItem('userTheme') || '"chroma"');
+      const themeClassName = 'theme-' + themeId;
+      document.documentElement.className = themeClassName;
+    } catch (e) {
+      document.documentElement.className = 'theme-chroma'; // Fallback
+    }
+  })();
+</script>
 </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

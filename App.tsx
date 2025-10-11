@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import Clock from './components/Clock';
 import Greeting from './components/Greeting';
 import Quote from './components/Quote';
@@ -11,7 +11,7 @@ import BackgroundSwitcher from './components/BackgroundSwitcher';
 import SearchWidget from './components/SearchWidget';
 import SettingsWidget from './components/SettingsWidget';
 import SettingsModal from './components/SettingsModal';
-import { BACKGROUND_IMAGES, LOCAL_STORAGE_KEYS } from './constants';
+import { BACKGROUND_IMAGES, LOCAL_STORAGE_KEYS, THEMES } from './constants';
 import { TimeProvider } from './contexts/TimeContext';
 import useLocalStorage from './hooks/useLocalStorage';
 import type { Link, UserFeed } from './types';
@@ -30,6 +30,14 @@ const App: React.FC = () => {
         { id: 1, url: 'https://www.theverge.com/rss/index.xml' },
         { id: 2, url: 'https://techcrunch.com/feed/' },
     ]);
+    const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_THEME, THEMES[0].id);
+
+    // Apply the theme class to the document root. The inline script in index.html handles the initial load.
+    // This useEffect handles changes made within the app session.
+    useEffect(() => {
+      const themeClassName = THEMES.find(t => t.id === theme)?.className || THEMES[0].className;
+      document.documentElement.className = themeClassName;
+    }, [theme]);
 
     const changeBackground = useCallback(() => {
         setCurrentBgIndex(prevIndex => (prevIndex + 1) % BACKGROUND_IMAGES.length);
@@ -66,12 +74,12 @@ const App: React.FC = () => {
 
                  {/* Bottom Widgets Area */}
                 <section className="relative z-10 p-4 lg:p-8">
-                    <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div className="col-span-2 md:col-span-3">
+                    <div className="w-full max-w-screen-2xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
+                        <div className="col-span-1 lg:col-span-3">
                             <ServiceGroups />
                         </div>
                         <FeedWidget 
-                            className="col-span-2 md:col-span-2" 
+                            className="col-span-1 lg:col-span-2" 
                             feedUrls={feedUrls} 
                             onOpenSettings={() => setIsSettingsOpen(true)} 
                         />
@@ -105,6 +113,8 @@ const App: React.FC = () => {
                         setFeedUrls={setFeedUrls}
                         focusPrompt={focusPrompt}
                         setFocusPrompt={setFocusPrompt}
+                        theme={theme}
+                        setTheme={setTheme}
                     />
                 )}
             </TimeProvider>

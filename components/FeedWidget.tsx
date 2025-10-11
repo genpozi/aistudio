@@ -35,18 +35,25 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
     setIsLoading(true);
     setError(null);
 
-    const promises = feedUrls.map(feed =>
-      fetch(`${API_ENDPOINT}${encodeURIComponent(feed.url)}`).then(res => {
-        if (!res.ok) throw new Error(`Failed to fetch ${feed.url}`);
-        return res.json() as Promise<RssApiResponse>;
-      })
-    );
+    const fetchAndParse = async (feed: UserFeed): Promise<RssApiResponse> => {
+        const response = await fetch(`${API_ENDPOINT}${encodeURIComponent(feed.url)}`);
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status} for feed: ${feed.url}`);
+        }
+        const data: RssApiResponse = await response.json();
+        if (data.status !== 'ok') {
+            throw new Error(`API error for ${feed.url}: ${data.message || 'Unknown API error'}`);
+        }
+        return data;
+    };
 
+    const promises = feedUrls.map(fetchAndParse);
     const results = await Promise.allSettled(promises);
     
     const newItems: FeedItem[] = [];
+    let hasErrors = false;
     results.forEach(result => {
-      if (result.status === 'fulfilled' && result.value.status === 'ok') {
+      if (result.status === 'fulfilled') {
         const sourceTitle = result.value.feed.title;
         result.value.items.forEach(item => {
           newItems.push({
@@ -57,11 +64,15 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
             pubDate: item.pubDate,
           });
         });
-      } else if (result.status === 'rejected') {
-        console.error("Feed fetch failed:", result.reason);
-        setError("Some feeds could not be loaded.");
+      } else { // result.status === 'rejected'
+        console.error("Feed fetch failed:", result.reason?.message || result.reason);
+        hasErrors = true;
       }
     });
+
+    if (hasErrors) {
+        setError("Some feeds could not be loaded. This might be a temporary issue, a problem with the feed URL, or an ad-blocker interfering.");
+    }
 
     // Sort all items by publication date, descending
     newItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
@@ -91,7 +102,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
             </div>
         );
     }
-    if (items.length === 0) {
+    if (items.length === 0 && !error) {
         return <div className="flex-grow flex items-center justify-center"><p className="text-white/70">No feed items found.</p></div>
     }
     return (
@@ -108,7 +119,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
                     <span className="bg-white/10 px-2 py-1 rounded-full font-semibold truncate max-w-[60%]">{item.source}</span>
                     <span>{timeSince(item.pubDate)}</span>
                 </div>
-                <p className="text-white font-semibold text-base leading-tight group-hover:text-blue-300 flex items-start justify-between">
+                <p className="text-white font-semibold text-base leading-tight group-hover:text-[var(--text-highlight)] transition-colors flex items-start justify-between">
                     <span className="pr-2">{item.title}</span>
                     <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 pt-1">
                     {ICONS.ExternalLink}
@@ -122,7 +133,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
   };
 
   return (
-    <div className={`bg-black/20 backdrop-blur-md rounded-xl p-4 border border-white/10 shadow-lg h-full max-h-[300px] flex flex-col ${className || ''}`}>
+    <div className={`bg-black/20 backdrop-blur-md rounded-xl p-4 border border-white/10 shadow-lg flex flex-col max-h-[450px] ${className || ''}`}>
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-white font-bold text-lg uppercase tracking-wider">Feeds</h3>
         <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">

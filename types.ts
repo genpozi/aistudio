@@ -30,6 +30,7 @@ export interface FeedItem {
 // Represents the data structure from the rss2json API
 export interface RssApiResponse {
   status: string;
+  message?: string; // For API error messages
   feed: {
     title: string;
     [key: string]: any;
@@ -63,4 +64,14 @@ export interface WeatherInfo {
   nearest_area: {
     areaName: { value: string }[];
   }[];
+}
+
+export interface Theme {
+    id: string;
+    name: string;
+    className: string;
+    colors: {
+      primary: string;
+      secondary: string;
+    };
 }

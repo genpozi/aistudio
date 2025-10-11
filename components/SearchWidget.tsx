@@ -24,7 +24,7 @@ const SearchWidget: React.FC = () => {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search Google..."
-        className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg py-2 pl-10 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all"
+        className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg py-2 pl-10 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)] transition-all"
         aria-label="Search Google"
       />
     </form>

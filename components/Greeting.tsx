@@ -5,7 +5,8 @@ import { LOCAL_STORAGE_KEYS } from '../constants';
 
 const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focusPrompt }) => {
   const [focus, setFocus] = useLocalStorage(LOCAL_STORAGE_KEYS.DAILY_FOCUS, '');
-  const [isEditing, setIsEditing] = useState(false);
+  // Initialize in editing mode if there's no focus saved yet.
+  const [isEditing, setIsEditing] = useState(() => !focus);
   const time = useTime();
 
   const greetingText = useMemo(() => {
@@ -26,17 +27,7 @@ const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focu
         {greetingText}
       </h2>
       <div className="mt-6 h-16">
-        {focus && !isEditing ? (
-          <div 
-            className="flex flex-col items-center group cursor-pointer"
-            onClick={() => setIsEditing(true)}
-          >
-            <p className="text-white/80 text-lg uppercase tracking-widest">TODAY</p>
-            <p className="text-white text-3xl font-medium transition-transform group-hover:scale-105">
-              {focus}
-            </p>
-          </div>
-        ) : (
+        {isEditing ? (
           <form onSubmit={handleFocusSubmit}>
             <label className="text-white text-3xl font-medium" htmlFor="focus-input">
               {focusPrompt || 'What is your goal for today?'}
@@ -48,9 +39,19 @@ const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focu
               onChange={(e) => setFocus(e.target.value)}
               onBlur={() => setIsEditing(false)}
               autoFocus
-              className="mt-2 text-center bg-transparent border-b-2 border-white/50 text-white text-3xl font-medium w-full max-w-lg focus:outline-none focus:border-white transition"
+              className="mt-2 text-center bg-transparent border-b-2 border-white/50 text-white text-3xl font-medium w-full max-w-lg focus:outline-none focus:border-[var(--text-highlight)] transition"
             />
           </form>
+        ) : (
+          <div 
+            className="flex flex-col items-center group cursor-pointer"
+            onClick={() => setIsEditing(true)}
+          >
+            <p className="text-white/80 text-lg uppercase tracking-widest">TODAY</p>
+            <p className="text-white text-3xl font-medium transition-transform group-hover:scale-105">
+              {focus}
+            </p>
+          </div>
         )}
       </div>
     </div>
