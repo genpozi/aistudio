@@ -1,20 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import type { Link } from '../types';
 
+// Simple hash function to get a color from a string
+const stringToColor = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    let color = '#';
+    for (let i = 0; i < 3; i++) {
+        const value = (hash >> (i * 8)) & 0xFF;
+        color += ('00' + value.toString(16)).substr(-2);
+    }
+    return color;
+};
+
+const FallbackIcon: React.FC<{ name: string }> = ({ name }) => {
+    const initial = name.charAt(0).toUpperCase();
+    const bgColor = stringToColor(name);
+    return (
+        <div 
+            className="w-4 h-4 flex items-center justify-center rounded-sm flex-shrink-0 font-bold text-xs"
+            style={{ backgroundColor: bgColor, color: '#fff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}
+            title={`${name} (fallback icon)`}
+        >
+            {initial}
+        </div>
+    );
+};
+
 const Favicon: React.FC<{ link: Link }> = ({ link }) => {
     const [hasError, setHasError] = useState(false);
 
-    // Reset error state if the icon URL changes
     useEffect(() => {
         setHasError(false);
     }, [link.iconUrl]);
 
     if (hasError || !link.iconUrl) {
-        return (
-            <div className="w-4 h-4 flex items-center justify-center text-white/80 flex-shrink-0" title="Generic link icon">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-full w-full" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9V3m0 18a9 9 0 00-9-9m9 9a9 9 0 00-9-9" /></svg>
-            </div>
-        );
+        return <FallbackIcon name={link.name} />;
     }
 
     return (

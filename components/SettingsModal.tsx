@@ -104,8 +104,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     const addFeed = (e: React.FormEvent) => {
         e.preventDefault();
         setFeedError('');
-        if (tempFeedUrls.length >= 5) {
-            setFeedError("You can add a maximum of 5 feeds.");
+        if (tempFeedUrls.length >= 10) {
+            setFeedError("You can add a maximum of 10 feeds.");
             return;
         }
         const urlInput = newFeedUrl.trim();
@@ -307,11 +307,11 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                          <div>
                             <form onSubmit={addFeed} className="mb-6">
                                 <label htmlFor="feed-url-input" className="block text-sm font-medium text-white/80 mb-1">New RSS Feed URL</label>
-                                 <p className="text-xs text-white/50 mb-2">Add up to 5 RSS feed URLs.</p>
+                                 <p className="text-xs text-white/50 mb-2">Add up to 10 RSS feed URLs.</p>
                                 <div className="flex space-x-2">
                                     <input id="feed-url-input" type="url" placeholder="https://www.example.com/feed.xml" value={newFeedUrl} onChange={e => setNewFeedUrl(e.target.value)}
                                         className="flex-grow bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" />
-                                    <button type="submit" className="bg-white/20 hover:bg-white/30 p-2 px-4 rounded font-semibold" disabled={tempFeedUrls.length >= 5}>Add</button>
+                                    <button type="submit" className="bg-white/20 hover:bg-white/30 p-2 px-4 rounded font-semibold" disabled={tempFeedUrls.length >= 10}>Add</button>
                                 </div>
                                 {feedError && <p className="text-red-400 text-xs mt-1">{feedError}</p>}
                             </form>

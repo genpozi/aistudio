@@ -1,7 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import type { Todo } from '../types';
 import useLocalStorage from '../hooks/useLocalStorage';
-import useOnClickOutside from '../hooks/useOnClickOutside';
 import { ICONS, LOCAL_STORAGE_KEYS } from '../constants';
 
 const TodoWidget: React.FC = () => {
@@ -9,9 +8,6 @@ const TodoWidget: React.FC = () => {
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [newTodoText, setNewTodoText] = useState('');
   const [justAddedTodoId, setJustAddedTodoId] = useState<number | null>(null);
-
-  const widgetRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside(widgetRef, () => setIsOpen(false), isOpen);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,13 +41,21 @@ const TodoWidget: React.FC = () => {
   };
 
   return (
-    <div ref={widgetRef}>
-      <button onClick={() => setIsOpen(!isOpen)} className="text-white text-lg font-medium hover:underline">
-        Todo
+    <div>
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className="group flex items-center space-x-2 px-3 py-2 rounded-lg bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)] border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_15px_-5px_var(--color-glow)]"
+        aria-expanded={isOpen}
+        aria-label="Toggle task list"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white/80 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+        </svg>
+        <span className="text-white text-sm font-semibold">Todo</span>
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-12 right-4 w-80 bg-black/50 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl p-4 text-white max-h-[50vh] flex flex-col">
+        <div className="absolute bottom-16 right-4 w-80 bg-black/50 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl p-4 text-white max-h-[50vh] flex flex-col">
           <h3 className="text-xl font-bold mb-4">My Tasks</h3>
           <ul className="space-y-2 overflow-y-auto flex-grow custom-scrollbar -mr-2 pr-2">
             {todos.map(todo => (

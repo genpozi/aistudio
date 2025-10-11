@@ -9,7 +9,7 @@ const Clock: React.FC = () => {
   };
 
   return (
-    <h1 className="text-white font-bold text-9xl tracking-tighter" style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}>
+    <h1 className="text-white font-bold text-8xl md:text-9xl tracking-tighter" style={{ textShadow: '0 4px 15px rgba(0,0,0,0.4)' }}>
       {formatTime(time)}
     </h1>
   );
