@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Todo } from '../types';
 import useLocalStorage from '../hooks/useLocalStorage';
@@ -42,16 +41,39 @@ const TodoWidget: React.FC = () => {
           <ul className="space-y-2 overflow-y-auto flex-grow">
             {todos.map(todo => (
               <li key={todo.id} className="group flex items-center justify-between hover:bg-white/10 p-2 rounded">
-                <div className="flex items-center cursor-pointer" onClick={() => toggleTodo(todo.id)}>
-                  <input
-                    type="checkbox"
-                    checked={todo.completed}
-                    readOnly
-                    className="h-5 w-5 rounded bg-transparent border-2 border-white/50 text-blue-500 focus:ring-0"
-                  />
-                  <span className={`ml-3 ${todo.completed ? 'line-through opacity-50' : ''}`}>{todo.text}</span>
+                <div 
+                  className="flex items-center cursor-pointer flex-grow" 
+                  onClick={() => toggleTodo(todo.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                      e.preventDefault();
+                      toggleTodo(todo.id);
+                    }
+                  }}
+                  role="checkbox"
+                  aria-checked={todo.completed}
+                  tabIndex={0}
+                  aria-labelledby={`todo-label-${todo.id}`}
+                >
+                  <div className={`w-5 h-5 border-2 rounded ${todo.completed ? 'bg-blue-500 border-blue-500' : 'border-white/50'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                    {todo.completed && (
+                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    )}
+                  </div>
+                  <span 
+                    id={`todo-label-${todo.id}`}
+                    className={`truncate ${todo.completed ? 'line-through opacity-50' : ''}`}
+                  >
+                    {todo.text}
+                  </span>
                 </div>
-                 <button onClick={() => deleteTodo(todo.id)} className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity">
+                 <button 
+                    onClick={() => deleteTodo(todo.id)} 
+                    className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity ml-2 flex-shrink-0"
+                    aria-label={`Delete todo: ${todo.text}`}
+                 >
                   {ICONS.Trash}
                 </button>
               </li>

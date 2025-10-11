@@ -1,18 +1,19 @@
-
 import React, { useState, useMemo } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
+import { useTime } from '../contexts/TimeContext';
 
 const Greeting: React.FC = () => {
   const [name] = useLocalStorage('userName', 'User');
   const [focus, setFocus] = useLocalStorage('dailyFocus', '');
   const [isEditing, setIsEditing] = useState(false);
+  const time = useTime();
 
   const greetingText = useMemo(() => {
-    const hour = new Date().getHours();
+    const hour = time.getHours();
     if (hour < 12) return `Good morning, ${name}.`;
     if (hour < 18) return `Good afternoon, ${name}.`;
     return `Good evening, ${name}.`;
-  }, [name]);
+  }, [name, time]);
   
   const handleFocusSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

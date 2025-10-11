@@ -1,15 +1,8 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useTime } from '../contexts/TimeContext';
 
 const Clock: React.FC = () => {
-  const [time, setTime] = useState(new Date());
-
-  useEffect(() => {
-    const timerId = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-    return () => clearInterval(timerId);
-  }, []);
+  const time = useTime();
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });

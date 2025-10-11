@@ -8,17 +8,10 @@ import LinksWidget from './components/LinksWidget';
 import TodoWidget from './components/TodoWidget';
 import ServiceGroups from './components/ServiceGroups';
 import FeedWidget from './components/FeedWidget';
-import { BACKGROUND_IMAGES, ICONS } from './constants';
-
-const BackgroundSwitcher: React.FC<{ onRefresh: () => void }> = ({ onRefresh }) => (
-    <button
-        onClick={onRefresh}
-        className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors duration-200"
-        aria-label="Change background image"
-    >
-        {ICONS.Refresh}
-    </button>
-);
+import BackgroundSwitcher from './components/BackgroundSwitcher';
+import SearchWidget from './components/SearchWidget';
+import { BACKGROUND_IMAGES } from './constants';
+import { TimeProvider } from './contexts/TimeContext';
 
 
 const App: React.FC = () => {
@@ -37,39 +30,48 @@ const App: React.FC = () => {
         >
             <div className="absolute inset-0 bg-black/30"></div>
 
-            {/* Top Bar */}
-            <header className="relative z-10 flex justify-between items-center p-4">
-                <LinksWidget />
-                <Weather />
-            </header>
-
-            {/* Center Content */}
-            <section className="relative z-10 flex-grow flex flex-col justify-center items-center text-center p-4">
-                <Clock />
-                <Greeting />
-            </section>
-
-             {/* Bottom Widgets Area */}
-            <section className="relative z-10 p-4 lg:p-8">
-                <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
-                    <div className="col-span-2 md:col-span-4">
-                        <ServiceGroups />
+            <TimeProvider>
+                {/* Top Bar */}
+                <header className="relative z-10 flex justify-between items-center p-4">
+                    <div className="flex-1 flex justify-start">
+                        <LinksWidget />
                     </div>
-                    <FeedWidget />
-                </div>
-            </section>
+                    <div className="flex-1 flex justify-center px-4">
+                        <SearchWidget />
+                    </div>
+                    <div className="flex-1 flex justify-end">
+                        <Weather />
+                    </div>
+                </header>
+
+                {/* Center Content */}
+                <section className="relative z-10 flex-grow flex flex-col justify-center items-center text-center p-4">
+                    <Clock />
+                    <Greeting />
+                </section>
+
+                 {/* Bottom Widgets Area */}
+                <section className="relative z-10 p-4 lg:p-8">
+                    <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div className="col-span-2 md:col-span-4">
+                            <ServiceGroups />
+                        </div>
+                        <FeedWidget />
+                    </div>
+                </section>
 
 
-            {/* Bottom Bar */}
-            <footer className="relative z-10 flex justify-between items-end p-4">
-                <div className="text-left">
-                     <BackgroundSwitcher onRefresh={changeBackground} />
-                </div>
-                <div className="flex-grow flex justify-center">
-                    <Quote />
-                </div>
-                <TodoWidget />
-            </footer>
+                {/* Bottom Bar */}
+                <footer className="relative z-10 flex justify-between items-end p-4">
+                    <div className="text-left">
+                         <BackgroundSwitcher onRefresh={changeBackground} />
+                    </div>
+                    <div className="flex-grow flex justify-center">
+                        <Quote />
+                    </div>
+                    <TodoWidget />
+                </footer>
+            </TimeProvider>
         </main>
     );
 };

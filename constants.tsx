@@ -11,15 +11,18 @@ export const ICONS = {
     Trash: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>,
     ExternalLink: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>,
     Refresh: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0120.5 19.5L20 20" /></svg>,
+    Search: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
 };
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "AI",
     services: [
-      { name: "ChatGPT", url: "https://chat.openai.com", icon: ICONS.Sparkles },
       { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.Sparkles },
-      { name: "Hugging Face", url: "https://huggingface.co", icon: ICONS.Sparkles },
+      { name: "AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles },
+      { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Sparkles },
+      { name: "Perplexity", url: "https://www.perplexity.ai/", icon: ICONS.Sparkles },
+      { name: "Pozi AI", url: "https://ai.pozi.plus", icon: ICONS.Sparkles },
     ],
   },
   {
@@ -28,7 +31,6 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "GitHub", url: "https://github.com", icon: ICONS.Code },
       { name: "Jira", url: "https://jira.atlassian.com", icon: ICONS.Briefcase },
       { name: "Figma", url: "https://figma.com", icon: ICONS.Briefcase },
-      { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.Briefcase },
     ],
   },
   {
@@ -36,15 +38,11 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     services: [
       { name: "Gmail", url: "https://mail.google.com", icon: ICONS.User },
       { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.User },
+      { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.Briefcase },
       { name: "Spotify", url: "https://spotify.com", icon: ICONS.User },
-    ],
-  },
-  {
-    category: "WEBSITES",
-    services: [
+      { name: "Wikipedia", url: "https://wikipedia.org", icon: ICONS.Globe },
       { name: "Reddit", url: "https://reddit.com", icon: ICONS.Globe },
-      { name: "Twitter", url: "https://twitter.com", icon: ICONS.Globe },
-      { name: "Product Hunt", url: "https://producthunt.com", icon: ICONS.Globe },
+      { name: "Amazon", url: "https://amazon.com", icon: ICONS.Globe },
     ],
   },
 ];
