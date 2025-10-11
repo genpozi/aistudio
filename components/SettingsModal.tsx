@@ -7,6 +7,7 @@ import Favicon from './Favicon';
 type Tab = 'general' | 'links' | 'feeds';
 
 interface SettingsModalProps {
+    initialTab?: string;
     onClose: () => void;
     name: string;
     setName: (name: string) => void;
@@ -23,6 +24,7 @@ interface SettingsModalProps {
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
+    initialTab = 'general',
     onClose,
     name,
     setName,
@@ -37,7 +39,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     theme,
     setTheme,
 }) => {
-    const [activeTab, setActiveTab] = useState<Tab>('general');
+    const [activeTab, setActiveTab] = useState<Tab>(initialTab as Tab);
     const modalRef = useRef<HTMLDivElement>(null);
     useOnClickOutside(modalRef, onClose, true);
 

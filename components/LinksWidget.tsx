@@ -1,46 +1,41 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import type { Link } from '../types';
-import useOnClickOutside from '../hooks/useOnClickOutside';
 import Favicon from './Favicon';
+import { ICONS } from '../constants';
 
 const LinksWidget: React.FC<{ links: Link[]; onOpenSettings: () => void }> = ({ links, onOpenSettings }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  
-  const widgetRef = useRef<HTMLDivElement>(null);
-  useOnClickOutside(widgetRef, () => setIsOpen(false), isOpen);
-
-  const handleManageClick = () => {
-    setIsOpen(false);
-    onOpenSettings();
-  };
+  const hasLinks = links.length > 0;
 
   return (
-    <div ref={widgetRef}>
-      <button onClick={() => setIsOpen(!isOpen)} className="text-white text-lg font-medium hover:underline">
+    <div className="flex items-center space-x-4">
+      <h3 className="text-white font-bold text-lg uppercase tracking-wider">
         Links
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-12 left-4 w-72 bg-black/50 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl p-4 text-white">
-          <ul className="space-y-2 max-h-60 overflow-y-auto">
-            {links.length > 0 ? links.map(link => (
-              <li key={link.id} className="group flex justify-between items-center hover:bg-white/10 p-1 rounded">
-                <a href={link.url} target="_blank" rel="noopener noreferrer" className="flex-grow truncate flex items-center space-x-3">
-                    <Favicon link={link} />
-                    <span>{link.name}</span>
-                </a>
-              </li>
-            )) : (
-              <li className="text-white/60 text-center py-4">No links added yet.</li>
-            )}
-          </ul>
-          <div className="mt-4 pt-4 border-t border-white/20">
-            <button onClick={handleManageClick} className="w-full text-center bg-white/20 hover:bg-white/30 p-2 rounded font-semibold">
-              Manage Links
-            </button>
-          </div>
-        </div>
-      )}
+      </h3>
+      <div className="flex items-center space-x-2">
+        {hasLinks ? (
+          links.map(link => (
+            <a
+              key={link.id}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center space-x-2 p-2 rounded-lg bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)] border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_15px_-5px_var(--color-glow)]"
+              title={link.name}
+            >
+              <Favicon link={link} />
+              <span className="text-white text-sm font-semibold leading-tight truncate pr-1">{link.name}</span>
+            </a>
+          ))
+        ) : (
+          <button
+            onClick={onOpenSettings}
+            className="group flex items-center space-x-2 p-2 rounded-lg bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)] border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_15px_-5px_var(--color-glow)]"
+          >
+            <span className="w-4 h-4 flex items-center justify-center text-white/80 group-hover:text-white transition-colors">{ICONS.Plus}</span>
+            <span className="text-white text-sm font-semibold leading-tight">Add Link</span>
+          </button>
+        )}
+      </div>
     </div>
   );
 };

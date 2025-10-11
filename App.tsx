@@ -20,6 +20,7 @@ import type { Link, UserFeed } from './types';
 const App: React.FC = () => {
     const [currentBgIndex, setCurrentBgIndex] = useState(() => Math.floor(Math.random() * BACKGROUND_IMAGES.length));
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [initialSettingsTab, setInitialSettingsTab] = useState('general');
 
     // Centralized state management using constants
     const [name, setName] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_NAME, 'User');
@@ -45,6 +46,11 @@ const App: React.FC = () => {
     
     const backgroundImageUrl = useMemo(() => BACKGROUND_IMAGES[currentBgIndex], [currentBgIndex]);
 
+    const openSettings = (tab: string = 'general') => {
+        setInitialSettingsTab(tab);
+        setIsSettingsOpen(true);
+    };
+
     return (
         <main
             className="h-screen w-screen bg-cover bg-center text-white flex flex-col font-sans transition-background-image duration-1000 ease-in-out"
@@ -56,7 +62,7 @@ const App: React.FC = () => {
                 {/* Top Bar */}
                 <header className="relative z-10 flex justify-between items-center p-4">
                     <div className="relative z-20 flex-1 flex justify-start">
-                        <LinksWidget links={links} onOpenSettings={() => setIsSettingsOpen(true)} />
+                        <LinksWidget links={links} onOpenSettings={() => openSettings('links')} />
                     </div>
                     <div className="flex-1 flex justify-center px-4">
                         <SearchWidget />
@@ -81,7 +87,7 @@ const App: React.FC = () => {
                         <FeedWidget 
                             className="col-span-1 lg:col-span-2" 
                             feedUrls={feedUrls} 
-                            onOpenSettings={() => setIsSettingsOpen(true)} 
+                            onOpenSettings={() => openSettings('feeds')} 
                         />
                     </div>
                 </section>
@@ -91,7 +97,7 @@ const App: React.FC = () => {
                 <footer className="relative z-10 flex justify-between items-end p-4">
                     <div className="flex items-center space-x-4">
                          <BackgroundSwitcher onRefresh={changeBackground} />
-                         <SettingsWidget onOpenSettings={() => setIsSettingsOpen(true)} />
+                         <SettingsWidget onOpenSettings={() => openSettings('general')} />
                     </div>
                     <div className="flex-grow flex justify-center">
                         <Quote />
@@ -102,6 +108,7 @@ const App: React.FC = () => {
                 {/* Render the modal and pass state and setters */}
                 {isSettingsOpen && (
                     <SettingsModal
+                        initialTab={initialSettingsTab}
                         onClose={() => setIsSettingsOpen(false)}
                         name={name}
                         setName={setName}
