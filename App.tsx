@@ -25,6 +25,7 @@ const App: React.FC = () => {
     const [name, setName] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_NAME, 'User');
     const [location, setLocation] = useLocalStorage(LOCAL_STORAGE_KEYS.WEATHER_LOCATION, '');
     const [links, setLinks] = useLocalStorage<Link[]>(LOCAL_STORAGE_KEYS.USER_LINKS, []);
+    const [focusPrompt, setFocusPrompt] = useLocalStorage(LOCAL_STORAGE_KEYS.FOCUS_PROMPT, 'What is your goal for today?');
     const [feedUrls, setFeedUrls] = useLocalStorage<UserFeed[]>(LOCAL_STORAGE_KEYS.USER_FEEDS, [
         { id: 1, url: 'https://www.theverge.com/rss/index.xml' },
         { id: 2, url: 'https://techcrunch.com/feed/' },
@@ -60,7 +61,7 @@ const App: React.FC = () => {
                 {/* Center Content */}
                 <section className="relative z-10 flex-grow flex flex-col justify-center items-center text-center p-4">
                     <Clock />
-                    <Greeting name={name} />
+                    <Greeting name={name} focusPrompt={focusPrompt} />
                 </section>
 
                  {/* Bottom Widgets Area */}
@@ -102,6 +103,8 @@ const App: React.FC = () => {
                         setLinks={setLinks}
                         feedUrls={feedUrls}
                         setFeedUrls={setFeedUrls}
+                        focusPrompt={focusPrompt}
+                        setFocusPrompt={setFocusPrompt}
                     />
                 )}
             </TimeProvider>

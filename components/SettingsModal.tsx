@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import useOnClickOutside from '../hooks/useOnClickOutside';
 import type { Link, UserFeed } from '../types';
-import { ICONS } from '../constants';
+import { ICONS, LOCAL_STORAGE_KEYS } from '../constants';
 import Favicon from './Favicon';
 
 type Tab = 'general' | 'links' | 'feeds';
@@ -16,6 +16,8 @@ interface SettingsModalProps {
     setLinks: React.Dispatch<React.SetStateAction<Link[]>>;
     feedUrls: UserFeed[];
     setFeedUrls: React.Dispatch<React.SetStateAction<UserFeed[]>>;
+    focusPrompt: string;
+    setFocusPrompt: (prompt: string) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -27,7 +29,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     links,
     setLinks,
     feedUrls,
-    setFeedUrls
+    setFeedUrls,
+    focusPrompt,
+    setFocusPrompt,
 }) => {
     const [activeTab, setActiveTab] = useState<Tab>('general');
     const modalRef = useRef<HTMLDivElement>(null);
@@ -36,6 +40,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     // Temporary state for form inputs
     const [tempName, setTempName] = useState(name);
     const [tempLocation, setTempLocation] = useState(location);
+    const [tempFocusPrompt, setTempFocusPrompt] = useState(focusPrompt);
 
     // Links Settings States
     const [newLinkUrl, setNewLinkUrl] = useState('');
@@ -50,6 +55,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         e.preventDefault();
         setName(tempName.trim() || 'User');
         setLocation(tempLocation.trim());
+        setFocusPrompt(tempFocusPrompt.trim() || 'What is your goal for today?');
         onClose();
     };
 
@@ -119,6 +125,78 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         setFeedUrls(feedUrls.filter(feed => feed.id !== id));
     };
 
+    const handleExportConfig = () => {
+        try {
+            const config: { [key: string]: any } = {};
+            Object.values(LOCAL_STORAGE_KEYS).forEach(key => {
+                const value = localStorage.getItem(key);
+                if (value !== null) {
+                    config[key] = JSON.parse(value);
+                }
+            });
+
+            const configString = JSON.stringify(config, null, 2);
+            const blob = new Blob([configString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pozi-dashboard-config.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("Failed to export configuration:", error);
+            alert("An error occurred while exporting your configuration.");
+        }
+    };
+
+    const handleImportConfig = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const text = e.target?.result;
+                if (typeof text !== 'string') {
+                    throw new Error("File could not be read.");
+                }
+                const config = JSON.parse(text);
+
+                const knownKeys = Object.values(LOCAL_STORAGE_KEYS);
+                const configKeys = Object.keys(config);
+
+                if (configKeys.length === 0 || !configKeys.some(key => knownKeys.includes(key))) {
+                    throw new Error("File does not appear to be a valid configuration.");
+                }
+
+                knownKeys.forEach(key => {
+                    localStorage.removeItem(key);
+                });
+
+                configKeys.forEach(key => {
+                    if (knownKeys.includes(key) && config[key] !== undefined) {
+                        localStorage.setItem(key, JSON.stringify(config[key]));
+                    }
+                });
+
+                alert("Configuration restored successfully! The page will now reload.");
+                window.location.reload();
+
+            } catch (error) {
+                console.error("Failed to import configuration:", error);
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                alert(`Error: Could not import configuration. Please make sure it's a valid backup file. Details: ${errorMessage}`);
+            } finally {
+                event.target.value = '';
+            }
+        };
+        reader.readAsText(file);
+    };
+
     const TabButton: React.FC<{ tab: Tab, label: string }> = ({ tab, label }) => (
         <button
             onClick={() => setActiveTab(tab)}
@@ -158,7 +236,46 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                     <input id="location-input" type="text" value={tempLocation} onChange={(e) => setTempLocation(e.target.value)}
                                         className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50" />
                                 </div>
+                                <div>
+                                    <label htmlFor="focus-prompt-input" className="block text-sm font-medium text-white/80 mb-1">Focus Prompt</label>
+                                    <p className="text-xs text-white/50 mb-2">The question that asks for your daily goal.</p>
+                                     <div className="relative">
+                                        <input id="focus-prompt-input" type="text" value={tempFocusPrompt} onChange={(e) => setTempFocusPrompt(e.target.value)} maxLength={50}
+                                            className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50 pr-12" />
+                                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/50">{tempFocusPrompt.length} / 50</span>
+                                    </div>
+                                </div>
                             </div>
+                            
+                            <div className="mt-8 pt-6 border-t border-white/20">
+                                <h3 className="text-lg font-semibold mb-2">Backup & Restore</h3>
+                                <p className="text-sm text-white/60 mb-4">
+                                    Save your dashboard configuration to a file to restore it later or on another device.
+                                </p>
+                                <div className="flex space-x-4">
+                                    <button
+                                        type="button"
+                                        onClick={handleExportConfig}
+                                        className="flex-1 bg-white/20 hover:bg-white/30 p-3 rounded font-semibold transition-colors"
+                                    >
+                                        Export
+                                    </button>
+                                    <label
+                                        htmlFor="import-config-input"
+                                        className="flex-1 text-center bg-white/20 hover:bg-white/30 p-3 rounded font-semibold transition-colors cursor-pointer"
+                                    >
+                                        Import
+                                    </label>
+                                    <input
+                                        id="import-config-input"
+                                        type="file"
+                                        accept=".json"
+                                        className="hidden"
+                                        onChange={handleImportConfig}
+                                    />
+                                </div>
+                            </div>
+                            
                             <div className="mt-8 pt-6 border-t border-white/20">
                                 <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded font-semibold transition-colors">
                                     Save and Close

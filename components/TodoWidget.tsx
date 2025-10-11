@@ -8,6 +8,7 @@ const TodoWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [newTodoText, setNewTodoText] = useState('');
+  const [justAddedTodoId, setJustAddedTodoId] = useState<number | null>(null);
 
   const widgetRef = useRef<HTMLDivElement>(null);
   useOnClickOutside(widgetRef, () => setIsOpen(false), isOpen);
@@ -22,6 +23,10 @@ const TodoWidget: React.FC = () => {
       };
       setTodos([...todos, newTodo]);
       setNewTodoText('');
+      setJustAddedTodoId(newTodo.id);
+      setTimeout(() => {
+        setJustAddedTodoId(null);
+      }, 500); // Duration of animation
     }
   };
 
@@ -33,6 +38,12 @@ const TodoWidget: React.FC = () => {
     setTodos(todos.filter(todo => todo.id !== id));
   }
 
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Escape') {
+      setNewTodoText('');
+    }
+  };
+
   return (
     <div ref={widgetRef}>
       <button onClick={() => setIsOpen(!isOpen)} className="text-white text-lg font-medium hover:underline">
@@ -42,9 +53,12 @@ const TodoWidget: React.FC = () => {
       {isOpen && (
         <div className="absolute bottom-12 right-4 w-80 bg-black/50 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl p-4 text-white max-h-[50vh] flex flex-col">
           <h3 className="text-xl font-bold mb-4">My Tasks</h3>
-          <ul className="space-y-2 overflow-y-auto flex-grow">
+          <ul className="space-y-2 overflow-y-auto flex-grow custom-scrollbar -mr-2 pr-2">
             {todos.map(todo => (
-              <li key={todo.id} className="group flex items-center justify-between hover:bg-white/10 p-2 rounded">
+              <li 
+                key={todo.id} 
+                className={`group flex items-center justify-between hover:bg-white/10 p-2 rounded ${justAddedTodoId === todo.id ? 'animate-add-todo' : ''}`}
+              >
                 <div 
                   className="flex items-center cursor-pointer flex-grow" 
                   onClick={() => toggleTodo(todo.id)}
@@ -89,6 +103,7 @@ const TodoWidget: React.FC = () => {
               placeholder="New Todo"
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
+              onKeyDown={handleInputKeyDown}
               className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/50"
             />
           </form>

@@ -3,7 +3,7 @@ import useLocalStorage from '../hooks/useLocalStorage';
 import { useTime } from '../contexts/TimeContext';
 import { LOCAL_STORAGE_KEYS } from '../constants';
 
-const Greeting: React.FC<{ name: string }> = ({ name }) => {
+const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focusPrompt }) => {
   const [focus, setFocus] = useLocalStorage(LOCAL_STORAGE_KEYS.DAILY_FOCUS, '');
   const [isEditing, setIsEditing] = useState(false);
   const time = useTime();
@@ -39,7 +39,7 @@ const Greeting: React.FC<{ name: string }> = ({ name }) => {
         ) : (
           <form onSubmit={handleFocusSubmit}>
             <label className="text-white text-3xl font-medium" htmlFor="focus-input">
-              What is your main focus for today?
+              {focusPrompt || 'What is your goal for today?'}
             </label>
             <input
               id="focus-input"

@@ -20,6 +20,7 @@ export const LOCAL_STORAGE_KEYS = {
     USER_LINKS: 'userLinks',
     USER_FEEDS: 'userFeeds',
     DAILY_FOCUS: 'dailyFocus',
+    FOCUS_PROMPT: 'focusPrompt',
     USER_TODOS: 'userTodos',
 };
 
