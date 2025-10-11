@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import type { Todo } from '../types';
 import useLocalStorage from '../hooks/useLocalStorage';
-import { ICONS } from '../constants';
+import useOnClickOutside from '../hooks/useOnClickOutside';
+import { ICONS, LOCAL_STORAGE_KEYS } from '../constants';
 
 const TodoWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [todos, setTodos] = useLocalStorage<Todo[]>('userTodos', []);
+  const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [newTodoText, setNewTodoText] = useState('');
+
+  const widgetRef = useRef<HTMLDivElement>(null);
+  useOnClickOutside(widgetRef, () => setIsOpen(false), isOpen);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,7 +34,7 @@ const TodoWidget: React.FC = () => {
   }
 
   return (
-    <div>
+    <div ref={widgetRef}>
       <button onClick={() => setIsOpen(!isOpen)} className="text-white text-lg font-medium hover:underline">
         Todo
       </button>

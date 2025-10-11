@@ -25,7 +25,7 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup }> = ({ group }) => (
 
 const ServiceGroups: React.FC = () => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
       {SERVICE_GROUPS.map((group) => (
         <ServiceGroupCard key={group.category} group={group} />
       ))}

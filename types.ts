@@ -13,6 +13,36 @@ export interface Link {
   iconUrl?: string;
 }
 
+export interface UserFeed {
+  id: number;
+  url: string;
+}
+
+// Represents a single, normalized item from a parsed feed
+export interface FeedItem {
+  title: string;
+  link: string;
+  pubDate: string;
+  author: string;
+  source: string; // Manually added from the feed's main title
+}
+
+// Represents the data structure from the rss2json API
+export interface RssApiResponse {
+  status: string;
+  feed: {
+    title: string;
+    [key: string]: any;
+  };
+  items: {
+    title: string;
+    pubDate: string;
+    link: string;
+    author: string;
+    [key: string]: any;
+  }[];
+}
+
 export interface Service {
   name: string;
   url: string;
@@ -23,14 +53,6 @@ export interface Service {
 export interface ServiceGroup {
   category: string;
   services: Service[];
-}
-
-export interface FeedItem {
-  id: number;
-  source: string;
-  title: string;
-  link: string;
-  timestamp: string;
 }
 
 export interface WeatherInfo {

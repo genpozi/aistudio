@@ -19,18 +19,25 @@ const WeatherIcon: React.FC<{ description?: string }> = ({ description }) => {
     return <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 16.5A4.5 4.5 0 1 0 7.5 12 4.5 4.5 0 0 0 12 16.5z" strokeLinecap="round" strokeLinejoin="round"/><path d="M12 8V7" strokeLinecap="round" strokeLinejoin="round"/></svg>
 };
 
-const Weather: React.FC = () => {
+const Weather: React.FC<{ location: string }> = ({ location }) => {
     const [weather, setWeather] = useState<WeatherInfo | null>(null);
     const [error, setError] = useState<string | null>(null);
     
-    // NOTE: For a production app, you would want to get the user's location via navigator.geolocation
-    // and handle API keys securely. For this demo, we'll use a hardcoded location and a keyless API.
     useEffect(() => {
+        if (!location) {
+            setWeather(null);
+            setError(null);
+            return;
+        }
+
         const fetchWeather = async () => {
+            setError(null);
+            setWeather(null); // Reset on new fetch
             try {
-                const response = await fetch('https://wttr.in/Victoria?format=j1');
+                // wttr.in is flexible with location formats (city, zip, etc.)
+                const response = await fetch(`https://wttr.in/${encodeURIComponent(location)}?format=j1`);
                 if (!response.ok) {
-                    throw new Error('Weather data not available');
+                    throw new Error('Location not found or data unavailable.');
                 }
                 const data: WeatherInfo = await response.json();
                 setWeather(data);
@@ -45,11 +52,14 @@ const Weather: React.FC = () => {
         };
 
         fetchWeather();
-    }, []);
+    }, [location]);
 
     const renderContent = () => {
+        if (!location) {
+            return <p className="text-sm opacity-80">Set location in settings</p>;
+        }
         if (error) {
-            return <p className="text-sm opacity-80">Weather unavailable</p>;
+            return <p className="text-sm opacity-80 text-red-400">{error}</p>;
         }
 
         if (!weather) {
@@ -57,14 +67,13 @@ const Weather: React.FC = () => {
         }
 
         const condition = weather.current_condition[0];
-        const location = weather.nearest_area[0].areaName[0].value;
         
         return (
             <>
                 <WeatherIcon description={condition.weatherDesc[0].value} />
                 <div className="text-right">
                     <p className="text-3xl">{condition.temp_C}°</p>
-                    <p className="text-sm opacity-80">{location}</p>
+                    <p className="text-sm opacity-80 capitalize">{location}</p>
                 </div>
             </>
         );
