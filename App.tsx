@@ -20,9 +20,8 @@ import type { Link, UserFeed } from './types';
 
 const defaultFeeds: UserFeed[] = [
     { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCH64kG4TyblRS0AxE-DpXbQ' },
-    { id: 3, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCwWhs_6x42TyRM4Wstoq8HA' },
-    { id: 4, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVy16RS5eEDh8anP8j94G2A' },
-    { id: 5, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVTyTA7-g9nopHeHbeuvpRA' },
+    { id: 3, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVy16RS5eEDh8anP8j94G2A' },
+    { id: 4, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVTyTA7-g9nopHeHbeuvpRA' },
 ];
 
 const App: React.FC = () => {

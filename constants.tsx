@@ -77,6 +77,8 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "Offline Research", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
       { name: "Super PDF Tools", url: "https://pdf.stanz.app", icon: ICONS.Document },
       { name: "Huly Projects", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase },
+      { name: "Miles Music", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe },
+      { name: "PoziPedia", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document },
     ],
   },
   {
@@ -89,7 +91,6 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "Reddit", url: "https://reddit.com", icon: ICONS.Globe },
       { name: "Glance Dash", url: "https://glance.pozi.plus", icon: ICONS.Globe },
       { name: "Casa Dash", url: "https://dash.stanz.app", icon: ICONS.Globe },
-      { name: "Hortus Plants", url: "https://hortusfox.pozi.work", icon: ICONS.Globe },
       { name: "Pozi Paperless", url: "https://paperless.stanz.app", icon: ICONS.Document },
       { name: "Bitwarden Server", url: "https://vault.pozi.plus", icon: ICONS.Lock },
     ],
