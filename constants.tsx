@@ -108,6 +108,14 @@ export const QUOTES = [
     { text: "Live what you love.", author: "Anonymous" },
     { text: "Better to do something imperfectly than to do nothing flawlessly.", author: "Robert H. Schuller" },
     { text: "Give whatever you are doing and whoever you are with the gift of your attention.", author: "Jim Rohn" },
+    { text: "Hard work never killed anybody, but why take a chance?", author: "Edgar Bergen" },
+    { text: "The brain is a wonderful organ; it starts working the moment you get up in the morning and does not stop until you get into the office.", author: "Robert Frost" },
+    { text: "I like work; it fascinates me. I can sit and look at it for hours.", author: "Jerome K. Jerome" },
+    { text: "I love deadlines. I like the whooshing sound they make as they fly by.", author: "Douglas Adams" },
+    { text: "Aim low, reach your goals, and avoid disappointment.", author: "Scott Adams" },
+    { text: "A meeting is an event where minutes are taken and hours are wasted.", author: "James T. Kirk" },
+    { text: "Meetings are indispensable when you don't want to do anything.", author: "John Kenneth Galbraith" },
+    { text: "A committee is a group of people who individually can do nothing but together can decide that nothing can be done.", author: "Fred Allen" },
 ];
 
 export const BACKGROUND_IMAGES = [

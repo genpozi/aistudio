@@ -1,8 +1,58 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ICONS } from '../constants';
-import type { FeedItem, UserFeed, RssApiResponse } from '../types';
+import type { FeedItem, UserFeed } from '../types';
 
-const API_ENDPOINT = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const CORS_PROXY_URL = 'https://corsproxy.io/?';
+
+// A simple utility to get text content from a DOM element, trying multiple selectors.
+const getText = (element: Element, selectors: string[]): string => {
+  for (const selector of selectors) {
+    const content = element.querySelector(selector)?.textContent;
+    if (content) return content.trim();
+  }
+  return '';
+};
+
+// Parses an XML string into a structured feed object.
+const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem, 'source'>[] } => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlString, 'application/xml');
+  const parserError = doc.querySelector('parsererror');
+  if (parserError) {
+    throw new Error('Failed to parse XML feed.');
+  }
+
+  const isAtom = doc.querySelector('feed') !== null;
+  
+  if (isAtom) {
+    // Atom Feed Parsing
+    const feedTitle = doc.querySelector('feed > title')?.textContent ?? 'Untitled Feed';
+    const entries = Array.from(doc.querySelectorAll('entry'));
+    const items = entries.map(entry => {
+      const linkElement = entry.querySelector('link');
+      const link = linkElement ? linkElement.getAttribute('href') : '';
+      return {
+        title: getText(entry, ['title']),
+        link: link || window.location.href, // Fallback link
+        pubDate: getText(entry, ['updated', 'published']),
+        author: getText(entry, ['author > name']),
+      };
+    });
+    return { feedTitle, items };
+  } else {
+    // RSS Feed Parsing (and other similar formats)
+    const feedTitle = doc.querySelector('channel > title')?.textContent ?? 'Untitled Feed';
+    const entries = Array.from(doc.querySelectorAll('item'));
+    const items = entries.map(item => ({
+      title: getText(item, ['title']),
+      link: getText(item, ['link']),
+      pubDate: getText(item, ['pubDate', 'dc\\:date']),
+      author: getText(item, ['author', 'dc\\:creator']),
+    }));
+    return { feedTitle, items };
+  }
+};
+
 
 // Helper to calculate time since a date string
 const timeSince = (dateString: string): string => {
@@ -45,16 +95,17 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
     setIsLoading(true);
     setError(null);
 
-    const fetchAndParse = async (feed: UserFeed): Promise<RssApiResponse> => {
-        const response = await fetch(`${API_ENDPOINT}${encodeURIComponent(feed.url)}`);
+    const fetchAndParse = async (feed: UserFeed): Promise<{ feedTitle: string; items: Omit<FeedItem, 'source'>[] }> => {
+      try {
+        const response = await fetch(`${CORS_PROXY_URL}${feed.url}`);
         if (!response.ok) {
-            throw new Error(`HTTP error ${response.status} for feed: ${feed.url}`);
+          throw new Error(`HTTP error ${response.status} for feed: ${feed.url}`);
         }
-        const data: RssApiResponse = await response.json();
-        if (data.status !== 'ok') {
-            throw new Error(`API error for ${feed.url}: ${data.message || 'Unknown API error'}`);
-        }
-        return data;
+        const text = await response.text();
+        return parseFeed(text);
+      } catch (err) {
+        throw new Error(`Failed to fetch or parse feed ${feed.url}: ${err instanceof Error ? err.message : String(err)}`);
+      }
     };
 
     const promises = feedUrls.map(fetchAndParse);
@@ -64,14 +115,11 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
     let hasErrors = false;
     results.forEach(result => {
       if (result.status === 'fulfilled') {
-        const sourceTitle = result.value.feed.title;
-        result.value.items.forEach(item => {
+        const { feedTitle, items } = result.value;
+        items.forEach(item => {
           newItems.push({
-            source: sourceTitle,
-            title: item.title,
-            link: item.link,
-            author: item.author,
-            pubDate: item.pubDate,
+            ...item,
+            source: feedTitle,
           });
         });
       } else { // result.status === 'rejected'
@@ -81,11 +129,17 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
     });
 
     if (hasErrors) {
-        setError("Some feeds could not be loaded. This might be a temporary issue, a problem with the feed URL, or an ad-blocker interfering.");
+        setError("Some feeds could not be loaded. Please check the URLs and your network connection.");
     }
 
     // Sort all items by publication date, descending
-    newItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    newItems.sort((a, b) => {
+        try {
+            return new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime();
+        } catch (e) {
+            return 0;
+        }
+    });
 
     setItems(newItems.slice(0, 20)); // Limit to latest 20 items
     setIsLoading(false);
@@ -100,7 +154,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
       return <div className="flex-grow flex items-center justify-center"><p className="text-white/70">Loading feeds...</p></div>;
     }
     if (error && items.length === 0) {
-        return <div className="flex-grow flex items-center justify-center"><p className="text-red-400/80">{error}</p></div>
+        return <div className="flex-grow flex items-center justify-center text-center p-4"><p className="text-red-400/80">{error}</p></div>
     }
     if (feedUrls.length === 0) {
         return (

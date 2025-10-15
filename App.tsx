@@ -92,12 +92,11 @@ const App: React.FC = () => {
                         </div>
                     </section>
                     
-                    <footer className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-screen-2xl mx-auto items-end mt-auto">
-                        <div className="md:col-span-1 justify-self-start">
+                    <footer className="grid grid-cols-2 gap-4 w-full max-w-screen-2xl mx-auto items-end mt-auto">
+                        <div className="justify-self-start">
                             <Quote />
                         </div>
-                        <div className="md:col-span-1" />
-                        <div className="md:col-span-1 justify-self-end">
+                        <div className="justify-self-end">
                             <div className="flex items-center justify-end space-x-4">
                                 <BackgroundSwitcher onRefresh={refreshBackground} />
                                 <SettingsWidget onOpenSettings={() => openSettings('general')} />

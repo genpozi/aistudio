@@ -27,23 +27,6 @@ export interface FeedItem {
   source: string; // Manually added from the feed's main title
 }
 
-// Represents the data structure from the rss2json API
-export interface RssApiResponse {
-  status: string;
-  message?: string; // For API error messages
-  feed: {
-    title: string;
-    [key: string]: any;
-  };
-  items: {
-    title: string;
-    pubDate: string;
-    link: string;
-    author: string;
-    [key: string]: any;
-  }[];
-}
-
 export interface Service {
   name: string;
   url: string;

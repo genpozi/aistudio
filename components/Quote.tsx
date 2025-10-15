@@ -6,7 +6,7 @@ const Quote: React.FC = () => {
 
   return (
     <div 
-        className="text-left text-white max-w-md md:max-w-lg" 
+        className="text-left text-white max-w-2xl" 
         style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}
     >
       <p className="text-xl md:text-2xl font-light italic leading-tight">"{quote.text}"</p>
