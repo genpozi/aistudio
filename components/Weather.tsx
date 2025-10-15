@@ -22,25 +22,23 @@ const WeatherIcon: React.FC<{ description?: string }> = ({ description }) => {
 const Weather: React.FC<{ location: string }> = ({ location }) => {
     const [weather, setWeather] = useState<WeatherInfo | null>(null);
     const [error, setError] = useState<string | null>(null);
-    
-    useEffect(() => {
-        if (!location) {
-            setWeather(null);
-            setError(null);
-            return;
-        }
+    const [isLoading, setIsLoading] = useState(!location); // Start loading if no location is set
+    const [displayLocation, setDisplayLocation] = useState(location);
 
-        const fetchWeather = async () => {
+    useEffect(() => {
+        const fetchWeather = async (loc: string) => {
             setError(null);
-            setWeather(null); // Reset on new fetch
+            setIsLoading(true);
             try {
-                // wttr.in is flexible with location formats (city, zip, etc.)
-                const response = await fetch(`https://wttr.in/${encodeURIComponent(location)}?format=j1`);
+                const response = await fetch(`https://wttr.in/${encodeURIComponent(loc)}?format=j1`);
                 if (!response.ok) {
-                    throw new Error('Location not found or data unavailable.');
+                    throw new Error('Location data unavailable.');
                 }
                 const data: WeatherInfo = await response.json();
                 setWeather(data);
+
+                // Update display location with the name from the API, especially if we used coordinates
+                setDisplayLocation(data.nearest_area[0].areaName[0].value);
             } catch (err) {
                 if (err instanceof Error) {
                     setError(err.message);
@@ -48,22 +46,47 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
                     setError('An unknown error occurred');
                 }
                 console.error("Failed to fetch weather:", err);
+            } finally {
+                setIsLoading(false);
             }
         };
 
-        fetchWeather();
+        if (location) {
+            setDisplayLocation(location);
+            fetchWeather(location);
+        } else {
+            // No location is set, try to autodetect.
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude } = position.coords;
+                    fetchWeather(`${latitude},${longitude}`);
+                },
+                (err) => {
+                    // Geolocation failed or was denied. End loading and let renderContent show the prompt.
+                    console.warn("Geolocation permission denied or failed:", err.message);
+                    setIsLoading(false);
+                    setWeather(null);
+                    setError(null);
+                }
+            );
+        }
     }, [location]);
 
     const renderContent = () => {
-        if (!location) {
+        if (isLoading) {
+            return <p className="text-sm opacity-80">Loading weather...</p>;
+        }
+
+        if (!location && !weather) {
             return <p className="text-sm opacity-80">Set location in settings</p>;
         }
+
         if (error) {
             return <p className="text-sm opacity-80 text-red-400">{error}</p>;
         }
 
         if (!weather) {
-            return <p className="text-sm opacity-80">Loading weather...</p>;
+            return <p className="text-sm opacity-80">Weather unavailable.</p>;
         }
 
         const condition = weather.current_condition[0];
@@ -73,7 +96,7 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
                 <WeatherIcon description={condition.weatherDesc[0].value} />
                 <div className="text-right">
                     <p className="text-3xl">{condition.temp_C}°</p>
-                    <p className="text-sm opacity-80 capitalize">{location}</p>
+                    <p className="text-sm opacity-80 capitalize">{displayLocation}</p>
                 </div>
             </>
         );

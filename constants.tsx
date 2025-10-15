@@ -93,6 +93,7 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "Casa Dash", url: "https://dash.stanz.app", icon: ICONS.Globe },
       { name: "Pozi Paperless", url: "https://paperless.stanz.app", icon: ICONS.Document },
       { name: "Bitwarden Server", url: "https://vault.pozi.plus", icon: ICONS.Lock },
+      { name: "WorkSpaces", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase },
     ],
   },
 ];

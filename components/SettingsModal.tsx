@@ -186,6 +186,24 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         reader.readAsText(file);
     };
 
+    const handleResetDashboard = () => {
+        const isConfirmed = window.confirm(
+            "Are you sure you want to reset the dashboard?\n\nAll your settings (name, links, feeds, etc.) will be permanently deleted and restored to the latest defaults. This action cannot be undone."
+        );
+        if (isConfirmed) {
+            try {
+                Object.values(LOCAL_STORAGE_KEYS).forEach(key => {
+                    localStorage.removeItem(key);
+                });
+                alert("Dashboard has been reset. The page will now reload.");
+                window.location.reload();
+            } catch (error) {
+                console.error("Failed to reset dashboard:", error);
+                alert("An error occurred while resetting the dashboard.");
+            }
+        }
+    };
+
     const TabButton: React.FC<{ tab: Tab, label: string }> = ({ tab, label }) => (
         <button
             onClick={() => setActiveTab(tab)}
@@ -265,7 +283,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/50">{tempFocusPrompt.length} / 50</span>
                                 </div>
                             </div>
-                             <div>
+                            <div className="pt-4 border-t border-white/10">
                                 <h3 className="text-lg font-semibold mb-2">Backup & Restore</h3>
                                 <p className="text-sm text-white/60 mb-4">Save your configuration to restore it later or on another device.</p>
                                 <div className="flex space-x-4">
@@ -273,6 +291,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                     <label htmlFor="import-config-input" className="flex-1 text-center bg-white/20 hover:bg-white/30 p-3 rounded font-semibold transition-colors cursor-pointer">Import</label>
                                     <input id="import-config-input" type="file" accept=".json" className="hidden" onChange={handleImportConfig} />
                                 </div>
+                            </div>
+                            <div className="pt-4 border-t border-white/10">
+                                <h3 className="text-lg font-semibold mb-2">Reset Application</h3>
+                                <p className="text-sm text-white/60 mb-4">This will permanently delete all your settings and restore the dashboard to its latest default state. This action cannot be undone.</p>
+                                <button type="button" onClick={handleResetDashboard} className="w-full bg-red-600/50 hover:bg-red-600/70 p-3 rounded font-semibold transition-colors">
+                                    Reset Dashboard
+                                </button>
                             </div>
                         </div>
                     )}

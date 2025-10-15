@@ -19,9 +19,9 @@ import { LOCAL_STORAGE_KEYS, BACKGROUND_IMAGES } from './constants';
 import type { Link, UserFeed } from './types';
 
 const defaultFeeds: UserFeed[] = [
-    { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCH64kG4TyblRS0AxE-DpXbQ' },
-    { id: 3, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVy16RS5eEDh8anP8j94G2A' },
-    { id: 4, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCVTyTA7-g9nopHeHbeuvpRA' },
+    { id: 1, url: 'https://hnrss.org/frontpage' },
+    { id: 2, url: 'https://www.smashingmagazine.com/feed/' },
+    { id: 3, url: 'http://feeds.arstechnica.com/arstechnica/index' },
 ];
 
 const App: React.FC = () => {
