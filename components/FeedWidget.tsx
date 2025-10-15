@@ -199,7 +199,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
   return (
     <div className={`bg-black/20 backdrop-blur-md rounded-xl p-4 border border-white/10 shadow-lg flex flex-col max-h-[450px] ${className || ''}`}>
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">Feeds</h3>
+        <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">RSS &amp; YOUTUBE FEEDS</h3>
         <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
             {ICONS.Refresh}
         </button>

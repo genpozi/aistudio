@@ -9,7 +9,7 @@ const LinksWidget: React.FC<{ links: Link[]; onOpenSettings: () => void }> = ({ 
   return (
     <div className="flex items-center space-x-4">
       <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">
-        Links
+        PERSONAL LINKS
       </h3>
       <div className="flex items-center flex-wrap gap-2">
         {hasLinks ? (
