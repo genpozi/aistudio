@@ -65,6 +65,35 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
+    category: "GOOGLE",
+    services: [
+      { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.Sparkles },
+      { name: "Gmail", url: "https://mail.google.com", icon: ICONS.User },
+      { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.User },
+      { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.Cloud },
+      { name: "Keep", url: "https://keep.google.com", icon: ICONS.Document },
+    ],
+  },
+  {
+    category: "SOCIAL & TOOLS",
+    services: [
+      { name: "Simple Links", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe },
+      { name: "Spotify", url: "https://spotify.com", icon: ICONS.User },
+      { name: "Reddit", url: "https://reddit.com", icon: ICONS.Globe },
+      { name: "Kiwix Server", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
+      { name: "Super PDF Tools", url: "https://pdf.stanz.app", icon: ICONS.Document },
+    ],
+  },
+  {
+    category: "IN PROGRESS",
+    services: [
+      { name: "Jaaz Canva", url: "https://slash.pozi.plus/s/jaaz", icon: ICONS.Sparkles, inProduction: true },
+      { name: "Miles Music", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe, inProduction: true },
+      { name: "PoziPedia", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, inProduction: true },
+      { name: "Pozi Paperless", url: "https://paperless.stanz.app", icon: ICONS.Document },
+    ],
+  },
+  {
     category: "WORK",
     services: [
       { name: "Next Cloud", url: "https://cloud.pozi.plus", icon: ICONS.Cloud },
@@ -83,35 +112,6 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "Bit / Vaultwarden", url: "https://vault.pozi.plus", icon: ICONS.Lock },
       { name: "WorkSpaces", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase },
       { name: "Hoarder Keeper", url: "https://keep.pozi.life", icon: ICONS.Briefcase },
-    ],
-  },
-  {
-    category: "IN PROGRESS",
-    services: [
-      { name: "Jaaz Canva", url: "https://slash.pozi.plus/s/jaaz", icon: ICONS.Sparkles, inProduction: true },
-      { name: "Miles Music", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe, inProduction: true },
-      { name: "PoziPedia", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, inProduction: true },
-      { name: "Pozi Paperless", url: "https://paperless.stanz.app", icon: ICONS.Document },
-    ],
-  },
-  {
-    category: "GOOGLE",
-    services: [
-      { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.Sparkles },
-      { name: "Gmail", url: "https://mail.google.com", icon: ICONS.User },
-      { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.User },
-      { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.Cloud },
-      { name: "Keep", url: "https://keep.google.com", icon: ICONS.Document },
-    ],
-  },
-    {
-    category: "SOCIAL & TOOLS",
-    services: [
-      { name: "Simple Links", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe },
-      { name: "Spotify", url: "https://spotify.com", icon: ICONS.User },
-      { name: "Reddit", url: "https://reddit.com", icon: ICONS.Globe },
-      { name: "Kiwix Server", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
-      { name: "Super PDF Tools", url: "https://pdf.stanz.app", icon: ICONS.Document },
     ],
   },
 ];

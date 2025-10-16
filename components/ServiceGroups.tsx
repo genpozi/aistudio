@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ICONS, SERVICE_GROUPS } from '../constants';
 import type { ServiceGroup } from '../types';
@@ -74,7 +75,7 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, on
  * The main component that lays out all the service group cards in a responsive grid.
  */
 const ServiceGroups: React.FC = () => {
-    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set(['AI TOOLS', 'GOOGLE', 'SOCIAL & TOOLS']));
     const hasInProductionServices = SERVICE_GROUPS.some(group => group.services.some(service => service.inProduction));
 
     const toggleCollapse = (category: string) => {
