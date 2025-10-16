@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { ICONS } from '../constants';
 import type { FeedItem, UserFeed } from '../types';
@@ -173,13 +174,13 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
     }
     return (
         <ul className="overflow-y-auto flex-grow custom-scrollbar -mr-2 pr-2">
-            {items.map((item: FeedItem, index: number) => (
+            {items.map((item, index) => (
             <li key={`${item.link}-${index}`} className="border-b border-white/10 last:border-b-0">
                 <a 
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="group block p-3 transition-colors rounded-lg hover:bg-white/10"
+                className={`group block p-3 transition-colors rounded-lg hover:bg-white/10 ${index % 2 !== 0 ? 'bg-white/5' : ''}`}
                 >
                 <div className="flex justify-between items-center text-xs text-white/70 mb-2">
                     <span className="bg-white/10 px-2 py-1 rounded-full font-semibold truncate max-w-[60%]">{item.source}</span>

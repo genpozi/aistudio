@@ -1,4 +1,5 @@
 
+
 import React, { useState } from 'react';
 import { ICONS, SERVICE_GROUPS } from '../constants';
 import type { ServiceGroup } from '../types';
@@ -49,13 +50,13 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, on
     <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
         <div className="p-6 pt-4">
         <div className="flex flex-col space-y-3">
-            {group.services.map((service) => (
+            {group.services.map((service, index) => (
             <a
                 key={service.name}
                 href={service.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group flex items-center space-x-4 p-3 rounded-xl bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)] border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)]"
+                className={`group flex items-center space-x-4 p-3 rounded-xl border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)] ${index % 2 === 0 ? 'bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)]' : 'bg-black/10'}`}
                 style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}
             >
                 <ServiceIcon name={service.name} icon={service.icon} />

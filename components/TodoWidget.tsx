@@ -58,10 +58,10 @@ const TodoWidget: React.FC = () => {
         <div className="absolute bottom-16 right-4 w-80 bg-black/50 backdrop-blur-lg border border-white/20 rounded-lg shadow-2xl p-4 text-white max-h-[50vh] flex flex-col">
           <h3 className="text-xl font-bold mb-4 text-[var(--text-highlight)]">My Tasks</h3>
           <ul className="space-y-2 overflow-y-auto flex-grow custom-scrollbar -mr-2 pr-2">
-            {todos.map(todo => (
+            {todos.map((todo, index) => (
               <li 
                 key={todo.id} 
-                className={`group flex items-center justify-between hover:bg-white/10 p-2 rounded ${justAddedTodoId === todo.id ? 'animate-add-todo' : ''}`}
+                className={`group flex items-center justify-between hover:bg-white/10 p-2 rounded ${justAddedTodoId === todo.id ? 'animate-add-todo' : ''} ${index % 2 !== 0 ? 'bg-white/5' : ''}`}
               >
                 <div 
                   className="flex items-center cursor-pointer flex-grow" 

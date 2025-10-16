@@ -59,3 +59,12 @@ export interface Theme {
       secondary: string;
     };
 }
+
+export type ResearchBackend = 'gemini' | 'mcp';
+
+export interface GroundingChunk {
+  web: {
+    uri: string;
+    title: string;
+  };
+}

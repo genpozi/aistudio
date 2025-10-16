@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import useOnClickOutside from '../hooks/useOnClickOutside';
-import type { Link, UserFeed, Theme } from '../types';
+import type { Link, UserFeed, Theme, ResearchBackend } from '../types';
 import { ICONS, LOCAL_STORAGE_KEYS, THEMES } from '../constants';
 import Favicon from './Favicon';
 
-type Tab = 'general' | 'links' | 'feeds';
+type Tab = 'general' | 'links' | 'feeds' | 'research';
 
 interface SettingsModalProps {
     initialTab?: string;
@@ -21,6 +21,10 @@ interface SettingsModalProps {
     setFocusPrompt: (prompt: string) => void;
     theme: string;
     setTheme: (theme: string) => void;
+    geminiApiKey: string;
+    setGeminiApiKey: (key: string) => void;
+    researchBackend: ResearchBackend;
+    setResearchBackend: (backend: ResearchBackend) => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({
@@ -38,6 +42,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     setFocusPrompt,
     theme,
     setTheme,
+    geminiApiKey,
+    setGeminiApiKey,
+    researchBackend,
+    setResearchBackend,
 }) => {
     const [activeTab, setActiveTab] = useState<Tab>(initialTab as Tab);
     const modalRef = useRef<HTMLDivElement>(null);
@@ -50,6 +58,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     const [tempTheme, setTempTheme] = useState(theme);
     const [tempLinks, setTempLinks] = useState(links);
     const [tempFeedUrls, setTempFeedUrls] = useState(feedUrls);
+    const [tempGeminiApiKey, setTempGeminiApiKey] = useState(geminiApiKey);
+    const [tempResearchBackend, setTempResearchBackend] = useState(researchBackend);
+
 
     // Form-specific states
     const [newLinkUrl, setNewLinkUrl] = useState('');
@@ -64,6 +75,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         setTheme(tempTheme);
         setLinks(tempLinks);
         setFeedUrls(tempFeedUrls);
+        setGeminiApiKey(tempGeminiApiKey.trim());
+        setResearchBackend(tempResearchBackend);
         onClose();
     };
 
@@ -254,6 +267,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                            <TabButton tab="general" label="General" />
                            <TabButton tab="links" label="Links" />
                            <TabButton tab="feeds" label="Feeds" />
+                           <TabButton tab="research" label="Research" />
                         </div>
                     </div>
                     <button onClick={onClose} className="text-white/60 hover:text-white text-3xl leading-none">&times;</button>
@@ -314,8 +328,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             </form>
                             <h3 className="text-lg font-semibold mb-3">Saved Links</h3>
                             <ul className="space-y-2">
-                                {tempLinks.map(link => (
-                                    <li key={link.id} className="flex justify-between items-center bg-white/5 p-2 rounded">
+                                {tempLinks.map((link, index) => (
+                                    <li key={link.id} className={`flex justify-between items-center p-2 rounded ${index % 2 === 0 ? 'bg-white/5' : ''}`}>
                                         <div className="flex items-center space-x-3 truncate">
                                             <Favicon link={link} />
                                             <a href={link.url} target="_blank" rel="noopener noreferrer" className="truncate hover:underline">{link.name}</a>
@@ -342,14 +356,43 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             </form>
                             <h3 className="text-lg font-semibold mb-3">Saved Feeds</h3>
                             <ul className="space-y-2">
-                                {tempFeedUrls.map(feed => (
-                                    <li key={feed.id} className="flex justify-between items-center bg-white/5 p-2 rounded">
+                                {tempFeedUrls.map((feed, index) => (
+                                    <li key={feed.id} className={`flex justify-between items-center p-2 rounded ${index % 2 === 0 ? 'bg-white/5' : ''}`}>
                                         <p className="truncate text-white/80">{feed.url}</p>
                                         <button onClick={() => deleteFeed(feed.id)} className="text-red-400 hover:text-red-300 transition-opacity ml-2 flex-shrink-0">{ICONS.Trash}</button>
                                     </li>
                                 ))}
                                 {tempFeedUrls.length === 0 && <p className="text-white/60 text-center py-4">No feeds yet. Add one above.</p>}
                             </ul>
+                        </div>
+                    )}
+                    {activeTab === 'research' && (
+                        <div className="space-y-6">
+                            <div>
+                                <label htmlFor="gemini-api-key" className="block text-sm font-medium text-white/80 mb-1">Google Gemini API Key</label>
+                                <p className="text-xs text-white/50 mb-2">Required for the Gemini research provider.</p>
+                                <input id="gemini-api-key" type="password" value={tempGeminiApiKey} onChange={(e) => setTempGeminiApiKey(e.target.value)}
+                                    className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" />
+                            </div>
+                             <div>
+                                <label className="block text-sm font-medium text-white/80 mb-2">Research Provider</label>
+                                <div className="space-y-2">
+                                    <label className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg border-2 border-transparent has-[:checked]:border-[var(--text-highlight)] has-[:checked]:bg-white/10 cursor-pointer">
+                                        <input type="radio" name="research-backend" value="gemini" checked={tempResearchBackend === 'gemini'} onChange={() => setTempResearchBackend('gemini')} className="h-4 w-4 accent-[var(--text-highlight)]" />
+                                        <span>
+                                            <span className="font-semibold">Gemini API</span>
+                                            <p className="text-xs text-white/60">Cloud-based research using the Gemini API with Google Search.</p>
+                                        </span>
+                                    </label>
+                                    <label className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg border-2 border-transparent has-[:checked]:border-[var(--text-highlight)] has-[:checked]:bg-white/10 cursor-pointer">
+                                        <input type="radio" name="research-backend" value="mcp" checked={tempResearchBackend === 'mcp'} onChange={() => setTempResearchBackend('mcp')} className="h-4 w-4 accent-[var(--text-highlight)]"/>
+                                        <span>
+                                            <span className="font-semibold">Local AI Helper (MCP)</span>
+                                            <p className="text-xs text-white/60">Forwards queries to a local application via the `mcp://` protocol.</p>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
