@@ -102,7 +102,13 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
         const hostname = urlObject.hostname;
         const iconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
-        const name = hostname.replace(/^www\./, '').split('.')[0];
+        
+        // Improved name generation: extract the most significant part of the domain.
+        let name = hostname.replace(/^www\./, '').split('.')[0];
+        // Fallback for cases where the above logic fails or produces a meaningless name (e.g., for an IP address).
+        if (!name || name.length < 2) {
+            name = hostname.replace(/^www\./, '');
+        }
         const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
 
         const newLink: Link = { id: Date.now(), name: capitalizedName, url: fullUrl, iconUrl };

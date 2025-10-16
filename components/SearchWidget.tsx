@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ICONS } from '../constants';
 import type { ResearchBackend } from '../types';
@@ -60,7 +59,7 @@ const SearchWidget: React.FC<SearchWidgetProps> = ({ researchBackend, onOpenSett
           }`}
           aria-pressed={!isResearchMode}
         >
-          Google
+          Search
         </button>
         <button
           type="button"

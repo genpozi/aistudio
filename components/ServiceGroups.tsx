@@ -1,8 +1,7 @@
-
-
-import React, { useState } from 'react';
+import React, { useState, PropsWithChildren, useEffect } from 'react';
 import { ICONS, SERVICE_GROUPS } from '../constants';
-import type { ServiceGroup } from '../types';
+import type { ServiceGroup, Link } from '../types';
+import LinksWidget from './LinksWidget';
 
 /**
  * A dedicated component to display a service icon within a colored, rounded container.
@@ -72,12 +71,32 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, on
   </div>
 );
 
+interface ServiceGroupsProps extends PropsWithChildren {
+    links: Link[];
+    onOpenSettings: () => void;
+    focusMode: boolean;
+}
+
 /**
- * The main component that lays out all the service group cards in a responsive grid.
+ * The main component that lays out all the service group cards in a responsive, fluid, masonry-style layout.
  */
-const ServiceGroups: React.FC = () => {
-    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set(['AI TOOLS', 'GOOGLE', 'SOCIAL & TOOLS']));
+const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, children, focusMode }) => {
+    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
+    const [isLinksCollapsed, setIsLinksCollapsed] = useState(false);
+    const [isFeedCollapsed, setIsFeedCollapsed] = useState(false);
+
     const hasInProductionServices = SERVICE_GROUPS.some(group => group.services.some(service => service.inProduction));
+
+    useEffect(() => {
+        setIsLinksCollapsed(focusMode);
+        setIsFeedCollapsed(focusMode);
+        if (focusMode) {
+            const allGroupCategories = new Set(SERVICE_GROUPS.map(g => g.category));
+            setCollapsedGroups(allGroupCategories);
+        } else {
+            setCollapsedGroups(new Set());
+        }
+    }, [focusMode]);
 
     const toggleCollapse = (category: string) => {
         setCollapsedGroups(prev => {
@@ -93,15 +112,40 @@ const ServiceGroups: React.FC = () => {
 
     return (
         <div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
-            {SERVICE_GROUPS.map((group) => (
-                <ServiceGroupCard 
-                    key={group.category} 
-                    group={group} 
-                    isCollapsed={collapsedGroups.has(group.category)}
-                    onToggle={() => toggleCollapse(group.category)}
-                />
-            ))}
+            {/* 
+              This container uses a CSS column-based layout for a masonry effect.
+              - `columns-*` classes set the number of columns at different breakpoints.
+              - `gap-6` provides horizontal spacing between columns.
+              - Each child is wrapped in a div with `break-inside-avoid` to prevent cards from splitting across columns,
+                and `mb-6` provides the necessary vertical spacing between cards within a column.
+            */}
+            <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6">
+                 <div className="break-inside-avoid mb-6">
+                    <LinksWidget 
+                        links={links} 
+                        onOpenSettings={onOpenSettings} 
+                        isCollapsed={isLinksCollapsed}
+                        onToggle={() => setIsLinksCollapsed(p => !p)}
+                    />
+                </div>
+                {SERVICE_GROUPS.map((group) => (
+                    <div key={group.category} className="break-inside-avoid mb-6">
+                        <ServiceGroupCard 
+                            group={group} 
+                            isCollapsed={collapsedGroups.has(group.category)}
+                            onToggle={() => toggleCollapse(group.category)}
+                        />
+                    </div>
+                ))}
+                {children && (
+                    <div className="break-inside-avoid mb-6">
+                       {/* Fix: Added a more specific type assertion to inform TypeScript that the child element accepts `isCollapsed` and `onToggle` props, resolving the overload error. */}
+                       {React.cloneElement(children as React.ReactElement<{ isCollapsed?: boolean; onToggle?: () => void; }>, { 
+                           isCollapsed: isFeedCollapsed, 
+                           onToggle: () => setIsFeedCollapsed(p => !p) 
+                        })}
+                    </div>
+                )}
             </div>
             {hasInProductionServices && (
                 <div className="mt-4 text-left text-sm text-white/70 italic">

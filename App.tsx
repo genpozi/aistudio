@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import useLocalStorage from './hooks/useLocalStorage';
 import { TimeProvider } from './contexts/TimeContext';
@@ -8,7 +7,6 @@ import Clock from './components/Clock';
 import Greeting from './components/Greeting';
 import Weather from './components/Weather';
 import Quote from './components/Quote';
-import LinksWidget from './components/LinksWidget';
 import TodoWidget from './components/TodoWidget';
 import ServiceGroups from './components/ServiceGroups';
 import FeedWidget from './components/FeedWidget';
@@ -18,7 +16,7 @@ import BackgroundSwitcher from './components/BackgroundSwitcher';
 import SettingsModal from './components/SettingsModal';
 import ResearchModal from './components/ResearchModal';
 
-import { LOCAL_STORAGE_KEYS, BACKGROUND_IMAGES } from './constants';
+import { LOCAL_STORAGE_KEYS, BACKGROUND_IMAGES, SERVICE_GROUPS } from './constants';
 import type { Link, UserFeed, ResearchBackend, GroundingChunk } from './types';
 
 const defaultFeeds: UserFeed[] = [
@@ -41,6 +39,7 @@ const App: React.FC = () => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [initialSettingsTab, setInitialSettingsTab] = useState('general');
     const [bgImage, setBgImage] = useState('');
+    const [isInFocusMode, setIsInFocusMode] = useState(false);
     
     // State for Research Modal
     const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
@@ -135,11 +134,17 @@ const App: React.FC = () => {
                 <div className="relative z-10 flex flex-col min-h-screen p-6 md:p-8">
                     <header className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-screen-2xl mx-auto">
                         <div className="md:col-span-1 justify-self-start">
-                            <LinksWidget links={links} onOpenSettings={() => openSettings('links')} />
+                            {/* LinksWidget was moved to the ServiceGroups component */}
                         </div>
                         <div className="md:col-span-1" />
-                        <div className="md:col-span-1 justify-self-end">
+                        <div className="md:col-span-1 justify-self-end flex flex-col items-end space-y-2">
                             <Weather location={location} />
+                             <button 
+                                onClick={() => setIsInFocusMode(prev => !prev)}
+                                className="px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white/80 bg-black/20 rounded-full hover:bg-black/40 hover:text-white transition-colors border border-white/10"
+                            >
+                                {isInFocusMode ? 'Show All' : 'Focus Mode'}
+                            </button>
                         </div>
                     </header>
 
@@ -156,14 +161,13 @@ const App: React.FC = () => {
                     </main>
 
                     <section className="w-full max-w-screen-2xl mx-auto mb-8">
-                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-                            <div className="lg:col-span-3">
-                                <ServiceGroups />
-                            </div>
-                            <div className="lg:col-span-1">
-                                <FeedWidget feedUrls={feedUrls} onOpenSettings={() => openSettings('feeds')} className="w-full" />
-                            </div>
-                        </div>
+                        <ServiceGroups 
+                            links={links} 
+                            onOpenSettings={() => openSettings('links')}
+                            focusMode={isInFocusMode}
+                        >
+                            <FeedWidget feedUrls={feedUrls} onOpenSettings={() => openSettings('feeds')} />
+                        </ServiceGroups>
                     </section>
                     
                     <footer className="grid grid-cols-2 gap-4 w-full max-w-screen-2xl mx-auto items-end mt-auto">

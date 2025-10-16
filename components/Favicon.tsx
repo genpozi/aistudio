@@ -15,12 +15,12 @@ const stringToColor = (str: string) => {
     return color;
 };
 
-const FallbackIcon: React.FC<{ name: string }> = ({ name }) => {
+const FallbackIcon: React.FC<{ name: string; className?: string }> = ({ name, className }) => {
     const initial = name.charAt(0).toUpperCase();
     const bgColor = stringToColor(name);
     return (
         <div 
-            className="w-4 h-4 flex items-center justify-center rounded-sm flex-shrink-0 font-bold text-xs"
+            className={`${className} flex items-center justify-center rounded-sm flex-shrink-0 font-bold text-xs`}
             style={{ backgroundColor: bgColor, color: '#fff', textShadow: '0 0 2px rgba(0,0,0,0.5)' }}
             title={`${name} (fallback icon)`}
         >
@@ -29,7 +29,7 @@ const FallbackIcon: React.FC<{ name: string }> = ({ name }) => {
     );
 };
 
-const Favicon: React.FC<{ link: Link }> = ({ link }) => {
+const Favicon: React.FC<{ link: Link; className?: string }> = ({ link, className = 'w-4 h-4' }) => {
     const [hasError, setHasError] = useState(false);
 
     useEffect(() => {
@@ -37,14 +37,14 @@ const Favicon: React.FC<{ link: Link }> = ({ link }) => {
     }, [link.iconUrl]);
 
     if (hasError || !link.iconUrl) {
-        return <FallbackIcon name={link.name} />;
+        return <FallbackIcon name={link.name} className={className} />;
     }
 
     return (
         <img
             src={link.iconUrl}
             alt={`${link.name} favicon`}
-            className="w-4 h-4 rounded-sm flex-shrink-0"
+            className={`${className} rounded-sm flex-shrink-0`}
             onError={() => setHasError(true)}
         />
     );

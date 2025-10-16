@@ -83,11 +83,18 @@ const timeSince = (dateString: string): string => {
   }
 };
 
-const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSettings: () => void; }> = ({ className, feedUrls, onOpenSettings }) => {
+interface FeedWidgetProps {
+  className?: string;
+  feedUrls: UserFeed[];
+  onOpenSettings: () => void;
+  isCollapsed?: boolean;
+  onToggle?: () => void;
+}
+
+const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSettings, isCollapsed = false, onToggle }) => {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const fetchFeeds = useCallback(async () => {
     if (!feedUrls || feedUrls.length === 0) {
@@ -208,7 +215,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
                 {ICONS.Refresh}
             </button>
             <button 
-                onClick={() => setIsCollapsed(prev => !prev)} 
+                onClick={onToggle} 
                 className="text-white/60 hover:text-white transition-colors"
                 aria-expanded={!isCollapsed}
                 aria-label={isCollapsed ? "Expand feed widget" : "Collapse feed widget"}
