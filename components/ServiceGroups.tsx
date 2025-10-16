@@ -44,7 +44,10 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup }> = ({ group }) => (
           style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}
         >
           <ServiceIcon name={service.name} icon={service.icon} />
-          <span className="text-white text-base font-semibold leading-tight transition-colors group-hover:text-[var(--text-highlight)]">{service.name}</span>
+          <span className="text-white text-base font-semibold leading-tight transition-colors group-hover:text-[var(--text-highlight)]">
+            {service.name}
+            {service.inProduction && <sup className="text-[var(--text-highlight)] ml-0.5">*</sup>}
+          </span>
         </a>
       ))}
     </div>
@@ -55,13 +58,22 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup }> = ({ group }) => (
  * The main component that lays out all the service group cards in a responsive grid.
  */
 const ServiceGroups: React.FC = () => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {SERVICE_GROUPS.map((group) => (
-        <ServiceGroupCard key={group.category} group={group} />
-      ))}
-    </div>
-  );
+    const hasInProductionServices = SERVICE_GROUPS.some(group => group.services.some(service => service.inProduction));
+
+    return (
+        <div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {SERVICE_GROUPS.map((group) => (
+                <ServiceGroupCard key={group.category} group={group} />
+            ))}
+            </div>
+            {hasInProductionServices && (
+                <div className="mt-4 text-center text-sm text-white/70 italic">
+                    <span className="text-[var(--text-highlight)] not-italic font-semibold">*</span> These services are in production and may not be available.
+                </div>
+            )}
+        </div>
+    );
 };
 
 export default ServiceGroups;

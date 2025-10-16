@@ -32,6 +32,7 @@ export interface Service {
   url: string;
   // Fix: Replaced `JSX.Element` with `React.ReactNode` to resolve a "Cannot find namespace 'JSX'" error in a .ts file.
   icon: React.ReactNode;
+  inProduction?: boolean;
 }
 
 export interface ServiceGroup {

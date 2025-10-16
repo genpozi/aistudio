@@ -57,6 +57,7 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     services: [
       { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.Sparkles },
       { name: "AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles },
+      { name: "Jaaz Canva", url: "https://slash.pozi.plus/s/jaaz", icon: ICONS.Sparkles, inProduction: true },
       { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Sparkles },
       { name: "Perplexity", url: "https://www.perplexity.ai/", icon: ICONS.Sparkles },
       { name: "Pozi AI", url: "https://ai.pozi.plus", icon: ICONS.Sparkles },
@@ -77,8 +78,8 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "Offline Research", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
       { name: "Super PDF Tools", url: "https://pdf.stanz.app", icon: ICONS.Document },
       { name: "Huly Projects", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase },
-      { name: "Miles Music", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe },
-      { name: "PoziPedia", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document },
+      { name: "Miles Music", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe, inProduction: true },
+      { name: "PoziPedia", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, inProduction: true },
     ],
   },
   {
@@ -89,7 +90,7 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.Cloud },
       { name: "Spotify", url: "https://spotify.com", icon: ICONS.User },
       { name: "Reddit", url: "https://reddit.com", icon: ICONS.Globe },
-      { name: "Glance Dash", url: "https://glance.pozi.plus", icon: ICONS.Globe },
+      { name: "Glance Dash", url: "https://glance.pozi.plus", icon: ICONS.Globe, inProduction: true },
       { name: "Casa Dash", url: "https://dash.stanz.app", icon: ICONS.Globe },
       { name: "Pozi Paperless", url: "https://paperless.stanz.app", icon: ICONS.Document },
       { name: "Bitwarden Server", url: "https://vault.pozi.plus", icon: ICONS.Lock },

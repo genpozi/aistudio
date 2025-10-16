@@ -22,6 +22,7 @@ const defaultFeeds: UserFeed[] = [
     { id: 1, url: 'https://hnrss.org/frontpage' },
     { id: 2, url: 'https://www.smashingmagazine.com/feed/' },
     { id: 3, url: 'http://feeds.arstechnica.com/arstechnica/index' },
+    { id: 4, url: 'https://www.omnycontent.com/d/playlist/885ace83-027a-47ad-ad67-aca7002f1df8/ab07fc49-2efc-4de6-92bf-b2e3011e17e9/f377cab3-e9e0-4dc2-8356-b2e3011e1800/podcast.rss' },
 ];
 
 const App: React.FC = () => {
