@@ -4,7 +4,7 @@ import type { Link, UserFeed, Theme, ResearchBackend } from '../types';
 import { ICONS, LOCAL_STORAGE_KEYS, THEMES, SERVICE_GROUPS, CORS_PROXY_URL } from '../constants';
 import Favicon from './Favicon';
 
-type Tab = 'general' | 'links' | 'feeds' | 'research';
+type Tab = 'general' | 'links' | 'feeds' | 'research' | 'about';
 
 // Fetches metadata (title, icon) for a given URL.
 const fetchLinkMetadata = async (url: string): Promise<{ name: string; iconUrl: string }> => {
@@ -325,11 +325,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                 <header className="flex items-center justify-between border-b border-white/20 p-4">
                     <div className="flex items-baseline space-x-2">
                         <h2 className="text-2xl font-bold">Settings</h2>
-                        <div className="flex">
+                        <div className="flex flex-wrap">
                            <TabButton tab="general" label="General" />
                            <TabButton tab="links" label="Links" />
                            <TabButton tab="feeds" label="Feeds" />
                            <TabButton tab="research" label="Research" />
+                           <TabButton tab="about" label="About" />
                         </div>
                     </div>
                     <button onClick={onClose} className="text-white/60 hover:text-white text-3xl leading-none">&times;</button>
@@ -470,6 +471,43 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                                         </span>
                                     </label>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+                    {activeTab === 'about' && (
+                        <div className="space-y-6 text-white/90">
+                            <div>
+                                <h3 className="text-2xl font-bold text-[var(--text-highlight)] mb-2">DashyDash by Pozi</h3>
+                                <p className="leading-relaxed">
+                                    Welcome! DashyDash is a customizable personal dashboard designed to help you stay focused, organized, and inspired. It's your private, browser-based start page, built for productivity and a beautiful aesthetic.
+                                </p>
+                            </div>
+
+                            <div>
+                                <h4 className="text-xl font-semibold text-[var(--text-highlight)] mb-3">Core Features</h4>
+                                <ul className="list-disc list-inside space-y-3 pl-2">
+                                    <li><strong className="font-semibold text-white">Focus Mode:</strong> Start your day with a clean, minimalist view. The app now defaults to this mode. Toggle "Show All" to reveal your widgets.</li>
+                                    <li><strong className="font-semibold text-white">Daily Goal:</strong> Set a primary goal each day to keep you on track.</li>
+                                    <li><strong className="font-semibold text-white">Customizable Links:</strong> Organize your most-visited websites into categories. Add, edit, and rearrange everything from the "Links" settings tab.</li>
+                                    <li><strong className="font-semibold text-white">AI Research:</strong> Perform quick research directly from your dashboard using Google's Gemini API. Toggle to "Research" mode in the search bar.</li>
+                                    <li><strong className="font-semibold text-white">RSS Feed Reader:</strong> Stay up-to-date with your favorite blogs, news sites, and YouTube channels.</li>
+                                    <li><strong className="font-semibold text-white">Essential Widgets:</strong> Weather, a simple Todo list, and quick access to Google services are built-in.</li>
+                                    <li><strong className="font-semibold text-white">Personalization:</strong> Customize the look and feel with themes and dynamic background images.</li>
+                                    <li><strong className="font-semibold text-white">Backup & Restore:</strong> Export your entire configuration and import it on another device to keep your setup synchronized.</li>
+                                </ul>
+                            </div>
+                            
+                            <div>
+                                <h4 className="text-xl font-semibold text-[var(--text-highlight)] mb-3">Getting Started Tips</h4>
+                                <ul className="list-disc list-inside space-y-3 pl-2">
+                                    <li><strong className="font-semibold text-white">Initial Setup:</strong> Head to the "General" tab to set your name and weather location.</li>
+                                    <li><strong className="font-semibold text-white">API Key:</strong> To use AI Research, you'll need a free Google Gemini API key. Add it in the "Research" tab.</li>
+                                    <li><strong className="font-semibold text-white">Customize Everything:</strong> The heart of DashyDash is customization. In the "Links" tab, click "Open Dashboard Customizer" to tailor all service links and categories.</li>
+                                </ul>
+                            </div>
+
+                            <div className="pt-6 border-t border-white/10 text-center text-sm text-white/60">
+                                <p>Crafted with passion.</p>
                             </div>
                         </div>
                     )}

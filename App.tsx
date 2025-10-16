@@ -53,7 +53,7 @@ const App: React.FC = () => {
     const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
     const [initialSettingsTab, setInitialSettingsTab] = useState('general');
     const [bgImage, setBgImage] = useState('');
-    const [isInFocusMode, setIsInFocusMode] = useState(false);
+    const [isInFocusMode, setIsInFocusMode] = useState(true);
     
     // State for Research Modal
     const [isResearchModalOpen, setIsResearchModalOpen] = useState(false);
