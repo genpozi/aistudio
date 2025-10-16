@@ -1,5 +1,5 @@
 import React, { useState, PropsWithChildren, useEffect } from 'react';
-import { ICONS, SERVICE_GROUPS } from '../constants';
+import { ICONS } from '../constants';
 import type { ServiceGroup, Link } from '../types';
 import LinksWidget from './LinksWidget';
 
@@ -75,28 +75,29 @@ interface ServiceGroupsProps extends PropsWithChildren {
     links: Link[];
     onOpenSettings: () => void;
     focusMode: boolean;
+    serviceGroups: ServiceGroup[];
 }
 
 /**
  * The main component that lays out all the service group cards in a responsive, fluid, masonry-style layout.
  */
-const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, children, focusMode }) => {
+const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, children, focusMode, serviceGroups }) => {
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
     const [isLinksCollapsed, setIsLinksCollapsed] = useState(false);
     const [isFeedCollapsed, setIsFeedCollapsed] = useState(false);
 
-    const hasInProductionServices = SERVICE_GROUPS.some(group => group.services.some(service => service.inProduction));
+    const hasInProductionServices = serviceGroups.some(group => group.services.some(service => service.inProduction));
 
     useEffect(() => {
         setIsLinksCollapsed(focusMode);
         setIsFeedCollapsed(focusMode);
         if (focusMode) {
-            const allGroupCategories = new Set(SERVICE_GROUPS.map(g => g.category));
+            const allGroupCategories = new Set(serviceGroups.map(g => g.category));
             setCollapsedGroups(allGroupCategories);
         } else {
             setCollapsedGroups(new Set());
         }
-    }, [focusMode]);
+    }, [focusMode, serviceGroups]);
 
     const toggleCollapse = (category: string) => {
         setCollapsedGroups(prev => {
@@ -128,7 +129,7 @@ const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, ch
                         onToggle={() => setIsLinksCollapsed(p => !p)}
                     />
                 </div>
-                {SERVICE_GROUPS.map((group) => (
+                {serviceGroups.map((group) => (
                     <div key={group.category} className="break-inside-avoid mb-6">
                         <ServiceGroupCard 
                             group={group} 

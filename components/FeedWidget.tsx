@@ -1,10 +1,8 @@
 
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { ICONS } from '../constants';
+import { ICONS, CORS_PROXY_URL } from '../constants';
 import type { FeedItem, UserFeed } from '../types';
-
-const CORS_PROXY_URL = 'https://corsproxy.io/?';
 
 // A simple utility to get text content from a DOM element, trying multiple selectors.
 const getText = (element: Element, selectors: string[]): string => {

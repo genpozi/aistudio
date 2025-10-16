@@ -1,14 +1,58 @@
 import React, { useState, useRef } from 'react';
 import useOnClickOutside from '../hooks/useOnClickOutside';
 import type { Link, UserFeed, Theme, ResearchBackend } from '../types';
-import { ICONS, LOCAL_STORAGE_KEYS, THEMES } from '../constants';
+import { ICONS, LOCAL_STORAGE_KEYS, THEMES, SERVICE_GROUPS, CORS_PROXY_URL } from '../constants';
 import Favicon from './Favicon';
 
 type Tab = 'general' | 'links' | 'feeds' | 'research';
 
+// Fetches metadata (title, icon) for a given URL.
+const fetchLinkMetadata = async (url: string): Promise<{ name: string; iconUrl: string }> => {
+    try {
+        const response = await fetch(`${CORS_PROXY_URL}${url}`);
+        const text = await response.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(text, 'text/html');
+
+        // Extract title
+        const title = doc.querySelector('title')?.textContent || new URL(url).hostname;
+        
+        // Find favicon
+        let iconUrl = '';
+        const iconSelectors = [
+            'link[rel="apple-touch-icon"]',
+            'link[rel="icon"]',
+            'link[rel="shortcut icon"]'
+        ];
+        
+        for(const selector of iconSelectors) {
+            const iconEl = doc.querySelector(selector);
+            if (iconEl?.getAttribute('href')) {
+                iconUrl = new URL(iconEl.getAttribute('href')!, url).href;
+                break;
+            }
+        }
+
+        if (!iconUrl) {
+            // Fallback to google's favicon service
+            iconUrl = `https://www.google.com/s2/favicons?sz=64&domain_url=${new URL(url).hostname}`;
+        }
+        
+        return { name: title, iconUrl };
+    } catch (err) {
+        console.error("Failed to fetch link metadata:", err);
+        const hostname = new URL(url).hostname;
+        return {
+            name: hostname,
+            iconUrl: `https://www.google.com/s2/favicons?sz=64&domain_url=${hostname}`
+        };
+    }
+};
+
 interface SettingsModalProps {
     initialTab?: string;
     onClose: () => void;
+    onOpenCustomizeModal: () => void;
     name: string;
     setName: (name: string) => void;
     location: string;
@@ -30,6 +74,7 @@ interface SettingsModalProps {
 const SettingsModal: React.FC<SettingsModalProps> = ({
     initialTab = 'general',
     onClose,
+    onOpenCustomizeModal,
     name,
     setName,
     location,
@@ -64,6 +109,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
 
     // Form-specific states
     const [newLinkUrl, setNewLinkUrl] = useState('');
+    const [isAddingLink, setIsAddingLink] = useState(false);
     const [linkError, setLinkError] = useState('');
     const [newFeedUrl, setNewFeedUrl] = useState('');
     const [feedError, setFeedError] = useState('');
@@ -80,42 +126,46 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         onClose();
     };
 
-    const addLink = (e: React.FormEvent) => {
+    const addLink = async (e: React.FormEvent) => {
         e.preventDefault();
         setLinkError('');
         const urlInput = newLinkUrl.trim();
         if (!urlInput) return;
-
-        let urlObject: URL;
+    
+        let fullUrl = urlInput;
+        if (!/^https?:\/\//i.test(fullUrl)) {
+            fullUrl = `https://${fullUrl}`;
+        }
+    
         try {
-            urlObject = new URL(urlInput.startsWith('http') ? urlInput : `https://${urlInput}`);
-        } catch (err) {
+            new URL(fullUrl); // Validate URL
+        } catch(err) {
             setLinkError("Please enter a valid URL.");
             return;
         }
-
-        const fullUrl = urlObject.href;
+    
         if (tempLinks.some(link => link.url === fullUrl)) {
             setLinkError("This link has already been added.");
             return;
         }
-
-        const hostname = urlObject.hostname;
-        const iconUrl = `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
-        
-        // Improved name generation: extract the most significant part of the domain.
-        let name = hostname.replace(/^www\./, '').split('.')[0];
-        // Fallback for cases where the above logic fails or produces a meaningless name (e.g., for an IP address).
-        if (!name || name.length < 2) {
-            name = hostname.replace(/^www\./, '');
+    
+        setIsAddingLink(true);
+        try {
+            const metadata = await fetchLinkMetadata(fullUrl);
+            const newLink: Link = {
+                id: Date.now(),
+                url: fullUrl,
+                ...metadata,
+            };
+            setTempLinks(prev => [...prev, newLink]);
+            setNewLinkUrl('');
+        } catch (error) {
+            setLinkError("Could not fetch link details. Please check the URL.");
+        } finally {
+            setIsAddingLink(false);
         }
-        const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
-
-        const newLink: Link = { id: Date.now(), name: capitalizedName, url: fullUrl, iconUrl };
-        setTempLinks(prev => [...prev, newLink]);
-        setNewLinkUrl('');
     };
-
+    
     const deleteLink = (id: number) => {
         setTempLinks(tempLinks.filter(link => link.id !== id));
     };
@@ -154,6 +204,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
     const handleExportConfig = () => {
         try {
             const config: { [key: string]: any } = {};
+            // Manually add default service groups if user hasn't customized them yet
+            const serviceGroupsInStorage = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
+            if (!serviceGroupsInStorage) {
+                config[LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS] = SERVICE_GROUPS;
+            }
+
             Object.values(LOCAL_STORAGE_KEYS).forEach(key => {
                 const value = localStorage.getItem(key);
                 if (value !== null) {
@@ -165,7 +221,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'pozi-dashboard-config.json';
+            a.download = 'dashydash-by-pozi-config.json';
             a.click();
             URL.revokeObjectURL(url);
         } catch (error) {
@@ -322,30 +378,46 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                         </div>
                     )}
                     {activeTab === 'links' && (
-                        <div>
-                            <form onSubmit={addLink} className="mb-6">
-                                <label htmlFor="link-url-input" className="block text-sm font-medium text-white/80 mb-1">New Link URL</label>
-                                <div className="flex space-x-2">
-                                    <input id="link-url-input" type="text" placeholder="e.g., google.com" value={newLinkUrl} onChange={e => setNewLinkUrl(e.target.value)}
-                                        className="flex-grow bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" />
-                                    <button type="submit" className="bg-white/20 hover:bg-white/30 p-2 px-4 rounded font-semibold">Add</button>
-                                </div>
-                                {linkError && <p className="text-red-400 text-xs mt-1">{linkError}</p>}
-                            </form>
-                            <h3 className="text-lg font-semibold mb-3">Saved Links</h3>
-                            <ul className="space-y-2">
-                                {tempLinks.map((link, index) => (
-                                    <li key={link.id} className={`flex justify-between items-center p-2 rounded ${index % 2 === 0 ? 'bg-white/5' : ''}`}>
-                                        <div className="flex items-center space-x-3 truncate">
-                                            <Favicon link={link} />
-                                            <a href={link.url} target="_blank" rel="noopener noreferrer" className="truncate hover:underline">{link.name}</a>
-                                            <span className="text-white/50 truncate text-sm">{link.url}</span>
-                                        </div>
-                                        <button onClick={() => deleteLink(link.id)} className="text-red-400 hover:text-red-300 transition-opacity ml-2 flex-shrink-0">{ICONS.Trash}</button>
-                                    </li>
-                                ))}
-                                {tempLinks.length === 0 && <p className="text-white/60 text-center py-4">No links yet. Add one above.</p>}
-                            </ul>
+                        <div className="space-y-8">
+                            <div className="text-center p-4 bg-white/5 rounded-lg">
+                               <h3 className="text-xl font-bold mb-2">Customize Main Dashboard</h3>
+                               <p className="text-white/70 mb-4 max-w-md mx-auto">
+                                   Add, edit, and rearrange all link categories and services on your dashboard.
+                               </p>
+                               <button 
+                                    onClick={onOpenCustomizeModal}
+                                    className="bg-[var(--text-highlight)] hover:opacity-90 text-white px-8 py-3 rounded-lg font-semibold transition-opacity text-lg"
+                               >
+                                    Open Dashboard Customizer
+                               </button>
+                            </div>
+                             <div>
+                                <h3 className="text-xl font-bold mb-4">Personal Links Widget</h3>
+                                <form onSubmit={addLink} className="mb-4">
+                                    <label htmlFor="link-url-input" className="block text-sm font-medium text-white/80 mb-1">New Personal Link URL</label>
+                                    <div className="flex space-x-2">
+                                        <input id="link-url-input" type="url" placeholder="example.com" value={newLinkUrl} onChange={e => setNewLinkUrl(e.target.value)}
+                                            className="flex-grow bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" />
+                                        <button type="submit" className="bg-white/20 hover:bg-white/30 p-2 px-4 rounded font-semibold" disabled={isAddingLink}>
+                                            {isAddingLink ? 'Adding...' : 'Add'}
+                                        </button>
+                                    </div>
+                                    {linkError && <p className="text-red-400 text-xs mt-1">{linkError}</p>}
+                                </form>
+                                <h4 className="text-lg font-semibold mb-3">Saved Links</h4>
+                                <ul className="space-y-2">
+                                    {tempLinks.map((link, index) => (
+                                        <li key={link.id} className={`flex justify-between items-center p-2 rounded ${index % 2 === 0 ? 'bg-white/5' : ''}`}>
+                                            <div className="flex items-center space-x-3 truncate">
+                                                <Favicon link={link} className="w-5 h-5" />
+                                                <span className="truncate">{link.name}</span>
+                                            </div>
+                                            <button onClick={() => deleteLink(link.id)} className="text-red-400 hover:text-red-300 transition-opacity ml-2 flex-shrink-0">{ICONS.Trash}</button>
+                                        </li>
+                                    ))}
+                                    {tempLinks.length === 0 && <p className="text-white/60 text-center py-4">No personal links yet. Add one above.</p>}
+                                </ul>
+                            </div>
                         </div>
                     )}
                     {activeTab === 'feeds' && (

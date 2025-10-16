@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ServiceGroup, Theme } from './types';
+import type { Service, ServiceGroup, Theme } from './types';
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
@@ -19,7 +19,16 @@ export const ICONS = {
     Plus: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>,
     ChevronUp: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>,
     Brain: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3c0-1.657-2.015-3-4.5-3s-4.5 1.343-4.5 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12c0-1.657-2.015-3-4.5-3S5 10.343 5 12v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V15c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12h-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12H3" /></svg>,
+    GOOGLE: {
+        Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z M6.83 8.8L12 17.75 17.17 8.8 12 0z"/></svg>,
+        Gmail: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>,
+        Calendar: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>,
+        Drive: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.5 14h5.5l6-10.5zM9.83 15L12 11.5 15 17h-8.5zM16.29 3.5L10.5 14h12z"/></svg>,
+        Keep: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V20H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>,
+    }
 };
+
+export const CORS_PROXY_URL = 'https://corsproxy.io/?';
 
 export const LOCAL_STORAGE_KEYS = {
     USER_NAME: 'userName',
@@ -32,6 +41,8 @@ export const LOCAL_STORAGE_KEYS = {
     USER_THEME: 'userTheme',
     GEMINI_API_KEY: 'geminiApiKey',
     RESEARCH_BACKEND: 'researchBackend',
+    HAS_ONBOARDED: 'hasOnboarded',
+    USER_SERVICE_GROUPS: 'userServiceGroups',
 };
 
 export const THEMES: Theme[] = [
@@ -55,66 +66,64 @@ export const THEMES: Theme[] = [
     },
 ];
 
+export const GOOGLE_SERVICES: Service[] = [
+    { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.GOOGLE.Gemini },
+    { name: "Google AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles },
+    { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Document },
+    { name: "Gmail", url: "https://mail.google.com", icon: ICONS.GOOGLE.Gmail },
+    { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.GOOGLE.Calendar },
+    { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.GOOGLE.Drive },
+    { name: "Keep", url: "https://keep.google.com", icon: ICONS.GOOGLE.Keep },
+];
+
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "AI TOOLS",
     services: [
-      { name: "Perplexity", url: "https://www.perplexity.ai/", icon: ICONS.Sparkles },
-      { name: "Blink Creative", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles },
-      { name: "Affine Creative", url: "https://affine.pozi.agency", icon: ICONS.Sparkles },
-      { name: "Pozi AI Studio", url: "https://ai.pozi.plus", icon: ICONS.Sparkles },
-      { name: "Google AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles },
-      { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Sparkles },
-    ],
-  },
-  {
-    category: "GOOGLE",
-    services: [
-      { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.Sparkles },
-      { name: "Gmail", url: "https://mail.google.com", icon: ICONS.User },
-      { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.User },
-      { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.Cloud },
-      { name: "Keep", url: "https://keep.google.com", icon: ICONS.Document },
+      { name: "Perplexity RESEARCH", url: "https://www.perplexity.ai/", icon: ICONS.Sparkles },
+      { name: "Blink Creative PROJECTS", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles },
+      { name: "Affine Creative PROJECTS", url: "https://affine.pozi.agency", icon: ICONS.Sparkles },
+      { name: "Pozi AI Studio AI-OPEN", url: "https://ai.pozi.plus", icon: ICONS.Sparkles },
     ],
   },
   {
     category: "SOCIAL & TOOLS",
     services: [
-      { name: "Simple Links", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe },
-      { name: "Spotify", url: "https://spotify.com", icon: ICONS.User },
-      { name: "Reddit", url: "https://reddit.com", icon: ICONS.Globe },
-      { name: "Kiwix Server", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
-      { name: "Super PDF Tools", url: "https://pdf.stanz.app", icon: ICONS.Document },
+      { name: "Simple Links TOOL", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe },
+      { name: "Spotify MUSIC", url: "https://spotify.com", icon: ICONS.User },
+      { name: "Reddit INFO", url: "https://reddit.com", icon: ICONS.Globe },
+      { name: "Kiwix Server INFO", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
+      { name: "PDF Tools TOOL", url: "https://pdf.stanz.app", icon: ICONS.Document },
     ],
   },
   {
     category: "IN PROGRESS",
     services: [
-      { name: "Jaaz Canva", url: "https://slash.pozi.plus/s/jaaz", icon: ICONS.Sparkles, inProduction: true },
-      { name: "Miles Music", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe, inProduction: true },
-      { name: "PoziPedia", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, inProduction: true },
-      { name: "Pozi Paperless", url: "https://paperless.stanz.app", icon: ICONS.Document },
+      { name: "Jaaz Canva AI CANVA", url: "https://slash.pozi.plus/s/jaaz", icon: ICONS.Sparkles, inProduction: true },
+      { name: "Miles Music MUSIC TABS", url: "https://slash.pozi.plus/s/milesmusic", icon: ICONS.Globe, inProduction: true },
+      { name: "PoziPedia POZIPLEXITY", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, inProduction: true },
+      { name: "Paperless DOCUMENT AI", url: "https://paperless.stanz.app", icon: ICONS.Document },
     ],
   },
   {
     category: "WORK",
     services: [
-      { name: "Next Cloud", url: "https://cloud.pozi.plus", icon: ICONS.Cloud },
-      { name: "Cloud Casa", url: "https://cloud.pozi.me", icon: ICONS.Cloud },
-      { name: "Colanode Server", url: "https://cola.pozi.work", icon: ICONS.Code },
-      { name: "Vikunja ToDo", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare },
-      { name: "Huly Projects", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase },
-      { name: "Pozi Photos", url: "https://photos.stanz.app", icon: ICONS.Cloud },
+      { name: "NextCloud OPEN", url: "https://cloud.pozi.plus", icon: ICONS.Cloud },
+      { name: "CloudCasa PRIVATE", url: "https://cloud.pozi.me", icon: ICONS.Cloud },
+      { name: "Colanode SERVER", url: "https://cola.pozi.work", icon: ICONS.Code },
+      { name: "Vikunja TODO", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare },
+      { name: "Huly PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase },
+      { name: "Poz-Immich PHOTOS", url: "https://photos.stanz.app", icon: ICONS.Cloud },
     ],
   },
   {
     category: "LIFE",
     services: [
-      { name: "Glance Dash", url: "https://glance.pozi.plus", icon: ICONS.Globe, inProduction: true },
-      { name: "Casa Dashboard", url: "https://dash.stanz.app", icon: ICONS.Globe },
-      { name: "Bit / Vaultwarden", url: "https://vault.pozi.plus", icon: ICONS.Lock },
-      { name: "WorkSpaces", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase },
-      { name: "Hoarder Keeper", url: "https://keep.pozi.life", icon: ICONS.Briefcase },
+      { name: "Glance Dash* DASH", url: "https://glance.pozi.plus", icon: ICONS.Globe, inProduction: true },
+      { name: "Heimdell Dash* DASH", url: "https://dash.stanz.app", icon: ICONS.Globe },
+      { name: "Vaultwarden PASSWORDS", url: "https://vault.pozi.plus", icon: ICONS.Lock },
+      { name: "WorkSpaces KASM", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase },
+      { name: "Karakeep HOARDER", url: "https://keep.pozi.life", icon: ICONS.Briefcase },
     ],
   },
 ];

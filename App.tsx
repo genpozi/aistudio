@@ -15,9 +15,12 @@ import SettingsWidget from './components/SettingsWidget';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
 import SettingsModal from './components/SettingsModal';
 import ResearchModal from './components/ResearchModal';
+import OnboardingModal from './components/OnboardingModal';
+import CustomizeModal from './components/CustomizeModal';
+import GoogleBar from './components/GoogleBar';
 
 import { LOCAL_STORAGE_KEYS, BACKGROUND_IMAGES, SERVICE_GROUPS } from './constants';
-import type { Link, UserFeed, ResearchBackend, GroundingChunk } from './types';
+import type { Link, UserFeed, ResearchBackend, GroundingChunk, ServiceGroup } from './types';
 
 const defaultFeeds: UserFeed[] = [
     { id: 1, url: 'https://hnrss.org/frontpage' },
@@ -25,6 +28,14 @@ const defaultFeeds: UserFeed[] = [
     { id: 3, url: 'http://feeds.arstechnica.com/arstechnica/index' },
     { id: 4, url: 'https://www.omnycontent.com/d/playlist/885ace83-027a-47ad-ad67-aca7002f1df8/ab07fc49-2efc-4de6-92bf-b2e3011e17e9/f377cab3-e9e0-4dc2-8356-b2e3011e1800/podcast.rss' },
 ];
+
+export interface OnboardingData {
+    name: string;
+    location: string;
+    focusPrompt: string;
+    apiKey: string;
+}
+
 
 const App: React.FC = () => {
     const [name, setName] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_NAME, 'My Liege 🙇');
@@ -35,8 +46,11 @@ const App: React.FC = () => {
     const [theme, setTheme] = useLocalStorage(LOCAL_STORAGE_KEYS.USER_THEME, 'chroma');
     const [geminiApiKey, setGeminiApiKey] = useLocalStorage(LOCAL_STORAGE_KEYS.GEMINI_API_KEY, '');
     const [researchBackend, setResearchBackend] = useLocalStorage<ResearchBackend>(LOCAL_STORAGE_KEYS.RESEARCH_BACKEND, 'gemini');
+    const [hasOnboarded, setHasOnboarded] = useLocalStorage(LOCAL_STORAGE_KEYS.HAS_ONBOARDED, false);
+    const [serviceGroups, setServiceGroups] = useLocalStorage<ServiceGroup[]>(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, SERVICE_GROUPS);
 
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState(false);
     const [initialSettingsTab, setInitialSettingsTab] = useState('general');
     const [bgImage, setBgImage] = useState('');
     const [isInFocusMode, setIsInFocusMode] = useState(false);
@@ -64,6 +78,14 @@ const App: React.FC = () => {
     const openSettings = (tab: string = 'general') => {
         setInitialSettingsTab(tab);
         setIsSettingsOpen(true);
+    };
+
+    const handleOnboardingComplete = (data: OnboardingData) => {
+        if (data.name) setName(data.name);
+        if (data.location) setLocation(data.location);
+        if (data.focusPrompt) setFocusPrompt(data.focusPrompt);
+        if (data.apiKey) setGeminiApiKey(data.apiKey);
+        setHasOnboarded(true);
     };
 
     const handleResearch = async (query: string) => {
@@ -125,8 +147,9 @@ const App: React.FC = () => {
 
     return (
         <TimeProvider>
+            {!hasOnboarded && <OnboardingModal onComplete={handleOnboardingComplete} />}
             <div
-                className="relative min-h-screen w-screen bg-cover bg-center bg-fixed text-white transition-background-image duration-1000"
+                className={`relative min-h-screen w-screen bg-cover bg-center bg-fixed text-white transition-all duration-1000 ${!hasOnboarded ? 'blur-sm' : 'blur-none'}`}
                 style={{ backgroundImage: `url(${bgImage})` }}
             >
                 <div className="absolute inset-0 bg-black/30" />
@@ -134,7 +157,7 @@ const App: React.FC = () => {
                 <div className="relative z-10 flex flex-col min-h-screen p-6 md:p-8">
                     <header className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-screen-2xl mx-auto">
                         <div className="md:col-span-1 justify-self-start">
-                            {/* LinksWidget was moved to the ServiceGroups component */}
+                            <GoogleBar />
                         </div>
                         <div className="md:col-span-1" />
                         <div className="md:col-span-1 justify-self-end flex flex-col items-end space-y-2">
@@ -165,6 +188,7 @@ const App: React.FC = () => {
                             links={links} 
                             onOpenSettings={() => openSettings('links')}
                             focusMode={isInFocusMode}
+                            serviceGroups={serviceGroups}
                         >
                             <FeedWidget feedUrls={feedUrls} onOpenSettings={() => openSettings('feeds')} />
                         </ServiceGroups>
@@ -188,6 +212,10 @@ const App: React.FC = () => {
                     <SettingsModal
                         initialTab={initialSettingsTab}
                         onClose={() => setIsSettingsOpen(false)}
+                        onOpenCustomizeModal={() => {
+                            setIsSettingsOpen(false);
+                            setIsCustomizeModalOpen(true);
+                        }}
                         name={name}
                         setName={setName}
                         location={location}
@@ -204,6 +232,14 @@ const App: React.FC = () => {
                         setGeminiApiKey={setGeminiApiKey}
                         researchBackend={researchBackend}
                         setResearchBackend={setResearchBackend}
+                    />
+                )}
+                {isCustomizeModalOpen && (
+                    <CustomizeModal
+                        isOpen={isCustomizeModalOpen}
+                        onClose={() => setIsCustomizeModalOpen(false)}
+                        currentGroups={serviceGroups}
+                        onSave={setServiceGroups}
                     />
                 )}
                 {isResearchModalOpen && (
