@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { ICONS } from '../constants';
 import type { FeedItem, UserFeed } from '../types';
@@ -85,6 +86,7 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const fetchFeeds = useCallback(async () => {
     if (!feedUrls || feedUrls.length === 0) {
@@ -197,15 +199,29 @@ const FeedWidget: React.FC<{ className?: string; feedUrls: UserFeed[]; onOpenSet
   };
 
   return (
-    <div className={`bg-black/20 backdrop-blur-md rounded-xl p-4 border border-white/10 shadow-lg flex flex-col max-h-[450px] ${className || ''}`}>
-      <div className="flex justify-between items-center mb-3">
+    <div className={`bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-lg flex flex-col overflow-hidden transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-14' : 'max-h-[36rem]'} ${className || ''}`}>
+      <div className="bg-gradient-to-r from-black/40 to-black/10 px-4 py-3 flex justify-between items-center flex-shrink-0">
         <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">RSS &amp; YOUTUBE FEEDS</h3>
-        <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
-            {ICONS.Refresh}
-        </button>
+        <div className="flex items-center space-x-2">
+            <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
+                {ICONS.Refresh}
+            </button>
+            <button 
+                onClick={() => setIsCollapsed(prev => !prev)} 
+                className="text-white/60 hover:text-white transition-colors"
+                aria-expanded={!isCollapsed}
+                aria-label={isCollapsed ? "Expand feed widget" : "Collapse feed widget"}
+            >
+                <div className={`transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+                    {ICONS.ChevronUp}
+                </div>
+            </button>
+        </div>
       </div>
-      {error && items.length > 0 && <p className="text-sm text-red-400/80 mb-2 -mt-1">{error}</p>}
-      {renderContent()}
+      <div className="px-4 pb-4 pt-3 flex-grow flex flex-col min-h-0">
+        {error && items.length > 0 && <p className="text-sm text-red-400/80 mb-2">{error}</p>}
+        {renderContent()}
+      </div>
     </div>
   );
 };
