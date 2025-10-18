@@ -140,13 +140,14 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
         setError("Some feeds could not be loaded. Please check the URLs and your network connection.");
     }
 
-    // Sort all items by publication date, descending
+    // Sort all items by publication date, descending, safely handling invalid dates.
     newItems.sort((a, b) => {
-        try {
-            return new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime();
-        } catch (e) {
-            return 0;
-        }
+        const dateA = new Date(a.pubDate);
+        const dateB = new Date(b.pubDate);
+        // Treat invalid dates as older than any valid date
+        const timeA = !isNaN(dateA.getTime()) ? dateA.getTime() : 0;
+        const timeB = !isNaN(dateB.getTime()) ? dateB.getTime() : 0;
+        return timeB - timeA;
     });
 
     setItems(newItems.slice(0, 20)); // Limit to latest 20 items
