@@ -18,6 +18,7 @@ import ResearchModal from './components/ResearchModal';
 import OnboardingModal from './components/OnboardingModal';
 import CustomizeModal from './components/CustomizeModal';
 import GoogleBar from './components/GoogleBar';
+import PoziBar from './components/PoziBar';
 
 import { LOCAL_STORAGE_KEYS, BACKGROUND_IMAGES, SERVICE_GROUPS } from './constants';
 import type { Link, UserFeed, ResearchBackend, GroundingChunk, ServiceGroup } from './types';
@@ -156,8 +157,9 @@ const App: React.FC = () => {
                 
                 <div className="relative z-10 flex flex-col min-h-screen p-6 md:p-8">
                     <header className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-screen-2xl mx-auto">
-                        <div className="md:col-span-1 justify-self-start">
+                        <div className="md:col-span-1 justify-self-start flex items-center space-x-2">
                             <GoogleBar />
+                            <PoziBar />
                         </div>
                         <div className="md:col-span-1" />
                         <div className="md:col-span-1 justify-self-end flex flex-col items-end space-y-2">

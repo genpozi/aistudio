@@ -12,13 +12,12 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
+// FIX: Standardized React import and types for ErrorBoundary.
+// Using `React.Component` with explicit props and state types, along with
+// class property syntax for state and arrow functions for methods,
+// provides the most stable and modern approach for this environment.
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  // FIX: Added a constructor to properly initialize state and ensure `this.props`
-  // and `this.setState` are available on the component instance.
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
+  state: ErrorBoundaryState = { hasError: false, error: null };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error: error };
@@ -37,7 +36,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       console.error("Failed to clear localStorage during recovery.", e);
       this.setState({ error: new Error("Automatic recovery failed. Please clear your browser's site data and refresh manually.") });
     }
-  };
+  }
 
   render() {
     if (this.state.hasError) {

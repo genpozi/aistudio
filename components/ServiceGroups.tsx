@@ -138,9 +138,9 @@ const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, ch
                         />
                     </div>
                 ))}
-                {children && (
+                {children && React.isValidElement(children) && (
                     <div className="break-inside-avoid mb-6">
-                       {/* Fix: Added a more specific type assertion to inform TypeScript that the child element accepts `isCollapsed` and `onToggle` props, resolving the overload error. */}
+                       {/* FIX: Added a check for `React.isValidElement` to make this component more robust against invalid children. */}
                        {React.cloneElement(children as React.ReactElement<{ isCollapsed?: boolean; onToggle?: () => void; }>, { 
                            isCollapsed: isFeedCollapsed, 
                            onToggle: () => setIsFeedCollapsed(p => !p) 

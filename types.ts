@@ -1,4 +1,5 @@
 import React from 'react';
+import { ICONS } from './constants';
 
 export interface Todo {
   id: number;
@@ -27,11 +28,16 @@ export interface FeedItem {
   source: string; // Manually added from the feed's main title
 }
 
+export type IconKey = keyof typeof ICONS;
+// FIX: Create a new type for icon keys that are not nested objects, to be used in the icon selector.
+export type FlatIconKey = Exclude<IconKey, 'GOOGLE' | 'POZI'>;
+
 export interface Service {
   name: string;
   url: string;
-  // Fix: Replaced `JSX.Element` with `React.ReactNode` to resolve a "Cannot find namespace 'JSX'" error in a .ts file.
   icon: React.ReactNode;
+  iconKey?: IconKey; // Store the key for editing purposes
+  // FIX: Added 'inProduction' as an optional property to the Service interface to support marking services as in-production.
   inProduction?: boolean;
 }
 
