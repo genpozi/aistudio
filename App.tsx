@@ -28,6 +28,7 @@ import Weather from './components/Weather';
 import YouTubeWidget from './components/YouTubeWidget';
 import {
   BACKGROUND_IMAGES,
+  DEFAULT_FEEDS,
   getIcon,
   GOOGLE_SERVICES,
   LOCAL_STORAGE_KEYS,
@@ -82,7 +83,7 @@ const App: React.FC = () => {
   // Local storage backed state
   const [name, setName] = useLocalStorage<string>(
     LOCAL_STORAGE_KEYS.USER_NAME,
-    'User',
+    'My Leige 🙇',
   );
   const [location, setLocation] = useLocalStorage<string>(
     LOCAL_STORAGE_KEYS.WEATHER_LOCATION,
@@ -94,7 +95,7 @@ const App: React.FC = () => {
   );
   const [feedUrls, setFeedUrls] = useLocalStorage<UserFeed[]>(
     LOCAL_STORAGE_KEYS.USER_FEEDS,
-    [],
+    DEFAULT_FEEDS,
   );
   const [focus, setFocus] = useLocalStorage(LOCAL_STORAGE_KEYS.DAILY_FOCUS, '');
   const [focusPrompt, setFocusPrompt] = useLocalStorage<string>(
@@ -133,8 +134,16 @@ const App: React.FC = () => {
     [],
   );
   
-  // State for widget collapse, lifted up from ServiceGroups
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  // State for widget collapse, backed by localStorage for persistence.
+  const initialCollapsedKeys = [
+      LINKS_WIDGET_CATEGORY_KEY,
+      ...defaultServiceGroups.map(g => g.category)
+  ];
+  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(
+      LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES,
+      initialCollapsedKeys
+  );
+  const collapsedCategories = useMemo(() => new Set(collapsedKeys), [collapsedKeys]);
 
   // Modal visibility state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -281,19 +290,17 @@ const App: React.FC = () => {
 
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
   
-  const handleCollapseAll = () => setCollapsedCategories(new Set(allCategoryKeys));
-  const handleExpandAll = () => setCollapsedCategories(new Set());
+  const handleCollapseAll = () => setCollapsedKeys(allCategoryKeys);
+  const handleExpandAll = () => setCollapsedKeys([]);
 
   const toggleCategoryCollapse = (category: string) => {
-    setCollapsedCategories(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) {
-        newSet.delete(category);
-      } else {
-        newSet.add(category);
-      }
-      return newSet;
-    });
+    const newSet = new Set(collapsedCategories);
+    if (newSet.has(category)) {
+      newSet.delete(category);
+    } else {
+      newSet.add(category);
+    }
+    setCollapsedKeys(Array.from(newSet));
   };
 
   const handleResearchSubmit = async (query: string) => {
@@ -383,7 +390,7 @@ const App: React.FC = () => {
   };
 
   const handleOnboardingComplete = (data: OnboardingData) => {
-    setName(data.name || 'User');
+    setName(data.name || 'My Leige 🙇');
     setLocation(data.location);
     setFocusPrompt(data.focusPrompt || 'What is your main goal for today?');
     setGeminiApiKey(data.apiKey);

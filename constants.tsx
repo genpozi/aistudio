@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Service, ServiceGroup, Theme } from './types';
+import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
 export const SCHEMA_VERSION = 2;
 
@@ -97,7 +97,15 @@ export const LOCAL_STORAGE_KEYS = {
     USER_SERVICE_GROUPS: 'userServiceGroups',
     DATA_SCHEMA_VERSION: 'dataSchemaVersion',
     CHAT_HISTORY: 'chatHistory',
+    COLLAPSED_CATEGORIES: 'collapsedCategories',
 };
+
+export const DEFAULT_FEEDS: UserFeed[] = [
+  { id: 1, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ', type: 'youtube' }, // MKBHD
+  { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6107grRI4m0o2-emgoDnAA', type: 'youtube' }, // SmarterEveryDay
+  { id: 3, url: 'http://feeds.arstechnica.com/arstechnica/index', type: 'rss' }, // Ars Technica
+  { id: 4, url: 'http://feeds.bbci.co.uk/news/rss.xml', type: 'rss' }, // BBC News
+];
 
 export const THEMES: Theme[] = [
     {

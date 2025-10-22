@@ -48,8 +48,8 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
 
     const [newLinkName, setNewLinkName] = useState('');
     const [newLinkUrl, setNewLinkUrl] = useState('');
-    const [newFeedUrl, setNewFeedUrl] = useState('');
-    const [newFeedType, setNewFeedType] = useState<'rss' | 'youtube'>('rss');
+    const [newFeedInput, setNewFeedInput] = useState('');
+    const [newFeedType, setNewFeedType] = useState<'rss' | 'youtube'>('youtube');
     
     const handleSave = () => {
         onSave({
@@ -85,11 +85,22 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
 
     const handleAddFeed = (e: React.FormEvent) => {
         e.preventDefault();
-        if (newFeedUrl.trim()) {
-            const newFeed: UserFeed = { id: Date.now(), url: newFeedUrl.trim(), type: newFeedType };
-            setFeedUrls([...feedUrls, newFeed]);
-            setNewFeedUrl('');
+        const trimmedInput = newFeedInput.trim();
+        if (!trimmedInput) return;
+
+        let finalUrl = trimmedInput;
+
+        if (newFeedType === 'youtube') {
+            if (!trimmedInput.startsWith('UC')) {
+                alert('Invalid YouTube Channel ID. It should start with "UC". Please find the correct ID and try again.');
+                return;
+            }
+            finalUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${trimmedInput}`;
         }
+        
+        const newFeed: UserFeed = { id: Date.now(), url: finalUrl, type: newFeedType };
+        setFeedUrls([...feedUrls, newFeed]);
+        setNewFeedInput('');
     };
 
     const handleDeleteFeed = (id: number) => setFeedUrls(feedUrls.filter(feed => feed.id !== id));
@@ -162,10 +173,51 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                     <div>
                         <h3 className="text-xl font-bold mb-4">RSS & YouTube Feeds</h3>
                         <form onSubmit={handleAddFeed} className="flex items-center space-x-2 mb-4">
-                            <input type="text" placeholder="Feed URL" value={newFeedUrl} onChange={e => setNewFeedUrl(e.target.value)} className="flex-grow bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" />
-                            <select value={newFeedType} onChange={e => setNewFeedType(e.target.value as 'rss' | 'youtube')} className="bg-white/10 p-2 rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]">
-                                <option value="rss">RSS</option>
+                            <div className="flex-grow">
+                                {newFeedType === 'rss' ? (
+                                    <input 
+                                        type="text" 
+                                        placeholder="RSS Feed URL" 
+                                        value={newFeedInput} 
+                                        onChange={e => setNewFeedInput(e.target.value)} 
+                                        className="w-full bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]"
+                                    />
+                                ) : (
+                                    <div className="flex items-center">
+                                        <span className="bg-black/20 text-white/70 text-sm p-2 rounded-l">https://www.youtube.com/feeds/videos.xml?channel_id=</span>
+                                        <input 
+                                            type="text" 
+                                            placeholder="Paste Channel ID here (starts with UC...)" 
+                                            value={newFeedInput} 
+                                            onChange={e => setNewFeedInput(e.target.value)} 
+                                            className="w-full bg-white/10 p-2 rounded-r-none placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" 
+                                        />
+                                        <div className="relative group flex items-center bg-white/10 p-2 rounded-r h-full">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 z-10 mb-2 w-72 p-3 bg-black border border-white/20 rounded-lg shadow-lg text-sm text-left opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                                <h4 className="font-bold">How to find the Channel ID:</h4>
+                                                <ol className="list-decimal list-inside mt-1 space-y-1">
+                                                    <li>Go to the YouTube channel's main page.</li>
+                                                    <li>Click the three-dots menu icon (⋮).</li>
+                                                    <li>Select "Share", then "Copy channel ID".</li>
+                                                </ol>
+                                                <p className="mt-2 text-xs text-white/50">The ID is a long string of letters and numbers that usually starts with "UC".</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <select 
+                                value={newFeedType} 
+                                onChange={e => {
+                                    setNewFeedType(e.target.value as 'rss' | 'youtube');
+                                    setNewFeedInput(''); // Clear input on type change
+                                }} 
+                                className="bg-white/10 p-2 rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]"
+                            >
                                 <option value="youtube">YouTube</option>
+                                <option value="rss">RSS</option>
                             </select>
                             <button type="submit" className="bg-[var(--text-highlight)] px-4 py-2 rounded font-semibold">Add</button>
                         </form>

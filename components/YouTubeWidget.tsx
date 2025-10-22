@@ -64,57 +64,6 @@ const timeSince = (dateString: string): string => {
   }
 };
 
-/**
- * Converts various YouTube channel URL formats into a valid RSS feed URL.
- * Handles /channel/, /user/, and /@handle formats.
- * @param userUrl The user-provided YouTube channel URL.
- * @returns A promise that resolves to the correct RSS feed URL.
- */
-const getFinalFeedUrl = async (userUrl: string): Promise<string> => {
-    if (userUrl.includes('/feeds/videos.xml')) {
-        return userUrl;
-    }
-
-    try {
-        const url = new URL(userUrl);
-        const pathname = url.pathname;
-
-        let match = pathname.match(/\/channel\/(UC[\w-]{22,})/);
-        if (match) {
-            const channelId = match[1];
-            return `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-        }
-
-        match = pathname.match(/\/user\/([\w-]+)/);
-        if (match) {
-            const username = match[1];
-            return `https://www.youtube.com/feeds/videos.xml?user=${username}`;
-        }
-        
-        match = pathname.match(/^\/(@[\w.-]+)/);
-        if (match) {
-            const response = await fetch(`${CORS_PROXY_URL}${userUrl}`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch channel page: ${response.status}`);
-            }
-            const html = await response.text();
-            // This regex is more robust, looking for either JSON-LD or meta tags
-            const channelIdMatch = html.match(/"channelId":"(UC[\w-]{22,})"/);
-            if (channelIdMatch && channelIdMatch[1]) {
-                return `https://www.youtube.com/feeds/videos.xml?channel_id=${channelIdMatch[1]}`;
-            } else {
-                throw new Error('Could not automatically find Channel ID from the handle page.');
-            }
-        }
-        
-        throw new Error('URL format not recognized. Use a /channel/, /user/, or /@handle URL.');
-    } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : String(e);
-        console.error(`Error resolving YouTube URL ${userUrl}:`, errorMessage);
-        throw new Error(`Could not resolve '${userUrl}': ${errorMessage}`);
-    }
-};
-
 interface YouTubeWidgetProps {
   className?: string;
   feedUrls: UserFeed[];
@@ -139,8 +88,7 @@ const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOp
 
     for (const feed of feedUrls) {
         try {
-            const finalUrl = await getFinalFeedUrl(feed.url);
-            const response = await fetch(`${CORS_PROXY_URL}${finalUrl}`);
+            const response = await fetch(`${CORS_PROXY_URL}${feed.url}`);
             if (!response.ok) {
                 if (response.status === 429) {
                      throw new Error(`Rate limited. Please try again in a few moments.`);

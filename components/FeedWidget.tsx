@@ -139,7 +139,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
         return timeB - timeA;
     });
 
-    setItems(newItems.slice(0, 20)); // Limit to latest 20 items
+    setItems(newItems.slice(0, 10)); // Limit to latest 10 items
     setIsLoading(false);
   }, [feedUrls]);
 
