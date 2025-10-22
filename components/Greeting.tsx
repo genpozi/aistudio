@@ -1,9 +1,15 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import useLocalStorage from '../hooks/useLocalStorage';
 import { useTime } from '../contexts/TimeContext';
-import { LOCAL_STORAGE_KEYS } from '../constants';
+import { ICONS, LOCAL_STORAGE_KEYS } from '../constants';
 
-const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focusPrompt }) => {
+interface GreetingProps {
+  name: string;
+  focusPrompt: string;
+  onStartFocus: () => void;
+}
+
+const Greeting: React.FC<GreetingProps> = ({ name, focusPrompt, onStartFocus }) => {
   const [focus, setFocus] = useLocalStorage(LOCAL_STORAGE_KEYS.DAILY_FOCUS, '');
   const [isEditing, setIsEditing] = useState(() => !focus);
   const time = useTime();
@@ -57,13 +63,26 @@ const Greeting: React.FC<{ name: string; focusPrompt: string; }> = ({ name, focu
           </form>
         ) : (
           <div 
-            className="flex flex-col items-center group cursor-pointer"
-            onClick={() => setIsEditing(true)}
+            className="flex flex-col items-center group"
           >
             <p className="text-[var(--text-highlight)] text-lg uppercase tracking-widest font-semibold">TODAY</p>
-            <p className="text-white text-2xl md:text-3xl font-medium transition-transform group-hover:scale-105">
-              {focus}
-            </p>
+            <div className="flex items-center space-x-4">
+                <p 
+                    className="text-white text-2xl md:text-3xl font-medium transition-transform group-hover:scale-105 cursor-pointer"
+                    onClick={() => setIsEditing(true)}
+                >
+                {focus}
+                </p>
+                {focus && (
+                    <button 
+                        onClick={onStartFocus}
+                        className="group/button text-white/70 hover:text-white transition-colors"
+                        title="Start Focus Session"
+                    >
+                        <span className="group-hover/button:scale-110 transition-transform block">{ICONS.Play}</span>
+                    </button>
+                )}
+            </div>
           </div>
         )}
       </div>

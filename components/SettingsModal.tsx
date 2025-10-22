@@ -1,46 +1,69 @@
 import React, { useState, useRef } from 'react';
 import useOnClickOutside from '../hooks/useOnClickOutside';
-import type { Link, UserFeed, ResearchBackend } from '../types';
+import type { Link, UserFeed, ResearchBackend, FocusDuration } from '../types';
 import { THEMES, ICONS } from '../constants';
 import Favicon from './Favicon';
 
 type Tab = 'general' | 'links' | 'feeds' | 'research' | 'theme' | 'services';
 
+export interface SettingsData {
+    name: string;
+    location: string;
+    links: Link[];
+    feedUrls: UserFeed[];
+    focusPrompt: string;
+    focusDuration: FocusDuration;
+    theme: string;
+    geminiApiKey: string;
+    researchBackend: ResearchBackend;
+}
+
 interface SettingsModalProps {
     initialTab: string;
     onClose: () => void;
+    onSave: (data: SettingsData) => void;
     onOpenCustomizeModal: () => void;
-    name: string;
-    setName: React.Dispatch<React.SetStateAction<string>>;
-    location: string;
-    setLocation: React.Dispatch<React.SetStateAction<string>>;
-    links: Link[];
-    setLinks: React.Dispatch<React.SetStateAction<Link[]>>;
-    feedUrls: UserFeed[];
-    setFeedUrls: React.Dispatch<React.SetStateAction<UserFeed[]>>;
-    focusPrompt: string;
-    setFocusPrompt: React.Dispatch<React.SetStateAction<string>>;
-    theme: string;
-    setTheme: React.Dispatch<React.SetStateAction<string>>;
-    geminiApiKey: string;
-    setGeminiApiKey: React.Dispatch<React.SetStateAction<string>>;
-    researchBackend: ResearchBackend;
-    setResearchBackend: React.Dispatch<React.SetStateAction<ResearchBackend>>;
+    currentSettings: SettingsData;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = (props) => {
     const {
-        initialTab, onClose, onOpenCustomizeModal, name, setName, location, setLocation, links, setLinks, feedUrls, setFeedUrls,
-        focusPrompt, setFocusPrompt, theme, setTheme, geminiApiKey, setGeminiApiKey, researchBackend, setResearchBackend
+        initialTab, onClose, onSave, onOpenCustomizeModal, currentSettings
     } = props;
 
     const [activeTab, setActiveTab] = useState<Tab>(initialTab as Tab || 'general');
     const modalRef = useRef<HTMLDivElement>(null);
     useOnClickOutside(modalRef, onClose, true);
+    
+    // Create temporary local state for all settings
+    const [name, setName] = useState(currentSettings.name);
+    const [location, setLocation] = useState(currentSettings.location);
+    const [links, setLinks] = useState(currentSettings.links);
+    const [feedUrls, setFeedUrls] = useState(currentSettings.feedUrls);
+    const [focusPrompt, setFocusPrompt] = useState(currentSettings.focusPrompt);
+    const [focusDuration, setFocusDuration] = useState(currentSettings.focusDuration);
+    const [theme, setTheme] = useState(currentSettings.theme);
+    const [geminiApiKey, setGeminiApiKey] = useState(currentSettings.geminiApiKey);
+    const [researchBackend, setResearchBackend] = useState(currentSettings.researchBackend);
 
     const [newLinkName, setNewLinkName] = useState('');
     const [newLinkUrl, setNewLinkUrl] = useState('');
     const [newFeedUrl, setNewFeedUrl] = useState('');
+    const [newFeedType, setNewFeedType] = useState<'rss' | 'youtube'>('rss');
+    
+    const handleSave = () => {
+        onSave({
+            name,
+            location,
+            links,
+            feedUrls,
+            focusPrompt,
+            focusDuration,
+            theme,
+            geminiApiKey,
+            researchBackend,
+        });
+    };
 
     const handleAddLink = (e: React.FormEvent) => {
         e.preventDefault();
@@ -63,7 +86,7 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
     const handleAddFeed = (e: React.FormEvent) => {
         e.preventDefault();
         if (newFeedUrl.trim()) {
-            const newFeed: UserFeed = { id: Date.now(), url: newFeedUrl.trim() };
+            const newFeed: UserFeed = { id: Date.now(), url: newFeedUrl.trim(), type: newFeedType };
             setFeedUrls([...feedUrls, newFeed]);
             setNewFeedUrl('');
         }
@@ -99,6 +122,14 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                                 <label className="block text-sm font-medium text-white/80 mb-1">Daily Focus Prompt</label>
                                 <input type="text" value={focusPrompt} onChange={e => setFocusPrompt(e.target.value)} className="w-full bg-white/10 p-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" />
                             </div>
+                             <div>
+                                <label className="block text-sm font-medium text-white/80 mb-1">Focus Session Duration</label>
+                                <select value={focusDuration} onChange={e => setFocusDuration(parseInt(e.target.value, 10) as FocusDuration)} className="w-full bg-white/10 p-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]">
+                                    <option value={25}>25 Minutes (Pomodoro)</option>
+                                    <option value={45}>45 Minutes</option>
+                                    <option value={60}>60 Minutes</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 );
@@ -130,14 +161,21 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                  return (
                     <div>
                         <h3 className="text-xl font-bold mb-4">RSS & YouTube Feeds</h3>
-                        <form onSubmit={handleAddFeed} className="flex space-x-2 mb-4">
+                        <form onSubmit={handleAddFeed} className="flex items-center space-x-2 mb-4">
                             <input type="text" placeholder="Feed URL" value={newFeedUrl} onChange={e => setNewFeedUrl(e.target.value)} className="flex-grow bg-white/10 p-2 rounded placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" />
-                            <button type="submit" className="bg-[var(--text-highlight)] px-4 rounded font-semibold">Add</button>
+                            <select value={newFeedType} onChange={e => setNewFeedType(e.target.value as 'rss' | 'youtube')} className="bg-white/10 p-2 rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]">
+                                <option value="rss">RSS</option>
+                                <option value="youtube">YouTube</option>
+                            </select>
+                            <button type="submit" className="bg-[var(--text-highlight)] px-4 py-2 rounded font-semibold">Add</button>
                         </form>
                         <ul className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-2">
                             {feedUrls.map(feed => (
                                 <li key={feed.id} className="group flex items-center justify-between bg-white/5 p-2 rounded">
-                                    <span className="truncate text-sm">{feed.url}</span>
+                                    <div className="flex items-center space-x-3 truncate">
+                                        <span className={`text-xs uppercase font-bold px-2 py-0.5 rounded-full ${feed.type === 'rss' ? 'bg-orange-500/50' : 'bg-red-500/50'}`}>{feed.type}</span>
+                                        <span className="truncate text-sm">{feed.url}</span>
+                                    </div>
                                     <button onClick={() => handleDeleteFeed(feed.id)} className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity">
                                         {ICONS.Trash}
                                     </button>
@@ -225,8 +263,9 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                     </main>
                 </div>
                 <footer className="p-4 border-t border-white/20 flex-shrink-0">
-                    <div className="flex justify-end">
-                        <button onClick={onClose} className="bg-white/10 hover:bg-white/20 px-6 py-2 rounded font-semibold transition-colors">Close</button>
+                    <div className="flex justify-end space-x-4">
+                        <button onClick={onClose} className="bg-white/10 hover:bg-white/20 px-6 py-2 rounded font-semibold transition-colors">Cancel</button>
+                        <button onClick={handleSave} className="bg-[var(--text-highlight)] hover:opacity-90 text-white px-6 py-2 rounded font-semibold transition-opacity">Save & Close</button>
                     </div>
                 </footer>
             </div>

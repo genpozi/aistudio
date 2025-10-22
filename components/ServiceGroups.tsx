@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { ICONS } from '../constants';
 import type { ServiceGroup, Link } from '../types';
 import LinksWidget from './LinksWidget';
@@ -74,40 +74,26 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, on
 interface ServiceGroupsProps {
     links: Link[];
     onOpenSettings: () => void;
-    focusMode: boolean;
     serviceGroups: ServiceGroup[];
+    collapsedCategories: Set<string>;
+    onToggleCategory: (category: string) => void;
 }
+
+const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
 
 /**
  * The main component that lays out all the service group cards in a responsive, fluid, masonry-style layout.
  */
-const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, focusMode, serviceGroups }) => {
-    const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
-    const [isLinksCollapsed, setIsLinksCollapsed] = useState(false);
+const ServiceGroups: React.FC<ServiceGroupsProps> = (props) => {
+    const { 
+        links, 
+        onOpenSettings, 
+        serviceGroups,
+        collapsedCategories,
+        onToggleCategory
+    } = props;
     
     const hasInProductionServices = serviceGroups.some(group => group.services.some(service => service.inProduction));
-
-    useEffect(() => {
-        setIsLinksCollapsed(focusMode);
-        if (focusMode) {
-            const allGroupCategories = new Set(serviceGroups.map(g => g.category));
-            setCollapsedGroups(allGroupCategories);
-        } else {
-            setCollapsedGroups(new Set());
-        }
-    }, [focusMode, serviceGroups]);
-
-    const toggleCollapse = (category: string) => {
-        setCollapsedGroups(prev => {
-            const newSet = new Set(prev);
-            if (newSet.has(category)) {
-                newSet.delete(category);
-            } else {
-                newSet.add(category);
-            }
-            return newSet;
-        });
-    };
 
     return (
         <div>
@@ -123,16 +109,16 @@ const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, fo
                     <LinksWidget 
                         links={links} 
                         onOpenSettings={onOpenSettings} 
-                        isCollapsed={isLinksCollapsed}
-                        onToggle={() => setIsLinksCollapsed(p => !p)}
+                        isCollapsed={collapsedCategories.has(LINKS_WIDGET_CATEGORY_KEY)}
+                        onToggle={() => onToggleCategory(LINKS_WIDGET_CATEGORY_KEY)}
                     />
                 </div>
                 {serviceGroups.map((group) => (
                     <div key={group.category} className="break-inside-avoid mb-6">
                         <ServiceGroupCard 
                             group={group} 
-                            isCollapsed={collapsedGroups.has(group.category)}
-                            onToggle={() => toggleCollapse(group.category)}
+                            isCollapsed={collapsedCategories.has(group.category)}
+                            onToggle={() => onToggleCategory(group.category)}
                         />
                     </div>
                 ))}

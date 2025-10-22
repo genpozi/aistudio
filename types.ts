@@ -17,6 +17,7 @@ export interface Link {
 export interface UserFeed {
   id: number;
   url: string;
+  type: 'rss' | 'youtube';
 }
 
 // Represents a single, normalized item from a parsed feed
@@ -101,3 +102,5 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
 }
+
+export type FocusDuration = 25 | 45 | 60;

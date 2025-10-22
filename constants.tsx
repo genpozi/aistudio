@@ -18,11 +18,13 @@ export const ICONS = {
     Refresh: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0120.5 19.5L20 20" /></svg>,
     Search: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
     Settings: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-    // FIX: Corrected a typo in the `strokeWidth` attribute for the 'Plus' icon SVG.
     Plus: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
     ChevronUp: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>,
     Brain: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3c0-1.657-2.015-3-4.5-3s-4.5 1.343-4.5 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12c0-1.657-2.015-3-4.5-3S5 10.343 5 12v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V15c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12h-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12H3" /></svg>,
     ChatBubble: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.455.09-.934.09-1.425 0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /><path strokeLinecap="round" strokeLinejoin="round" d="M3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25" /></svg>,
+    Play: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+    CollapseAll: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>,
+    ExpandAll: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>,
     GOOGLE: {
         Logo: <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>,
         Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z M6.83 8.8L12 17.75 17.17 8.8 12 0z"/></svg>,
@@ -33,23 +35,31 @@ export const ICONS = {
     },
     POZI: {
         Logo: (
-            <svg viewBox="0 0 24 24" fill="currentColor">
+            <svg viewBox="0 0 24 24">
                 <defs>
-                    <linearGradient id="poziGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style={{ stopColor: '#58267e' }} />
-                        <stop offset="20%" style={{ stopColor: '#0071bc' }} />
-                        <stop offset="40%" style={{ stopColor: '#39b54a' }} />
-                        <stop offset="60%" style={{ stopColor: '#fbb03b' }} />
-                        <stop offset="80%" style={{ stopColor: '#d92121' }} />
-                        <stop offset="100%" style={{ stopColor: '#c42069' }} />
+                    <linearGradient id="poziRainbow" x1="0.5" y1="0" x2="0.5" y2="1">
+                        <stop offset="0%" stop-color="#c084fc" />
+                        <stop offset="20%" stop-color="#4f46e5" />
+                        <stop offset="40%" stop-color="#22c55e" />
+                        <stop offset="60%" stop-color="#eab308" />
+                        <stop offset="80%" stop-color="#f97316" />
+                        <stop offset="100%" stop-color="#ef4444" />
                     </linearGradient>
                 </defs>
-                <path
-                    fill="url(#poziGradient)"
-                    d="M12.5,2C8.5,2,5,5.5,5,9.5v10h5V14h3.5c3,0,5.5-2.5,5.5-5.5S16,2,12.5,2z M12.5,6c1.9,0,3.5,1.6,3.5,3.5S14.4,13,12.5,13h-3V6H12.5z"
-                />
+                <text 
+                    x="50%" 
+                    y="50%" 
+                    dominantBaseline="central" 
+                    textAnchor="middle" 
+                    fontSize="21" 
+                    fontFamily="sans-serif" 
+                    fontWeight="700" 
+                    fill="url(#poziRainbow)"
+                >
+                    P
+                </text>
             </svg>
-        ),
+        )
     }
 };
 
@@ -78,6 +88,7 @@ export const LOCAL_STORAGE_KEYS = {
     USER_FEEDS: 'userFeeds',
     DAILY_FOCUS: 'dailyFocus',
     FOCUS_PROMPT: 'focusPrompt',
+    FOCUS_SESSION_DURATION: 'focusSessionDuration',
     USER_TODOS: 'userTodos',
     USER_THEME: 'userTheme',
     GEMINI_API_KEY: 'geminiApiKey',
@@ -199,9 +210,34 @@ export const QUOTES = [
     { text: "I like work; it fascinates me. I can sit and look at it for hours.", author: "Jerome K. Jerome" },
     { text: "I love deadlines. I like the whooshing sound they make as they fly by.", author: "Douglas Adams" },
     { text: "Aim low, reach your goals, and avoid disappointment.", author: "Scott Adams" },
-    { text: "A meeting is an event where minutes are taken and hours are wasted.", author: "James T. Kirk" },
     { text: "Meetings are indispensable when you don't want to do anything.", author: "John Kenneth Galbraith" },
     { text: "A committee is a group of people who individually can do nothing but together can decide that nothing can be done.", author: "Fred Allen" },
+    { text: "Son, if you really want something in this life, you have to work for it. Now quiet! They're about to announce the lottery numbers.", author: "Homer Simpson (The Simpsons)" },
+    { text: "I choose a lazy person to do a hard job. Because a lazy person will find an easy way to do it.", author: "Bill Gates" },
+    { text: "It's not that I'm lazy, it's that I just don't care.", author: "Peter Gibbons (Office Space)" },
+    { text: "Doing nothing is very hard to do... you never know when you're finished.", author: "Leslie Nielsen" },
+    { text: "If A equals success, then the formula is A = X + Y + Z. Where X is work. Y is play. Z is keeping your mouth shut.", author: "Albert Einstein" },
+    { text: "Most people work just hard enough not to get fired and get paid just enough money not to quit.", author: "George Carlin" },
+    { text: "I always arrive late at the office, but I make up for it by leaving early.", author: "Charles Lamb" },
+    { text: "No man goes before his time—unless the boss leaves early.", author: "Groucho Marx" },
+    { text: "Work is the curse of the drinking classes.", author: "Oscar Wilde" },
+    { text: "The only thing that ever sat its way to success was a hen.", author: "Sarah Brown" },
+    { text: "Lisa, if you don't like your job, you don't strike. You just go in every day and do it really half-assed. That's the American way.", author: "Homer Simpson (The Simpsons)" },
+    { text: "By working faithfully eight hours a day, you may eventually get to be boss and work twelve hours a day.", author: "Robert Frost" },
+    { text: "Sometimes I'll start a sentence and I don't even know where it's going. I just hope I find it along the way.", author: "Michael Scott (The Office)" },
+    { text: "People often say that motivation doesn't last. Well, neither does bathing—that's why we recommend it daily.", author: "Zig Ziglar" },
+    { text: "The best way to appreciate your job is to imagine yourself without one.", author: "Oscar Wilde" },
+    { text: "If you think your boss is stupid, remember: you wouldn't have a job if he was any smarter.", author: "John Gotti" },
+    { text: "I'm a great believer in luck, and I find the harder I work the more I have of it.", author: "Thomas Jefferson" },
+    { text: "Never put off till tomorrow what you can do the day after tomorrow.", author: "Mark Twain" },
+    { text: "A meeting is an event at which the minutes are kept and the hours are lost.", author: "Unknown (often attributed to \"G.K. Chesterton\" or \"James T. Kirk\" in humor)" },
+    { text: "I work for myself, which is fun. Except when I call in sick, I know I'm lying.", author: "Rita Rudner" },
+    { text: "One of the symptoms of an approaching nervous breakdown is the belief that one's work is terribly important.", author: "Bertrand Russell" },
+    { text: "The problem with the rat race is that even if you win, you're still a rat.", author: "Lily Tomlin" },
+    { text: "The reward for good work is more work.", author: "Francesca Elisia" },
+    { text: "Work is a necessity for man. Man invented the alarm clock.", author: "Pablo Picasso" },
+    { text: "I always give 100% at work: 13% Monday, 22% Tuesday, 26% Wednesday, 35% Thursday, 4% Friday.", author: "Anonymous" },
+    { text: "The successful warrior is the average man, with laser-like focus.", author: "Bruce Lee" },
 ];
 
 export const BACKGROUND_IMAGES = [

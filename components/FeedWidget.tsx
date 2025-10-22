@@ -31,37 +31,17 @@ const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem
     throw new Error('Failed to parse XML feed.');
   }
 
-  const isAtom = doc.querySelector('feed') !== null;
-  
-  if (isAtom) {
-    // Atom Feed Parsing (includes YouTube)
-    const feedTitle = doc.querySelector('feed > title')?.textContent ?? 'Untitled Feed';
-    const entries = Array.from(doc.querySelectorAll('entry'));
-    const items = entries.map(entry => {
-      const linkElement = entry.querySelector('link');
-      const link = linkElement ? linkElement.getAttribute('href') : '';
-      return {
-        title: getText(entry, ['title']),
-        link: link || window.location.href, // Fallback link
-        pubDate: getText(entry, ['updated', 'published']),
-        author: getText(entry, ['author > name']),
-        thumbnailUrl: getAttribute(entry, ['media\\:thumbnail', 'thumbnail'], 'url'),
-      };
-    });
-    return { feedTitle, items };
-  } else {
-    // RSS Feed Parsing
-    const feedTitle = doc.querySelector('channel > title')?.textContent ?? 'Untitled Feed';
-    const entries = Array.from(doc.querySelectorAll('item'));
-    const items = entries.map(item => ({
-      title: getText(item, ['title']),
-      link: getText(item, ['link']),
-      pubDate: getText(item, ['pubDate', 'dc\\:date']),
-      author: getText(item, ['author', 'dc\\:creator']),
-      thumbnailUrl: getAttribute(item, ['enclosure', 'media\\:content', 'media\\:thumbnail'], 'url'),
-    }));
-    return { feedTitle, items };
-  }
+  // RSS Feed Parsing
+  const feedTitle = doc.querySelector('channel > title')?.textContent ?? 'Untitled Feed';
+  const entries = Array.from(doc.querySelectorAll('item'));
+  const items = entries.map(item => ({
+    title: getText(item, ['title']),
+    link: getText(item, ['link']),
+    pubDate: getText(item, ['pubDate', 'dc\\:date']),
+    author: getText(item, ['author', 'dc\\:creator']),
+    thumbnailUrl: getAttribute(item, ['enclosure', 'media\\:content', 'media\\:thumbnail'], 'url'),
+  }));
+  return { feedTitle, items };
 };
 
 
@@ -169,7 +149,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
 
   const renderContent = () => {
     if (isLoading) {
-      return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">Loading feeds...</p></div>;
+      return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">Loading news...</p></div>;
     }
     if (error && items.length === 0) {
         return <div className="flex-grow flex items-center justify-center text-center p-4 min-h-[200px]"><p className="text-red-400/80">{error}</p></div>
@@ -177,7 +157,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
     if (feedUrls.length === 0) {
         return (
             <div className="flex-grow flex flex-col items-center justify-center text-center min-h-[200px]">
-                <p className="text-white/70 mb-4">No feeds configured.</p>
+                <p className="text-white/70 mb-4">No RSS feeds configured.</p>
                 <button onClick={onOpenSettings} className="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-lg">
                     Configure Feeds
                 </button>
@@ -185,24 +165,21 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
         );
     }
     if (items.length === 0 && !error) {
-        return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">No feed items found.</p></div>
+        return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">No news items found.</p></div>
     }
     return (
-        <div className="flex overflow-x-auto space-x-4 pb-4 custom-scrollbar -mr-4 pr-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4 custom-scrollbar -mr-4 pr-4">
             {items.map((item, index) => (
             <a 
                 key={`${item.link}-${index}`}
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className="group block flex-shrink-0 w-72 bg-white/5 rounded-lg overflow-hidden border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)]"
+                className="group block flex-shrink-0 bg-white/5 rounded-lg overflow-hidden border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)]"
             >
                 {item.thumbnailUrl && (
                     <div className="relative">
                         <img src={item.thumbnailUrl} alt={item.title} className="w-full h-40 object-cover" />
-                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white/70 group-hover:text-white group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
                     </div>
                 )}
                 <div className="p-4 flex flex-col h-36 justify-between">
@@ -225,7 +202,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
   return (
     <div className={`bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-lg flex flex-col ${className || ''}`}>
       <div className="bg-gradient-to-r from-black/40 to-black/10 px-4 py-3 flex justify-between items-center flex-shrink-0">
-        <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">RSS &amp; YOUTUBE FEEDS</h3>
+        <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">NEWS & ARTICLES (RSS)</h3>
         <div className="flex items-center space-x-2">
             <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
                 {ICONS.Refresh}

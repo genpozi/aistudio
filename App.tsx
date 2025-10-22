@@ -7,9 +7,11 @@ import AICompanionModal from './components/AICompanionModal';
 import AICompanionWidget from './components/AICompanionWidget';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
 import Clock from './components/Clock';
+import CollapseAllWidget from './components/CollapseAllWidget';
 import CustomizeModal from './components/CustomizeModal';
 import Favicon from './components/Favicon';
 import FeedWidget from './components/FeedWidget';
+import FocusSessionOverlay from './components/FocusSessionOverlay';
 import GoogleBar from './components/GoogleBar';
 import Greeting from './components/Greeting';
 import OmniBar from './components/OmniBar';
@@ -19,10 +21,11 @@ import Quote from './components/Quote';
 import ResearchModal from './components/ResearchModal';
 import SearchWidget from './components/SearchWidget';
 import ServiceGroups from './components/ServiceGroups';
-import SettingsModal from './components/SettingsModal';
+import SettingsModal, { SettingsData } from './components/SettingsModal';
 import SettingsWidget from './components/SettingsWidget';
 import TodoWidget from './components/TodoWidget';
 import Weather from './components/Weather';
+import YouTubeWidget from './components/YouTubeWidget';
 import {
   BACKGROUND_IMAGES,
   getIcon,
@@ -36,6 +39,7 @@ import { TimeProvider } from './contexts/TimeContext';
 import useLocalStorage from './hooks/useLocalStorage';
 import type {
   ChatMessage,
+  FocusDuration,
   GroundingChunk,
   Link,
   ResearchBackend,
@@ -71,6 +75,9 @@ const defaultServiceGroups: ServiceGroup[] = [
   ...SERVICE_GROUPS,
 ];
 
+// A special identifier for the Links widget to be used in the collapsed state set.
+const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
+
 const App: React.FC = () => {
   // Local storage backed state
   const [name, setName] = useLocalStorage<string>(
@@ -89,9 +96,14 @@ const App: React.FC = () => {
     LOCAL_STORAGE_KEYS.USER_FEEDS,
     [],
   );
+  const [focus, setFocus] = useLocalStorage(LOCAL_STORAGE_KEYS.DAILY_FOCUS, '');
   const [focusPrompt, setFocusPrompt] = useLocalStorage<string>(
     LOCAL_STORAGE_KEYS.FOCUS_PROMPT,
     'What is your main goal for today?',
+  );
+   const [focusDuration, setFocusDuration] = useLocalStorage<FocusDuration>(
+    LOCAL_STORAGE_KEYS.FOCUS_SESSION_DURATION,
+    25
   );
   const [theme, setTheme] = useLocalStorage<string>(
     LOCAL_STORAGE_KEYS.USER_THEME,
@@ -120,6 +132,9 @@ const App: React.FC = () => {
     LOCAL_STORAGE_KEYS.CHAT_HISTORY,
     [],
   );
+  
+  // State for widget collapse, lifted up from ServiceGroups
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   // Modal visibility state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -140,8 +155,30 @@ const App: React.FC = () => {
   // AI Companion State
   const [isResponding, setIsResponding] = useState(false);
 
-  // Focus mode state
-  const [focusMode, setFocusMode] = useState(false);
+  // Focus Session state
+  const [isFocusSessionActive, setIsFocusSessionActive] = useState(false);
+  const [focusSessionEndTime, setFocusSessionEndTime] = useState<number | null>(null);
+
+
+  // Migrate and filter feeds
+  const { rssFeeds, youtubeFeeds } = useMemo(() => {
+    const migratedFeeds = feedUrls.map(feed => {
+        // This check provides a seamless, one-time migration for users with old data
+        if (!feed.type) {
+            return {
+                ...feed,
+                type: feed.url.includes('youtube.com') ? 'youtube' : 'rss'
+            };
+        }
+        return feed;
+    });
+
+    return {
+        rssFeeds: migratedFeeds.filter(f => f.type === 'rss'),
+        youtubeFeeds: migratedFeeds.filter(f => f.type === 'youtube'),
+    };
+  }, [feedUrls]);
+
 
   const ai = useMemo(() => {
     try {
@@ -224,6 +261,39 @@ const App: React.FC = () => {
   const openSettings = (tab = 'general') => {
     setSettingsInitialTab(tab);
     setIsSettingsOpen(true);
+  };
+
+  const handleStartFocus = () => {
+    setFocusSessionEndTime(Date.now() + focusDuration * 60 * 1000);
+    setIsFocusSessionActive(true);
+  };
+  
+  const handleEndFocus = () => {
+    setIsFocusSessionActive(false);
+    setFocusSessionEndTime(null);
+  };
+  
+  // --- Collapse All Logic ---
+  const allCategoryKeys = useMemo(() => 
+    [LINKS_WIDGET_CATEGORY_KEY, ...hydratedServiceGroups.map(g => g.category)],
+    [hydratedServiceGroups]
+  );
+
+  const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
+  
+  const handleCollapseAll = () => setCollapsedCategories(new Set(allCategoryKeys));
+  const handleExpandAll = () => setCollapsedCategories(new Set());
+
+  const toggleCategoryCollapse = (category: string) => {
+    setCollapsedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(category)) {
+        newSet.delete(category);
+      } else {
+        newSet.add(category);
+      }
+      return newSet;
+    });
   };
 
   const handleResearchSubmit = async (query: string) => {
@@ -332,10 +402,25 @@ const App: React.FC = () => {
     }));
     setStoredServiceGroups(stored);
   };
+  
+  const handleSettingsSave = (data: SettingsData) => {
+    setName(data.name);
+    setLocation(data.location);
+    setLinks(data.links);
+    setFeedUrls(data.feedUrls);
+    setFocusPrompt(data.focusPrompt);
+    setFocusDuration(data.focusDuration);
+    setTheme(data.theme);
+    setGeminiApiKey(data.geminiApiKey);
+    setResearchBackend(data.researchBackend);
+    setIsSettingsOpen(false);
+  };
 
   if (!hasOnboarded) {
     return <OnboardingModal onComplete={handleOnboardingComplete} />;
   }
+
+  const mainContentClass = `h-full w-full bg-black/40 backdrop-blur-sm flex flex-col p-4 md:p-8 overflow-y-auto custom-scrollbar transition-opacity duration-500 ${isFocusSessionActive ? 'opacity-0' : 'opacity-100'}`;
 
   return (
     <TimeProvider>
@@ -343,43 +428,59 @@ const App: React.FC = () => {
         className="h-screen w-screen bg-cover bg-center bg-no-repeat text-white transition-all duration-1000"
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
-        <div className="h-full w-full bg-black/40 backdrop-blur-sm flex flex-col p-4 md:p-8 overflow-y-auto custom-scrollbar">
+        <div className={mainContentClass}>
           <header className="flex justify-between items-start">
             <div className="flex items-center space-x-2">
               <GoogleBar />
               <PoziBar />
             </div>
-            <Weather location={location} />
+            <div className="flex items-center space-x-2">
+                <Weather location={location} />
+                <CollapseAllWidget
+                    areAllCollapsed={areAllCollapsed}
+                    onCollapseAll={handleCollapseAll}
+                    onExpandAll={handleExpandAll}
+                />
+            </div>
           </header>
 
-          <div className="flex-grow flex flex-col justify-center items-center text-center -mt-16 md:-mt-24">
+          <main className="flex-grow flex flex-col justify-center items-center text-center">
             <Clock />
-            <Greeting name={name} focusPrompt={focusPrompt} />
-          </div>
-
-          <div className="w-full max-w-4xl mx-auto mt-auto">
-            <SearchWidget
-              researchBackend={researchBackend}
-              onOpenSettings={() => openSettings('research')}
-              onResearchSubmit={handleResearchSubmit}
-            />
-          </div>
+            <Greeting name={name} focusPrompt={focusPrompt} onStartFocus={handleStartFocus} />
+            <div className="w-full max-w-4xl mx-auto mt-12">
+              <SearchWidget
+                researchBackend={researchBackend}
+                onOpenSettings={() => openSettings('research')}
+                onResearchSubmit={handleResearchSubmit}
+              />
+            </div>
+          </main>
 
           <div className="w-full max-w-7xl mx-auto mt-8">
             <ServiceGroups
               links={links}
               onOpenSettings={() => openSettings('links')}
-              focusMode={focusMode}
               serviceGroups={hydratedServiceGroups}
+              collapsedCategories={collapsedCategories}
+              onToggleCategory={toggleCategoryCollapse}
             />
           </div>
-
+          
           <div className="w-full max-w-7xl mx-auto mt-8">
             <FeedWidget
-                feedUrls={feedUrls}
+                feedUrls={rssFeeds}
                 onOpenSettings={() => openSettings('feeds')}
             />
           </div>
+          
+          {youtubeFeeds.length > 0 && (
+             <div className="w-full max-w-7xl mx-auto mt-8">
+                <YouTubeWidget
+                    feedUrls={youtubeFeeds}
+                    onOpenSettings={() => openSettings('feeds')}
+                />
+            </div>
+          )}
 
 
           <footer className="w-full flex justify-between items-end mt-8">
@@ -406,6 +507,15 @@ const App: React.FC = () => {
           </footer>
         </div>
       </div>
+      
+      {isFocusSessionActive && focusSessionEndTime && (
+        <FocusSessionOverlay
+          goal={focus}
+          endTime={focusSessionEndTime}
+          duration={focusDuration}
+          onEnd={handleEndFocus}
+        />
+      )}
 
       <OmniBar
         isOpen={isOmniBarOpen}
@@ -417,26 +527,22 @@ const App: React.FC = () => {
         <SettingsModal
           initialTab={settingsInitialTab}
           onClose={() => setIsSettingsOpen(false)}
+          onSave={handleSettingsSave}
           onOpenCustomizeModal={() => {
             setIsSettingsOpen(false);
             setIsCustomizeModalOpen(true);
           }}
-          name={name}
-          setName={setName}
-          location={location}
-          setLocation={setLocation}
-          links={links}
-          setLinks={setLinks}
-          feedUrls={feedUrls}
-          setFeedUrls={setFeedUrls}
-          focusPrompt={focusPrompt}
-          setFocusPrompt={setFocusPrompt}
-          theme={theme}
-          setTheme={setTheme}
-          geminiApiKey={geminiApiKey}
-          setGeminiApiKey={setGeminiApiKey}
-          researchBackend={researchBackend}
-          setResearchBackend={setResearchBackend}
+          currentSettings={{
+              name,
+              location,
+              links,
+              feedUrls,
+              focusPrompt,
+              focusDuration,
+              theme,
+              geminiApiKey,
+              researchBackend
+          }}
         />
       )}
       <ResearchModal

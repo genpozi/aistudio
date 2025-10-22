@@ -1,5 +1,6 @@
-// FIX: Standardized the React import to use named imports for Component, ReactNode, and ErrorInfo to resolve component inheritance issues in the ErrorBoundary.
-import React, { Component, ReactNode, ErrorInfo } from 'react';
+// FIX: Explicitly use React.Component to ensure the ErrorBoundary class correctly extends it, resolving type errors where 'setState' and 'props' were not found. The React import has been updated to be consistent with the rest of the project.
+import React from 'react';
+import type { ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { LOCAL_STORAGE_KEYS, SCHEMA_VERSION } from './constants';
@@ -73,12 +74,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: Standardized React import and types for ErrorBoundary.
-// Using `React.Component` with explicit props and state types, along with
-// class property syntax for state and arrow functions for methods,
-// provides the most stable and modern approach for this environment.
-// FIX: Changed `extends Component` to `extends React.Component` to correctly establish inheritance.
-// This resolves errors where `this.setState` and `this.props` were not found on the ErrorBoundary instance.
+// FIX: Explicitly extend React.Component to ensure the ErrorBoundary class has access to 'setState' and 'props'.
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
 
