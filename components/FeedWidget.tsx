@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { ICONS, CORS_PROXY_URL } from '../constants';
 import type { FeedItem, UserFeed } from '../types';
@@ -13,6 +11,17 @@ const getText = (element: Element, selectors: string[]): string => {
   return '';
 };
 
+// Gets an attribute from an element, trying multiple selectors.
+const getAttribute = (element: Element, selectors: string[], attribute: string): string => {
+    for (const selector of selectors) {
+        const selectedElement = element.querySelector(selector);
+        if (selectedElement && selectedElement.hasAttribute(attribute)) {
+            return selectedElement.getAttribute(attribute) || '';
+        }
+    }
+    return '';
+}
+
 // Parses an XML string into a structured feed object.
 const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem, 'source'>[] } => {
   const parser = new DOMParser();
@@ -25,7 +34,7 @@ const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem
   const isAtom = doc.querySelector('feed') !== null;
   
   if (isAtom) {
-    // Atom Feed Parsing
+    // Atom Feed Parsing (includes YouTube)
     const feedTitle = doc.querySelector('feed > title')?.textContent ?? 'Untitled Feed';
     const entries = Array.from(doc.querySelectorAll('entry'));
     const items = entries.map(entry => {
@@ -36,11 +45,12 @@ const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem
         link: link || window.location.href, // Fallback link
         pubDate: getText(entry, ['updated', 'published']),
         author: getText(entry, ['author > name']),
+        thumbnailUrl: getAttribute(entry, ['media\\:thumbnail', 'thumbnail'], 'url'),
       };
     });
     return { feedTitle, items };
   } else {
-    // RSS Feed Parsing (and other similar formats)
+    // RSS Feed Parsing
     const feedTitle = doc.querySelector('channel > title')?.textContent ?? 'Untitled Feed';
     const entries = Array.from(doc.querySelectorAll('item'));
     const items = entries.map(item => ({
@@ -48,6 +58,7 @@ const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem
       link: getText(item, ['link']),
       pubDate: getText(item, ['pubDate', 'dc\\:date']),
       author: getText(item, ['author', 'dc\\:creator']),
+      thumbnailUrl: getAttribute(item, ['enclosure', 'media\\:content', 'media\\:thumbnail'], 'url'),
     }));
     return { feedTitle, items };
   }
@@ -85,11 +96,9 @@ interface FeedWidgetProps {
   className?: string;
   feedUrls: UserFeed[];
   onOpenSettings: () => void;
-  isCollapsed?: boolean;
-  onToggle?: () => void;
 }
 
-const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSettings, isCollapsed = false, onToggle }) => {
+const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSettings }) => {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -160,14 +169,14 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
 
   const renderContent = () => {
     if (isLoading) {
-      return <div className="flex-grow flex items-center justify-center"><p className="text-white/70">Loading feeds...</p></div>;
+      return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">Loading feeds...</p></div>;
     }
     if (error && items.length === 0) {
-        return <div className="flex-grow flex items-center justify-center text-center p-4"><p className="text-red-400/80">{error}</p></div>
+        return <div className="flex-grow flex items-center justify-center text-center p-4 min-h-[200px]"><p className="text-red-400/80">{error}</p></div>
     }
     if (feedUrls.length === 0) {
         return (
-            <div className="flex-grow flex flex-col items-center justify-center text-center">
+            <div className="flex-grow flex flex-col items-center justify-center text-center min-h-[200px]">
                 <p className="text-white/70 mb-4">No feeds configured.</p>
                 <button onClick={onOpenSettings} className="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-lg">
                     Configure Feeds
@@ -176,56 +185,54 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
         );
     }
     if (items.length === 0 && !error) {
-        return <div className="flex-grow flex items-center justify-center"><p className="text-white/70">No feed items found.</p></div>
+        return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">No feed items found.</p></div>
     }
     return (
-        <ul className="overflow-y-auto flex-grow custom-scrollbar -mr-2 pr-2">
+        <div className="flex overflow-x-auto space-x-4 pb-4 custom-scrollbar -mr-4 pr-4">
             {items.map((item, index) => (
-            <li key={`${item.link}-${index}`} className="border-b border-white/10 last:border-b-0">
-                <a 
+            <a 
+                key={`${item.link}-${index}`}
                 href={item.link} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className={`group block p-3 transition-colors rounded-lg hover:bg-white/10 ${index % 2 !== 0 ? 'bg-white/5' : ''}`}
-                >
-                <div className="flex justify-between items-center text-xs text-white/70 mb-2">
-                    <span className="bg-white/10 px-2 py-1 rounded-full font-semibold truncate max-w-[60%]">{item.source}</span>
-                    <span>{timeSince(item.pubDate)}</span>
+                className="group block flex-shrink-0 w-72 bg-white/5 rounded-lg overflow-hidden border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)]"
+            >
+                {item.thumbnailUrl && (
+                    <div className="relative">
+                        <img src={item.thumbnailUrl} alt={item.title} className="w-full h-40 object-cover" />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white/70 group-hover:text-white group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                )}
+                <div className="p-4 flex flex-col h-36 justify-between">
+                    <div>
+                      <p className="text-white font-semibold text-base leading-tight group-hover:text-[var(--text-highlight)] transition-colors three-line-clamp">
+                          {item.title}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center text-xs text-white/70 mt-2">
+                        <span className="bg-white/10 px-2 py-1 rounded-full font-semibold truncate max-w-[60%]">{item.source}</span>
+                        <span>{timeSince(item.pubDate)}</span>
+                    </div>
                 </div>
-                <p className="text-white font-semibold text-base leading-tight group-hover:text-[var(--text-highlight)] transition-colors flex items-start justify-between">
-                    <span className="pr-2">{item.title}</span>
-                    <span className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 pt-1">
-                    {ICONS.ExternalLink}
-                    </span>
-                </p>
-                </a>
-            </li>
+            </a>
             ))}
-        </ul>
+        </div>
     );
   };
 
   return (
-    <div className={`bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-lg flex flex-col overflow-hidden transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-14' : 'max-h-[36rem]'} ${className || ''}`}>
+    <div className={`bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-lg flex flex-col ${className || ''}`}>
       <div className="bg-gradient-to-r from-black/40 to-black/10 px-4 py-3 flex justify-between items-center flex-shrink-0">
         <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">RSS &amp; YOUTUBE FEEDS</h3>
         <div className="flex items-center space-x-2">
             <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
                 {ICONS.Refresh}
             </button>
-            <button 
-                onClick={onToggle} 
-                className="text-white/60 hover:text-white transition-colors"
-                aria-expanded={!isCollapsed}
-                aria-label={isCollapsed ? "Expand feed widget" : "Collapse feed widget"}
-            >
-                <div className={`transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
-                    {ICONS.ChevronUp}
-                </div>
-            </button>
         </div>
       </div>
-      <div className="px-4 pb-4 pt-3 flex-grow flex flex-col min-h-0">
+      <div className="px-4 pb-0 pt-3 flex-grow flex flex-col min-h-0">
         {error && items.length > 0 && <p className="text-sm text-red-400/80 mb-2">{error}</p>}
         {renderContent()}
       </div>

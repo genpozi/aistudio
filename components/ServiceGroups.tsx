@@ -1,4 +1,4 @@
-import React, { useState, PropsWithChildren, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ICONS } from '../constants';
 import type { ServiceGroup, Link } from '../types';
 import LinksWidget from './LinksWidget';
@@ -71,7 +71,7 @@ const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, on
   </div>
 );
 
-interface ServiceGroupsProps extends PropsWithChildren {
+interface ServiceGroupsProps {
     links: Link[];
     onOpenSettings: () => void;
     focusMode: boolean;
@@ -81,16 +81,14 @@ interface ServiceGroupsProps extends PropsWithChildren {
 /**
  * The main component that lays out all the service group cards in a responsive, fluid, masonry-style layout.
  */
-const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, children, focusMode, serviceGroups }) => {
+const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, focusMode, serviceGroups }) => {
     const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
     const [isLinksCollapsed, setIsLinksCollapsed] = useState(false);
-    const [isFeedCollapsed, setIsFeedCollapsed] = useState(false);
-
+    
     const hasInProductionServices = serviceGroups.some(group => group.services.some(service => service.inProduction));
 
     useEffect(() => {
         setIsLinksCollapsed(focusMode);
-        setIsFeedCollapsed(focusMode);
         if (focusMode) {
             const allGroupCategories = new Set(serviceGroups.map(g => g.category));
             setCollapsedGroups(allGroupCategories);
@@ -138,15 +136,6 @@ const ServiceGroups: React.FC<ServiceGroupsProps> = ({ links, onOpenSettings, ch
                         />
                     </div>
                 ))}
-                {children && React.isValidElement(children) && (
-                    <div className="break-inside-avoid mb-6">
-                       {/* FIX: Added a check for `React.isValidElement` to make this component more robust against invalid children. */}
-                       {React.cloneElement(children as React.ReactElement<{ isCollapsed?: boolean; onToggle?: () => void; }>, { 
-                           isCollapsed: isFeedCollapsed, 
-                           onToggle: () => setIsFeedCollapsed(p => !p) 
-                        })}
-                    </div>
-                )}
             </div>
             {hasInProductionServices && (
                 <div className="mt-4 text-left text-sm text-white/70 italic">

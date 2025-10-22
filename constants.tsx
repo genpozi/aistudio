@@ -1,6 +1,8 @@
 import React from 'react';
 import type { Service, ServiceGroup, Theme } from './types';
 
+export const SCHEMA_VERSION = 2;
+
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
     Sparkles: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.456-2.456L12.75 18l1.197-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.197a3.375 3.375 0 002.456 2.456L20.25 18l-1.197.398a3.375 3.375 0 00-2.456 2.456z" /></svg>,
@@ -16,9 +18,11 @@ export const ICONS = {
     Refresh: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0120.5 19.5L20 20" /></svg>,
     Search: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
     Settings: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-    Plus: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>,
+    // FIX: Corrected a typo in the `strokeWidth` attribute for the 'Plus' icon SVG.
+    Plus: <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
     ChevronUp: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>,
     Brain: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3c0-1.657-2.015-3-4.5-3s-4.5 1.343-4.5 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12c0-1.657-2.015-3-4.5-3S5 10.343 5 12v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V15c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12h-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12H3" /></svg>,
+    ChatBubble: <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.455.09-.934.09-1.425 0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /><path strokeLinecap="round" strokeLinejoin="round" d="M3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25" /></svg>,
     GOOGLE: {
         Logo: <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>,
         Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z M6.83 8.8L12 17.75 17.17 8.8 12 0z"/></svg>,
@@ -49,6 +53,22 @@ export const ICONS = {
     }
 };
 
+/**
+ * Resolves an icon component from a string key (e.g., 'Globe', 'GOOGLE.Gemini').
+ * This is crucial for rehydrating icons from localStorage.
+ * @param iconKey The string identifier for the icon.
+ * @returns A ReactNode representing the icon, or a fallback Globe icon.
+ */
+export const getIcon = (iconKey: string): React.ReactNode => {
+    const parts = iconKey.split('.');
+    let current: any = ICONS;
+    for (const part of parts) {
+        if (current?.[part] === undefined) return ICONS.Globe; // Fallback for invalid keys
+        current = current[part];
+    }
+    return React.isValidElement(current) ? current : ICONS.Globe; // Final fallback if path is valid but not an element
+};
+
 export const CORS_PROXY_URL = 'https://corsproxy.io/?';
 
 export const LOCAL_STORAGE_KEYS = {
@@ -64,6 +84,8 @@ export const LOCAL_STORAGE_KEYS = {
     RESEARCH_BACKEND: 'researchBackend',
     HAS_ONBOARDED: 'hasOnboarded',
     USER_SERVICE_GROUPS: 'userServiceGroups',
+    DATA_SCHEMA_VERSION: 'dataSchemaVersion',
+    CHAT_HISTORY: 'chatHistory',
 };
 
 export const THEMES: Theme[] = [
@@ -88,75 +110,76 @@ export const THEMES: Theme[] = [
 ];
 
 export const GOOGLE_SERVICES: Service[] = [
-    { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.GOOGLE.Gemini },
-    { name: "Google AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles },
-    { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Document },
-    { name: "Gmail", url: "https://mail.google.com", icon: ICONS.GOOGLE.Gmail },
-    { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.GOOGLE.Calendar },
-    { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.GOOGLE.Drive },
-    { name: "Keep", url: "https://keep.google.com", icon: ICONS.GOOGLE.Keep },
+    { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.GOOGLE.Gemini, iconKey: "GOOGLE.Gemini" },
+    { name: "Google AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+    { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Document, iconKey: "Document" },
+    { name: "Gmail", url: "https://mail.google.com", icon: ICONS.GOOGLE.Gmail, iconKey: "GOOGLE.Gmail" },
+    { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.GOOGLE.Calendar, iconKey: "GOOGLE.Calendar" },
+    { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.GOOGLE.Drive, iconKey: "GOOGLE.Drive" },
+    { name: "Keep", url: "https://keep.google.com", icon: ICONS.GOOGLE.Keep, iconKey: "GOOGLE.Keep" },
 ];
 
 export const POZI_SERVICES: Service[] = [
-    { name: "POZI.ME", url: "https://www.pozi.me", icon: ICONS.Globe },
-    { name: "POZI.SERVICES", url: "https://www.pozi.services", icon: ICONS.Document },
-    { name: "WORKSPACES", url: "https://spaces.stanz.info", icon: ICONS.Briefcase },
-    { name: "POZICLOUD", url: "https://c.stanz.app/apps/dashboard/", icon: ICONS.Cloud },
-    { name: "POZICASA", url: "https://dash.stanz.info/#/", icon: ICONS.Lock },
-    { name: "HOARDER", url: "https://keep.pozi.life/signin", icon: ICONS.Briefcase },
-    { name: "POZIVERSE JUMP", url: "https://link.pozi.agency/", icon: ICONS.Globe },
-    { name: "POZI OPENWEB AI", url: "https://ai.pozi.plus/", icon: ICONS.Sparkles },
-    { name: "VAULTWARDEN", url: "https://vault.pozi.plus/", icon: ICONS.Lock },
+    { name: "POZI.ME", url: "https://www.pozi.me", icon: ICONS.Globe, iconKey: "Globe" },
+    { name: "POZI.SERVICES", url: "https://www.pozi.services", icon: ICONS.Document, iconKey: "Document" },
+    { name: "WORKSPACES", url: "https://spaces.stanz.info", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "POZICLOUD", url: "https://c.stanz.app/apps/dashboard/", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "POZICASA", url: "https://dash.stanz.info/#/", icon: ICONS.Lock, iconKey: "Lock" },
+    { name: "HOARDER", url: "https://keep.pozi.life/signin", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "POZIVERSE JUMP", url: "https://link.pozi.agency/", icon: ICONS.Globe, iconKey: "Globe" },
+    { name: "POZI OPENWEB AI", url: "https://ai.pozi.plus/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+    { name: "VAULTWARDEN", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
 ];
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "AI TOOLS",
     services: [
-      { name: "PERPLEXITY RESEARCH", url: "https://www.perplexity.ai/", icon: ICONS.Sparkles },
-      { name: "BLINK CREATIVE PROJECTS", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles },
-      { name: "AFFINE CREATIVE PROJECTS", url: "https://affine.pozi.agency", icon: ICONS.Sparkles },
-      { name: "POZI AI STUDIO AI-OPEN", url: "https://ai.pozi.plus", icon: ICONS.Sparkles },
+      { name: "PERPLEXITY RESEARCH", url: "https://www.perplexity.ai/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+      { name: "BLINK CREATIVE PROJECTS", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+      { name: "AFFINE CREATIVE PROJECTS", url: "https://affine.pozi.agency", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+      { name: "POZI AI STUDIO AI-OPEN", url: "https://ai.pozi.plus", icon: ICONS.Sparkles, iconKey: "Sparkles" },
     ],
   },
   {
     category: "SOCIAL & TOOLS",
     services: [
-      { name: "SIMPLE LINKS TOOL", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe },
-      { name: "SPOTIFY MUSIC", url: "https://spotify.com", icon: ICONS.User },
-      { name: "REDDIT INFO", url: "https://reddit.com", icon: ICONS.Globe },
-      { name: "KIWIX SERVER INFO", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase },
-      { name: "PDF TOOLS", url: "https://pdf.stanz.app", icon: ICONS.Document },
+      { name: "SIMPLE LINKS TOOL", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe, iconKey: "Globe" },
+      { name: "SPOTIFY MUSIC", url: "https://spotify.com", icon: ICONS.User, iconKey: "User" },
+      { name: "REDDIT INFO", url: "https://reddit.com", icon: ICONS.Globe, iconKey: "Globe" },
+      { name: "KIWIX SERVER INFO", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+      { name: "PDF TOOLS", url: "https://pdf.stanz.app", icon: ICONS.Document, iconKey: "Document" },
     ],
   },
   {
     category: "IN PROGRESS",
     services: [
-      { name: "JAAZ CANVA AI", url: "https://8000--0199e4d7-fc95-7a8c-9647-8c615d5797aa.us-east-1-01.gitpod.dev/", icon: ICONS.Sparkles, inProduction: true },
-      { name: "MILES MUSIC TABS", url: "https://47777--0199e32c-3ad7-7553-997b-2393edb8f772.us-east-1-01.gitpod.dev/", icon: ICONS.Globe, inProduction: true },
-      { name: "POZIPEDIA POZIPLEXITY", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, inProduction: true },
-      { name: "PAPERLESS DOCUMENT AI", url: "https://paperless.stanz.app", icon: ICONS.Document },
+      { name: "JAAZ CANVA AI", url: "https://8000--0199e4d7-fc95-7a8c-9647-8c615d5797aa.us-east-1-01.gitpod.dev/", icon: ICONS.Sparkles, iconKey: "Sparkles", inProduction: true },
+      { name: "MILES MUSIC TABS", url: "https://47777--0199e32c-3ad7-7553-997b-2393edb8f772.us-east-1-01.gitpod.dev/", icon: ICONS.Globe, iconKey: "Globe", inProduction: true },
+      { name: "POZIPLEXITY ANSWERS", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, iconKey: "Document", inProduction: true },
+      { name: "POZIPEDIA RESEARCH", url: "https://8501--0199d6f6-7bbe-7c39-ae2d-664f1939da23.us-east-1-01.gitpod.dev/", icon: ICONS.Sparkles, iconKey: "Sparkles", inProduction: true },
+      { name: "PAPERLESS DOCUMENT AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
     ],
   },
   {
     category: "WORK",
     services: [
-      { name: "NEXTCLOUD OPEN", url: "https://cloud.pozi.plus", icon: ICONS.Cloud },
-      { name: "CLOUDCASA PRIVATE", url: "https://cloud.pozi.me", icon: ICONS.Cloud },
-      { name: "COLANODE SERVER", url: "https://cola.pozi.work", icon: ICONS.Code },
-      { name: "VIKUNJA TODO", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare },
-      { name: "HULY PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase },
-      { name: "POZ-IMMICH PHOTOS", url: "https://photos.stanz.app", icon: ICONS.Cloud },
+      { name: "NEXTCLOUD OPEN", url: "https://cloud.pozi.plus", icon: ICONS.Cloud, iconKey: "Cloud" },
+      { name: "CLOUDCASA PRIVATE", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
+      { name: "COLANODE SERVER", url: "https://cola.pozi.work", icon: ICONS.Code, iconKey: "Code" },
+      { name: "VIKUNJA TODO", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
+      { name: "HULY PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+      { name: "POZ-IMMICH PHOTOS", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
     ],
   },
   {
     category: "LIFE",
     services: [
-      { name: "GLANCE DASH", url: "https://glance.pozi.plus", icon: ICONS.Globe, inProduction: true },
-      { name: "HEIMDELL DASH*", url: "https://dash.stanz.app", icon: ICONS.Globe },
-      { name: "VAULTWARDEN PASSWORDS", url: "https://vault.pozi.plus", icon: ICONS.Lock },
-      { name: "WORKSPACES KASM", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase },
-      { name: "KARAKEEP HOARDER", url: "https://keep.pozi.life", icon: ICONS.Briefcase },
+      { name: "GLANCE DASH", url: "https://glance.pozi.plus", icon: ICONS.Globe, iconKey: "Globe", inProduction: true },
+      { name: "HEIMDELL DASH*", url: "https://dash.stanz.app", icon: ICONS.Globe, iconKey: "Globe" },
+      { name: "VAULTWARDEN PASSWORDS", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
+      { name: "WORKSPACES KASM", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+      { name: "KARAKEEP HOARDER", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
     ],
   },
 ];

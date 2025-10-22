@@ -26,24 +26,46 @@ export interface FeedItem {
   pubDate: string;
   author: string;
   source: string; // Manually added from the feed's main title
+  thumbnailUrl?: string;
 }
 
 export type IconKey = keyof typeof ICONS;
 // FIX: Create a new type for icon keys that are not nested objects, to be used in the icon selector.
 export type FlatIconKey = Exclude<IconKey, 'GOOGLE' | 'POZI'>;
 
-export interface Service {
+// The data structure that is safe to store in localStorage.
+// It uses a string `iconKey` instead of a ReactNode.
+export interface StoredService {
   name: string;
-  url: string;
-  icon: React.ReactNode;
-  iconKey?: IconKey; // Store the key for editing purposes
-  // FIX: Added 'inProduction' as an optional property to the Service interface to support marking services as in-production.
+  url:string;
+  iconKey: string;
   inProduction?: boolean;
 }
 
+// The runtime data structure, with the 'icon' ReactNode rehydrated.
+export interface Service extends StoredService {
+  icon: React.ReactNode;
+}
+
+// The stored group structure.
+export interface StoredServiceGroup {
+    category: string;
+    services: StoredService[];
+}
+
+// The runtime group structure.
 export interface ServiceGroup {
   category: string;
   services: Service[];
+}
+
+// Unified type for all items searchable in the OmniBar
+export interface SearchableItem {
+  type: 'service' | 'link';
+  name: string;
+  url: string;
+  icon: React.ReactNode;
+  category?: string; // for services
 }
 
 export interface WeatherInfo {
@@ -73,4 +95,9 @@ export interface GroundingChunk {
     uri: string;
     title: string;
   };
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
 }

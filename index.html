@@ -28,6 +28,7 @@
   /* Custom scrollbar for Webkit browsers */
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
@@ -54,6 +55,33 @@
   }
   .animate-add-todo {
     animation: fadeInAndScale 0.3s ease-out forwards;
+  }
+
+  /* Drag and drop styles */
+  .dragging {
+      opacity: 0.5;
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 2px dashed var(--color-border-hover);
+  }
+  .drop-indicator-before::before {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 10px;
+      right: 10px;
+      height: 4px;
+      background-color: var(--text-highlight);
+      border-radius: 2px;
+  }
+  .drop-indicator-after::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 10px;
+      right: 10px;
+      height: 4px;
+      background-color: var(--text-highlight);
+      border-radius: 2px;
   }
 
   /* --- THEME DEFINITIONS --- */

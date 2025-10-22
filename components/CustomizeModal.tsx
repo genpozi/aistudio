@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-// FIX: Import the new FlatIconKey type for safer icon selection.
-import type { ServiceGroup, Service, IconKey, FlatIconKey } from '../types';
-import { ICONS, SERVICE_GROUPS } from '../constants';
+import type { ServiceGroup, Service } from '../types';
+import { ICONS, SERVICE_GROUPS, getIcon } from '../constants';
 
 interface CustomizeModalProps {
     isOpen: boolean;
@@ -10,12 +9,25 @@ interface CustomizeModalProps {
     onSave: (newGroups: ServiceGroup[]) => void;
 }
 
-// FIX: Use a type predicate to correctly type the filtered icon keys, ensuring only valid ReactNodes are used.
-const iconOptions = Object.keys(ICONS).filter(
-    (key): key is FlatIconKey => key !== 'GOOGLE' && key !== 'POZI'
-);
+// Recursively builds a flat list of all available icons with their string keys.
+const getIconOptions = (obj: Record<string, any>, prefix = ''): { key: string; icon: React.ReactNode }[] => {
+    return Object.keys(obj).flatMap(key => {
+        const value = obj[key];
+        const newKey = prefix ? `${prefix}.${key}` : key;
+        if (React.isValidElement(value)) {
+            return [{ key: newKey, icon: value }];
+        }
+        if (typeof value === 'object' && value !== null && !React.isValidElement(value)) {
+            return getIconOptions(value, newKey);
+        }
+        return [];
+    });
+};
 
-const IconSelector: React.FC<{ selected: React.ReactNode; onSelect: (icon: React.ReactNode) => void; }> = ({ selected, onSelect }) => {
+const iconOptions = getIconOptions(ICONS);
+
+
+const IconSelector: React.FC<{ selected: React.ReactNode; onSelect: (iconKey: string) => void; }> = ({ selected, onSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
         <div className="relative">
@@ -23,15 +35,16 @@ const IconSelector: React.FC<{ selected: React.ReactNode; onSelect: (icon: React
                 <div className="w-5 h-5">{selected}</div>
             </button>
             {isOpen && (
-                <div className="absolute z-10 bottom-full mb-2 left-0 grid grid-cols-6 gap-1 bg-black/80 backdrop-blur-md border border-white/20 rounded p-2 max-h-48 overflow-y-auto custom-scrollbar">
-                    {iconOptions.map(key => (
+                <div className="absolute z-10 bottom-full mb-2 left-0 grid grid-cols-8 gap-1 bg-black/80 backdrop-blur-md border border-white/20 rounded p-2 max-h-48 overflow-y-auto custom-scrollbar">
+                    {iconOptions.map(({ key, icon }) => (
                         <button
                             key={key}
                             type="button"
-                            onClick={() => { onSelect(ICONS[key]); setIsOpen(false); }}
+                            onClick={() => { onSelect(key); setIsOpen(false); }}
                             className="p-1 rounded hover:bg-white/20"
+                            title={key}
                         >
-                           <div className="w-5 h-5">{ICONS[key]}</div>
+                           <div className="w-5 h-5">{icon}</div>
                         </button>
                     ))}
                 </div>
@@ -43,11 +56,15 @@ const IconSelector: React.FC<{ selected: React.ReactNode; onSelect: (icon: React
 const CustomizeModal: React.FC<CustomizeModalProps> = ({ isOpen, onClose, currentGroups, onSave }) => {
     const [groups, setGroups] = useState<ServiceGroup[]>(JSON.parse(JSON.stringify(currentGroups)));
     const [newServiceForms, setNewServiceForms] = useState<Record<string, {name: string, url: string}>>({});
+    
+    // --- Drag and Drop State ---
+    const [draggedItem, setDraggedItem] = useState<{ groupIndex: number; serviceIndex?: number } | null>(null);
+    const [dragOverItem, setDragOverItem] = useState<{ groupIndex: number; serviceIndex?: number; position?: 'before' | 'after' } | null>(null);
+
 
     if (!isOpen) return null;
 
     const handleSave = () => {
-        // Filter out any empty services that might have been added
         const cleanedGroups = groups.map(group => ({
             ...group,
             services: group.services.filter(service => service.name.trim() && service.url.trim()),
@@ -71,10 +88,6 @@ const CustomizeModal: React.FC<CustomizeModalProps> = ({ isOpen, onClose, curren
         }
     };
 
-    const updateCategoryName = (oldName: string, newName: string) => {
-        setGroups(groups.map(g => g.category === oldName ? { ...g, category: newName.trim() } : g));
-    };
-
     const deleteCategory = (categoryName: string) => {
         if (window.confirm(`Are you sure you want to delete the "${categoryName}" category and all its links?`)) {
             setGroups(groups.filter(g => g.category !== categoryName));
@@ -83,25 +96,16 @@ const CustomizeModal: React.FC<CustomizeModalProps> = ({ isOpen, onClose, curren
     
     const addService = (categoryName: string) => {
         const formState = newServiceForms[categoryName];
-        if (!formState || !formState.name.trim() || !formState.url.trim()) {
-            alert("Please provide a name and a URL for the new link.");
-            return;
-        }
-
+        if (!formState || !formState.name.trim() || !formState.url.trim()) return;
         try {
             const url = formState.url;
             new URL(url.startsWith('http') ? url : `https://${url}`);
-            const newService: Service = { name: formState.name, url, icon: ICONS.Globe };
-
-            setGroups(groups.map(g => 
-                g.category === categoryName 
-                ? { ...g, services: [...g.services, newService] }
-                : g
-            ));
-            // Reset form
+            const defaultIconKey = 'Globe';
+            const newService: Service = { name: formState.name, url, icon: getIcon(defaultIconKey), iconKey: defaultIconKey };
+            setGroups(groups.map(g => g.category === categoryName ? { ...g, services: [...g.services, newService] } : g));
             setNewServiceForms({...newServiceForms, [categoryName]: { name: '', url: '' }});
         } catch (e) {
-            alert("Invalid URL provided. Please enter a full, valid URL (e.g., https://google.com)");
+            alert("Invalid URL provided.");
         }
     };
     
@@ -117,25 +121,70 @@ const CustomizeModal: React.FC<CustomizeModalProps> = ({ isOpen, onClose, curren
     };
 
     const deleteService = (categoryName: string, serviceIndex: number) => {
-        setGroups(groups.map(g => {
-            if (g.category === categoryName) {
-                const updatedServices = g.services.filter((_, i) => i !== serviceIndex);
-                return { ...g, services: updatedServices };
-            }
-            return g;
-        }));
+        setGroups(groups.map(g => g.category === categoryName ? { ...g, services: g.services.filter((_, i) => i !== serviceIndex) } : g));
     };
     
     const handleNewServiceFormChange = (categoryName: string, field: 'name' | 'url', value: string) => {
-        setNewServiceForms(prev => ({
-            ...prev,
-            [categoryName]: {
-                ...prev[categoryName],
-                [field]: value
-            }
-        }));
+        setNewServiceForms(prev => ({ ...prev, [categoryName]: { ...prev[categoryName], [field]: value } }));
     };
 
+    // --- Drag and Drop Handlers ---
+    const handleDragStart = (e: React.DragEvent, groupIndex: number, serviceIndex?: number) => {
+        e.dataTransfer.setData('text/plain', ''); // Necessary for Firefox
+        e.dataTransfer.effectAllowed = 'move';
+        setDraggedItem({ groupIndex, serviceIndex });
+    };
+
+    const handleDragOver = (e: React.DragEvent, groupIndex: number, serviceIndex?: number) => {
+        e.preventDefault();
+        if (!draggedItem) return;
+
+        const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+        const midpoint = rect.top + rect.height / 2;
+        const position = e.clientY < midpoint ? 'before' : 'after';
+
+        if (draggedItem.serviceIndex === undefined) { // Dragging a category
+             if (draggedItem.groupIndex !== groupIndex) {
+                setDragOverItem({ groupIndex, position });
+            }
+        } else { // Dragging a service
+            setDragOverItem({ groupIndex, serviceIndex, position });
+        }
+    };
+
+    const handleDrop = (e: React.DragEvent, targetGroupIndex: number, targetServiceIndex?: number) => {
+        e.preventDefault();
+        if (!draggedItem || !dragOverItem) return;
+
+        const newGroups = [...groups];
+
+        if (draggedItem.serviceIndex === undefined) { // Dropping a category
+            const [draggedGroup] = newGroups.splice(draggedItem.groupIndex, 1);
+            const dropIndex = dragOverItem.position === 'before' ? targetGroupIndex : targetGroupIndex + 1;
+            const finalIndex = dropIndex > draggedItem.groupIndex ? dropIndex - 1 : dropIndex;
+            newGroups.splice(finalIndex, 0, draggedGroup);
+        } else { // Dropping a service
+            const sourceGroup = newGroups[draggedItem.groupIndex];
+            const [draggedService] = sourceGroup.services.splice(draggedItem.serviceIndex, 1);
+            
+            const targetGroup = newGroups[targetGroupIndex];
+            const dropIndex = targetServiceIndex !== undefined ? (dragOverItem.position === 'before' ? targetServiceIndex : targetServiceIndex + 1) : targetGroup.services.length;
+            
+            if (draggedItem.groupIndex === targetGroupIndex && dropIndex > draggedItem.serviceIndex) {
+                 targetGroup.services.splice(dropIndex - 1, 0, draggedService);
+            } else {
+                 targetGroup.services.splice(dropIndex, 0, draggedService);
+            }
+        }
+        setGroups(newGroups);
+        setDraggedItem(null);
+        setDragOverItem(null);
+    };
+
+    const handleDragEnd = () => {
+        setDraggedItem(null);
+        setDragOverItem(null);
+    };
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
@@ -145,78 +194,73 @@ const CustomizeModal: React.FC<CustomizeModalProps> = ({ isOpen, onClose, curren
                     <button onClick={onClose} className="text-white/60 hover:text-white text-3xl leading-none">&times;</button>
                 </header>
 
-                <div className="p-6 overflow-y-auto custom-scrollbar flex-grow space-y-6">
-                    {groups.map((group) => (
-                        <div key={group.category} className="bg-white/5 border border-white/10 rounded-lg p-4">
-                            <div className="flex justify-between items-center mb-4">
-                                <input
-                                    type="text"
-                                    value={group.category}
-                                    onBlur={(e) => updateCategoryName(group.category, e.target.value)}
-                                    onChange={(e) => setGroups(groups.map(g => g.category === group.category ? {...g, category: e.target.value} : g))}
-                                    className="text-xl font-bold uppercase tracking-wider bg-transparent border-b-2 border-transparent focus:border-[var(--text-highlight)] focus:outline-none transition"
-                                />
-                                <button onClick={() => deleteCategory(group.category)} className="text-red-400 hover:text-red-300">
-                                    <div className="w-5 h-5">{ICONS.Trash}</div>
-                                </button>
+                <div className="p-6 overflow-y-auto custom-scrollbar flex-grow space-y-6" onDragOver={e => e.preventDefault()}>
+                    {groups.map((group, groupIndex) => {
+                        const isDraggingCategory = draggedItem?.groupIndex === groupIndex && draggedItem.serviceIndex === undefined;
+                        const isDragOverCategory = dragOverItem?.groupIndex === groupIndex && dragOverItem.serviceIndex === undefined;
+                        const categoryDropIndicator = isDragOverCategory ? `drop-indicator-${dragOverItem.position}` : '';
+
+                        return (
+                            <div 
+                                key={group.category} 
+                                draggable
+                                onDragStart={(e) => handleDragStart(e, groupIndex)}
+                                onDragOver={(e) => handleDragOver(e, groupIndex)}
+                                onDrop={(e) => handleDrop(e, groupIndex)}
+                                onDragEnd={handleDragEnd}
+                                onDragLeave={() => setDragOverItem(null)}
+                                className={`relative bg-white/5 border border-white/10 rounded-lg p-4 transition-opacity ${isDraggingCategory ? 'dragging' : 'opacity-100'} ${categoryDropIndicator}`}
+                            >
+                                <div className="flex justify-between items-center mb-4">
+                                    <input
+                                        type="text"
+                                        value={group.category}
+                                        onChange={(e) => setGroups(groups.map((g, i) => i === groupIndex ? {...g, category: e.target.value} : g))}
+                                        className="text-xl font-bold uppercase tracking-wider bg-transparent border-b-2 border-transparent focus:border-[var(--text-highlight)] focus:outline-none transition cursor-move"
+                                    />
+                                    <button onClick={() => deleteCategory(group.category)} className="text-red-400 hover:text-red-300">
+                                        <div className="w-5 h-5">{ICONS.Trash}</div>
+                                    </button>
+                                </div>
+                                <div className="space-y-2">
+                                    {group.services.map((service, serviceIndex) => {
+                                         const isDraggingService = draggedItem?.groupIndex === groupIndex && draggedItem.serviceIndex === serviceIndex;
+                                         const isDragOverService = dragOverItem?.groupIndex === groupIndex && dragOverItem.serviceIndex === serviceIndex;
+                                         const serviceDropIndicator = isDragOverService ? `drop-indicator-${dragOverItem.position}` : '';
+
+                                        return (
+                                            <div 
+                                                key={serviceIndex} 
+                                                draggable
+                                                onDragStart={(e) => { e.stopPropagation(); handleDragStart(e, groupIndex, serviceIndex); }}
+                                                onDragOver={(e) => { e.stopPropagation(); handleDragOver(e, groupIndex, serviceIndex); }}
+                                                onDrop={(e) => { e.stopPropagation(); handleDrop(e, groupIndex, serviceIndex); }}
+                                                className={`relative flex items-center space-x-2 bg-black/20 p-2 rounded cursor-move transition-opacity ${isDraggingService ? 'dragging' : 'opacity-100'} ${serviceDropIndicator}`}
+                                            >
+                                                <IconSelector selected={service.icon} onSelect={(iconKey) => updateService(group.category, serviceIndex, { iconKey, icon: getIcon(iconKey) })} />
+                                                <input type="text" value={service.name} onChange={(e) => updateService(group.category, serviceIndex, { name: e.target.value })} className="bg-white/10 p-2 rounded w-1/3 placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" placeholder="Link Name"/>
+                                                <input type="text" value={service.url} onChange={(e) => updateService(group.category, serviceIndex, { url: e.target.value })} className="bg-white/10 p-2 rounded flex-grow placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" placeholder="Link URL"/>
+                                                <button onClick={() => deleteService(group.category, serviceIndex)} className="text-red-400 hover:text-red-300 p-2"><div className="w-5 h-5">{ICONS.Trash}</div></button>
+                                            </div>
+                                        );
+                                    })}
+                                    <form onSubmit={(e) => { e.preventDefault(); addService(group.category); }} className="flex items-center space-x-2 bg-black/20 p-2 rounded border-2 border-dashed border-white/20">
+                                       <div className="p-2 h-full flex items-center text-white/50"><div className="w-5 h-5">{ICONS.Plus}</div></div>
+                                       <input type="text" value={newServiceForms[group.category]?.name || ''} onChange={(e) => handleNewServiceFormChange(group.category, 'name', e.target.value)} className="bg-white/10 p-2 rounded w-1/3 placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" placeholder="New Link Name"/>
+                                       <input type="text" value={newServiceForms[group.category]?.url || ''} onChange={(e) => handleNewServiceFormChange(group.category, 'url', e.target.value)} className="bg-white/10 p-2 rounded flex-grow placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]" placeholder="New Link URL"/>
+                                       <button type="submit" className="text-green-400 hover:text-green-300 p-2 font-bold text-sm">ADD</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                {group.services.map((service, serviceIndex) => (
-                                    <div key={serviceIndex} className="flex items-center space-x-2 bg-black/20 p-2 rounded">
-                                        <IconSelector selected={service.icon} onSelect={(icon) => updateService(group.category, serviceIndex, { icon })} />
-                                        <input 
-                                            type="text"
-                                            value={service.name}
-                                            onChange={(e) => updateService(group.category, serviceIndex, { name: e.target.value })}
-                                            className="bg-white/10 p-2 rounded w-1/3 placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]"
-                                            placeholder="Link Name"
-                                        />
-                                        <input 
-                                            type="text"
-                                            value={service.url}
-                                            onChange={(e) => updateService(group.category, serviceIndex, { url: e.target.value })}
-                                            className="bg-white/10 p-2 rounded flex-grow placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]"
-                                            placeholder="Link URL"
-                                        />
-                                        <button onClick={() => deleteService(group.category, serviceIndex)} className="text-red-400 hover:text-red-300 p-2">
-                                            <div className="w-5 h-5">{ICONS.Trash}</div>
-                                        </button>
-                                    </div>
-                                ))}
-                                {/* Add New Service Form */}
-                                <form onSubmit={(e) => { e.preventDefault(); addService(group.category); }} className="flex items-center space-x-2 bg-black/20 p-2 rounded border-2 border-dashed border-white/20">
-                                   <div className="p-2 h-full flex items-center text-white/50"><div className="w-5 h-5">{ICONS.Plus}</div></div>
-                                   <input 
-                                       type="text"
-                                       value={newServiceForms[group.category]?.name || ''}
-                                       onChange={(e) => handleNewServiceFormChange(group.category, 'name', e.target.value)}
-                                       className="bg-white/10 p-2 rounded w-1/3 placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]"
-                                       placeholder="New Link Name"
-                                   />
-                                   <input 
-                                       type="text"
-                                       value={newServiceForms[group.category]?.url || ''}
-                                       onChange={(e) => handleNewServiceFormChange(group.category, 'url', e.target.value)}
-                                       className="bg-white/10 p-2 rounded flex-grow placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)]"
-                                       placeholder="New Link URL"
-                                   />
-                                   <button type="submit" className="text-green-400 hover:text-green-300 p-2 font-bold text-sm">
-                                       ADD
-                                   </button>
-                               </form>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                      <button onClick={addCategory} className="w-full text-center p-3 mt-4 rounded bg-white/20 hover:bg-white/30 transition-colors font-bold text-lg">
                         + Add New Category
                     </button>
                 </div>
 
                 <footer className="p-4 border-t border-white/20 flex-shrink-0 flex justify-between items-center">
-                    <button 
-                        onClick={handleResetToDefault} 
-                        className="bg-red-600/50 hover:bg-red-600/70 px-6 py-2 rounded font-semibold transition-colors"
-                    >
+                    <button onClick={handleResetToDefault} className="bg-red-600/50 hover:bg-red-600/70 px-6 py-2 rounded font-semibold transition-colors">
                         Reset to Default Layout
                     </button>
                     <div className="space-x-4">
