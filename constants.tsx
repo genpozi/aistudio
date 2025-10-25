@@ -1,3 +1,5 @@
+
+
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
@@ -139,13 +141,8 @@ export const GOOGLE_SERVICES: Service[] = [
 ];
 
 export const POZI_SERVICES: Service[] = [
-    { name: "POZI.ME", url: "https://www.pozi.me", icon: ICONS.Globe, iconKey: "Globe" },
-    { name: "POZI.SERVICES", url: "https://www.pozi.services", icon: ICONS.Document, iconKey: "Document" },
     { name: "WORKSPACES", url: "https://spaces.stanz.info", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    { name: "POZICLOUD", url: "https://c.stanz.app/apps/dashboard/", icon: ICONS.Cloud, iconKey: "Cloud" },
     { name: "POZICASA", url: "https://dash.stanz.info/#/", icon: ICONS.Lock, iconKey: "Lock" },
-    { name: "HOARDER", url: "https://keep.pozi.life/signin", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    { name: "POZIVERSE JUMP", url: "https://link.pozi.agency/", icon: ICONS.Globe, iconKey: "Globe" },
     { name: "POZI OPENWEB AI", url: "https://ai.pozi.plus/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
     { name: "VAULTWARDEN", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
 ];
@@ -164,10 +161,10 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     category: "SOCIAL & TOOLS",
     services: [
       { name: "SIMPLE LINKS TOOL", url: "https://snap.pozi.agency/dashboard", icon: ICONS.Globe, iconKey: "Globe" },
-      { name: "SPOTIFY MUSIC", url: "https://spotify.com", icon: ICONS.User, iconKey: "User" },
-      { name: "REDDIT INFO", url: "https://reddit.com", icon: ICONS.Globe, iconKey: "Globe" },
       { name: "KIWIX SERVER INFO", url: "https://kiwi.stanz.app", icon: ICONS.Briefcase, iconKey: "Briefcase" },
       { name: "PDF TOOLS", url: "https://pdf.stanz.app", icon: ICONS.Document, iconKey: "Document" },
+      { name: "SHARED EXP", url: "https://share.stanz.info/", icon: ICONS.Globe, iconKey: "Globe" },
+      { name: "POZIVERSE JUMP", url: "https://link.pozi.agency/", icon: ICONS.Globe, iconKey: "Globe" },
     ],
   },
   {
@@ -177,13 +174,11 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "MILES MUSIC TABS", url: "https://47777--0199e32c-3ad7-7553-997b-2393edb8f772.us-east-1-01.gitpod.dev/", icon: ICONS.Globe, iconKey: "Globe", inProduction: true },
       { name: "POZIPLEXITY ANSWERS", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, iconKey: "Document", inProduction: true },
       { name: "POZIPEDIA RESEARCH", url: "https://8501--0199d6f6-7bbe-7c39-ae2d-664f1939da23.us-east-1-01.gitpod.dev/", icon: ICONS.Sparkles, iconKey: "Sparkles", inProduction: true },
-      { name: "PAPERLESS DOCUMENT AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
     ],
   },
   {
     category: "WORK",
     services: [
-      { name: "NEXTCLOUD OPEN", url: "https://cloud.pozi.plus", icon: ICONS.Cloud, iconKey: "Cloud" },
       { name: "CLOUDCASA PRIVATE", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
       { name: "COLANODE SERVER", url: "https://cola.pozi.work", icon: ICONS.Code, iconKey: "Code" },
       { name: "VIKUNJA TODO", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
@@ -195,10 +190,10 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     category: "LIFE",
     services: [
       { name: "GLANCE DASH", url: "https://glance.pozi.plus", icon: ICONS.Globe, iconKey: "Globe", inProduction: true },
-      { name: "HEIMDELL DASH*", url: "https://dash.stanz.app", icon: ICONS.Globe, iconKey: "Globe" },
       { name: "VAULTWARDEN PASSWORDS", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
       { name: "WORKSPACES KASM", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
       { name: "KARAKEEP HOARDER", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+      { name: "PAPERLESS DOCUMENT AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
     ],
   },
 ];
