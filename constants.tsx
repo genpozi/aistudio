@@ -27,6 +27,11 @@ export const ICONS = {
     Play: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     CollapseAll: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>,
     ExpandAll: <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>,
+    AMPERSAND: (
+        <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
+            <text x="50%" y="50%" dominantBaseline="central" textAnchor="middle" fontSize="20" fontWeight="bold">&amp;</text>
+        </svg>
+    ),
     GOOGLE: {
         Logo: <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>,
         Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z M6.83 8.8L12 17.75 17.17 8.8 12 0z"/></svg>,
@@ -145,6 +150,15 @@ export const POZI_SERVICES: Service[] = [
     { name: "POZICASA", url: "https://dash.stanz.info/#/", icon: ICONS.Lock, iconKey: "Lock" },
     { name: "POZI OPENWEB AI", url: "https://ai.pozi.plus/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
     { name: "VAULTWARDEN", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
+];
+
+export const AMPERSAND_SERVICES: Service[] = [
+    { name: "Fake News", url: "https://fake-news2.vercel.app", icon: ICONS.Document, iconKey: "Document" },
+    { name: "DashyDash", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+    { name: "Cognita", url: "https://cognita-ashen.vercel.app", icon: ICONS.Brain, iconKey: "Brain" },
+    { name: "DockaDoodle", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
+    { name: "PoziCorder", url: "https://pozicorder.vercel.app", icon: ICONS.Play, iconKey: "Play" },
+    { name: "Obsidian CoPilot", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
 ];
 
 export const SERVICE_GROUPS: ServiceGroup[] = [

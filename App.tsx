@@ -5,6 +5,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 // This resolves "not a module" errors and provides the central logic for the dashboard.
 import AICompanionModal from './components/AICompanionModal';
 import AICompanionWidget from './components/AICompanionWidget';
+import AmpersandBar from './components/AmpersandBar';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
 import Clock from './components/Clock';
 import CollapseAllWidget from './components/CollapseAllWidget';
@@ -440,6 +441,7 @@ const App: React.FC = () => {
             <div className="flex items-center space-x-2">
               <GoogleBar />
               <PoziBar />
+              <AmpersandBar />
             </div>
             <div className="flex items-center space-x-2">
                 <Weather location={location} />

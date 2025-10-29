@@ -1,4 +1,5 @@
 
+
 import React, { ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -73,7 +74,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: The `ErrorBoundary` class component must extend `React.Component` to gain access to component features like `state`, `props`, and lifecycle methods. This resolves the errors regarding missing `setState` and `props`.
+// FIX: The `ErrorBoundary` class component must extend `React.Component` to be a valid React component and have access to props, state, and lifecycle methods like setState.
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   state: ErrorBoundaryState = { hasError: false, error: null };
 
