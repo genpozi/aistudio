@@ -72,8 +72,6 @@ const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => 
 };
 
 const defaultServiceGroups: ServiceGroup[] = [
-  { category: 'Google', services: GOOGLE_SERVICES },
-  { category: 'POZI', services: POZI_SERVICES },
   ...SERVICE_GROUPS,
 ];
 
@@ -213,6 +211,12 @@ const App: React.FC = () => {
       })),
     }));
   }, [storedServiceGroups]);
+  
+  // Filter out Google/POZI groups for display in the main grid, as they have dedicated icon bars.
+  const displayedServiceGroups = useMemo(() =>
+    hydratedServiceGroups.filter(
+        (g) => g.category !== 'Google' && g.category !== 'POZI'
+    ), [hydratedServiceGroups]);
 
   // Create a unified list of all searchable items for the OmniBar
   const searchableItems = useMemo<SearchableItem[]>(() => {
@@ -285,8 +289,8 @@ const App: React.FC = () => {
   
   // --- Collapse All Logic ---
   const allCategoryKeys = useMemo(() => 
-    [LINKS_WIDGET_CATEGORY_KEY, ...hydratedServiceGroups.map(g => g.category)],
-    [hydratedServiceGroups]
+    [LINKS_WIDGET_CATEGORY_KEY, ...displayedServiceGroups.map(g => g.category)],
+    [displayedServiceGroups]
   );
 
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
@@ -469,7 +473,7 @@ const App: React.FC = () => {
             <ServiceGroups
               links={links}
               onOpenSettings={() => openSettings('links')}
-              serviceGroups={hydratedServiceGroups}
+              serviceGroups={displayedServiceGroups}
               collapsedCategories={collapsedCategories}
               onToggleCategory={toggleCategoryCollapse}
             />

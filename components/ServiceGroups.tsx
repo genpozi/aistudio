@@ -92,8 +92,6 @@ const ServiceGroups: React.FC<ServiceGroupsProps> = (props) => {
         collapsedCategories,
         onToggleCategory
     } = props;
-    
-    const hasInProductionServices = serviceGroups.some(group => group.services.some(service => service.inProduction));
 
     return (
         <div>
@@ -123,11 +121,6 @@ const ServiceGroups: React.FC<ServiceGroupsProps> = (props) => {
                     </div>
                 ))}
             </div>
-            {hasInProductionServices && (
-                <div className="mt-4 text-left text-sm text-white/70 italic">
-                    <span className="text-[var(--text-highlight)] not-italic font-semibold">*</span> These services are in production and may not be available.
-                </div>
-            )}
         </div>
     );
 };
