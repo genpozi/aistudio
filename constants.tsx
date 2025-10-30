@@ -227,10 +227,11 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     category: "WORK",
     services: [
       { name: "CLOUDCASA #open #app", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
-      { name: "COLANODE SERVER #open #app", url: "https://cola.pozi.work", icon: ICONS.Code, iconKey: "Code" },
+      { name: "COLANODE SERVER #open #app #team", url: "https://cola.pozi.work", icon: ICONS.Code, iconKey: "Code" },
       { name: "VIKUNJA TASK MANAGER #open", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
       { name: "HULY PROJECT MANAGEMENT #open", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
       { name: "AI+ IMMICH PHOTOS #open #app", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
+      { name: "PLANE PROJECT CONTROL #open #team", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
     ],
   },
   {
