@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import AICompanionModal from './components/AICompanionModal';
 import AICompanionWidget from './components/AICompanionWidget';
 import AmpersandBar from './components/AmpersandBar';
+import AnnouncementCard from './components/AnnouncementCard';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
 import Clock from './components/Clock';
 import CollapseAllWidget from './components/CollapseAllWidget';
@@ -15,16 +16,17 @@ import FeedWidget from './components/FeedWidget';
 import FocusSessionOverlay from './components/FocusSessionOverlay';
 import GoogleBar from './components/GoogleBar';
 import Greeting from './components/Greeting';
+import LinksWidget from './components/LinksWidget';
 import OmniBar from './components/OmniBar';
 import OnboardingModal from './components/OnboardingModal';
 import PoziBar from './components/PoziBar';
 import Quote from './components/Quote';
 import ResearchModal from './components/ResearchModal';
 import SearchWidget from './components/SearchWidget';
-import ServiceGroups from './components/ServiceGroups';
+import { ServiceGroupCard } from './components/ServiceGroupCard';
 import SettingsModal, { SettingsData } from './components/SettingsModal';
 import SettingsWidget from './components/SettingsWidget';
-import TodoWidget from './components/TodoWidget';
+import TodoCardWidget from './components/TodoCardWidget';
 import Weather from './components/Weather';
 import YouTubeWidget from './components/YouTubeWidget';
 import {
@@ -49,6 +51,7 @@ import type {
   ServiceGroup,
   StoredService,
   StoredServiceGroup,
+  Todo,
   UserFeed,
 } from './types';
 
@@ -56,7 +59,6 @@ export interface OnboardingData {
   name: string;
   location: string;
   focusPrompt: string;
-  apiKey: string;
 }
 
 const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => {
@@ -75,8 +77,11 @@ const defaultServiceGroups: ServiceGroup[] = [
   ...SERVICE_GROUPS,
 ];
 
-// A special identifier for the Links widget to be used in the collapsed state set.
+// Special identifiers for widgets to be used in the collapsed state set.
 const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
+const TODO_WIDGET_CATEGORY_KEY = '__TODO__';
+const ANNOUNCEMENT_WIDGET_CATEGORY_KEY = '__ANNOUNCEMENT__';
+
 
 const App: React.FC = () => {
   // Local storage backed state
@@ -109,10 +114,6 @@ const App: React.FC = () => {
     LOCAL_STORAGE_KEYS.USER_THEME,
     'cyberwave',
   );
-  const [geminiApiKey, setGeminiApiKey] = useLocalStorage<string>(
-    LOCAL_STORAGE_KEYS.GEMINI_API_KEY,
-    '',
-  );
   const [researchBackend, setResearchBackend] =
     useLocalStorage<ResearchBackend>(
       LOCAL_STORAGE_KEYS.RESEARCH_BACKEND,
@@ -132,11 +133,18 @@ const App: React.FC = () => {
     LOCAL_STORAGE_KEYS.CHAT_HISTORY,
     [],
   );
+  const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   
   // State for widget collapse, backed by localStorage for persistence.
   const initialCollapsedKeys = [
       LINKS_WIDGET_CATEGORY_KEY,
-      ...defaultServiceGroups.map(g => g.category)
+      TODO_WIDGET_CATEGORY_KEY,
+      ANNOUNCEMENT_WIDGET_CATEGORY_KEY,
+      'IN PROGRESS',
+      'AI TOOLS',
+      'SOCIAL & TOOLS',
+      'WORK',
+      'LIFE'
   ];
   const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(
       LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES,
@@ -212,11 +220,14 @@ const App: React.FC = () => {
     }));
   }, [storedServiceGroups]);
   
-  // Filter out Google/POZI groups for display in the main grid, as they have dedicated icon bars.
-  const displayedServiceGroups = useMemo(() =>
-    hydratedServiceGroups.filter(
-        (g) => g.category !== 'Google' && g.category !== 'POZI'
-    ), [hydratedServiceGroups]);
+  // Create a map for quick lookups
+  const serviceGroupsMap = useMemo(() => {
+    const map = new Map<string, ServiceGroup>();
+    hydratedServiceGroups.forEach(group => {
+      map.set(group.category, group);
+    });
+    return map;
+  }, [hydratedServiceGroups]);
 
   // Create a unified list of all searchable items for the OmniBar
   const searchableItems = useMemo<SearchableItem[]>(() => {
@@ -289,8 +300,13 @@ const App: React.FC = () => {
   
   // --- Collapse All Logic ---
   const allCategoryKeys = useMemo(() => 
-    [LINKS_WIDGET_CATEGORY_KEY, ...displayedServiceGroups.map(g => g.category)],
-    [displayedServiceGroups]
+    [
+        LINKS_WIDGET_CATEGORY_KEY, 
+        TODO_WIDGET_CATEGORY_KEY,
+        ANNOUNCEMENT_WIDGET_CATEGORY_KEY,
+        ...hydratedServiceGroups.map(g => g.category)
+    ],
+    [hydratedServiceGroups]
   );
 
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
@@ -398,7 +414,6 @@ const App: React.FC = () => {
     setName(data.name || 'My Leige 🙇');
     setLocation(data.location);
     setFocusPrompt(data.focusPrompt || 'What is your main goal for today?');
-    setGeminiApiKey(data.apiKey);
     setHasOnboarded(true);
   };
 
@@ -423,7 +438,6 @@ const App: React.FC = () => {
     setFocusPrompt(data.focusPrompt);
     setFocusDuration(data.focusDuration);
     setTheme(data.theme);
-    setGeminiApiKey(data.geminiApiKey);
     setResearchBackend(data.researchBackend);
     setIsSettingsOpen(false);
   };
@@ -469,31 +483,63 @@ const App: React.FC = () => {
             </div>
           </main>
 
+          {/* Locked Dashboard Rows */}
           <div className="w-full max-w-7xl mx-auto mt-8">
-            <ServiceGroups
-              links={links}
-              onOpenSettings={() => openSettings('links')}
-              serviceGroups={displayedServiceGroups}
-              collapsedCategories={collapsedCategories}
-              onToggleCategory={toggleCategoryCollapse}
-            />
+            {/* Row 1 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+                <LinksWidget
+                  links={links}
+                  onOpenSettings={() => openSettings('links')}
+                  isCollapsed={collapsedCategories.has(LINKS_WIDGET_CATEGORY_KEY)}
+                  onToggle={() => toggleCategoryCollapse(LINKS_WIDGET_CATEGORY_KEY)}
+                />
+                <TodoCardWidget
+                  todos={todos}
+                  setTodos={setTodos}
+                  isCollapsed={collapsedCategories.has(TODO_WIDGET_CATEGORY_KEY)}
+                  onToggle={() => toggleCategoryCollapse(TODO_WIDGET_CATEGORY_KEY)}
+                />
+                <AnnouncementCard
+                    isCollapsed={collapsedCategories.has(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
+                    onToggle={() => toggleCategoryCollapse(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
+                />
+                {serviceGroupsMap.has('IN PROGRESS') && (
+                    <ServiceGroupCard
+                        group={serviceGroupsMap.get('IN PROGRESS')!}
+                        isCollapsed={collapsedCategories.has('IN PROGRESS')}
+                        onToggle={() => toggleCategoryCollapse('IN PROGRESS')}
+                    />
+                )}
+            </div>
+
+            {/* Row 2 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start mt-10">
+                {['AI TOOLS', 'SOCIAL & TOOLS', 'WORK', 'LIFE'].map(category => 
+                    serviceGroupsMap.has(category) && (
+                        <ServiceGroupCard
+                            key={category}
+                            group={serviceGroupsMap.get(category)!}
+                            isCollapsed={collapsedCategories.has(category)}
+                            onToggle={() => toggleCategoryCollapse(category)}
+                        />
+                    )
+                )}
+            </div>
           </div>
           
-          <div className="w-full max-w-7xl mx-auto mt-8">
+          <div className="w-full max-w-7xl mx-auto mt-6 space-y-6">
             <FeedWidget
                 feedUrls={rssFeeds}
                 onOpenSettings={() => openSettings('feeds')}
             />
-          </div>
           
-          {youtubeFeeds.length > 0 && (
-             <div className="w-full max-w-7xl mx-auto mt-8">
+            {youtubeFeeds.length > 0 && (
                 <YouTubeWidget
                     feedUrls={youtubeFeeds}
                     onOpenSettings={() => openSettings('feeds')}
                 />
-            </div>
-          )}
+            )}
+          </div>
 
 
           <footer className="w-full flex justify-between items-end mt-8">
@@ -513,7 +559,6 @@ const App: React.FC = () => {
                 </kbd>
               </div>
               <BackgroundSwitcher onRefresh={refreshBackgroundImage} />
-              <TodoWidget />
               <AICompanionWidget onClick={() => setIsCompanionOpen(true)} />
               <SettingsWidget onOpenSettings={() => openSettings('general')} />
             </div>
@@ -553,7 +598,6 @@ const App: React.FC = () => {
               focusPrompt,
               focusDuration,
               theme,
-              geminiApiKey,
               researchBackend
           }}
         />

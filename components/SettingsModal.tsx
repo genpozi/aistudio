@@ -14,7 +14,6 @@ export interface SettingsData {
     focusPrompt: string;
     focusDuration: FocusDuration;
     theme: string;
-    geminiApiKey: string;
     researchBackend: ResearchBackend;
 }
 
@@ -43,7 +42,6 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
     const [focusPrompt, setFocusPrompt] = useState(currentSettings.focusPrompt);
     const [focusDuration, setFocusDuration] = useState(currentSettings.focusDuration);
     const [theme, setTheme] = useState(currentSettings.theme);
-    const [geminiApiKey, setGeminiApiKey] = useState(currentSettings.geminiApiKey);
     const [researchBackend, setResearchBackend] = useState(currentSettings.researchBackend);
 
     const [newLinkName, setNewLinkName] = useState('');
@@ -60,7 +58,6 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
             focusPrompt,
             focusDuration,
             theme,
-            geminiApiKey,
             researchBackend,
         });
     };
@@ -249,11 +246,9 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-white/80 mb-1">Google Gemini API Key</label>
-                                <input type="password" value={geminiApiKey} onChange={e => setGeminiApiKey(e.target.value)} className="w-full bg-white/10 p-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" />
-                                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-sm text-[var(--text-highlight)] hover:underline mt-2 inline-block">
-                                    Get your Gemini API Key here &rarr;
-                                </a>
+                                <p className="text-sm text-white/70">
+                                    The Gemini API key is now managed via an environment variable for enhanced security. The application will automatically use the key provided by the execution environment.
+                                </p>
                             </div>
                         </div>
                     </div>

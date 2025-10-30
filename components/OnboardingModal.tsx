@@ -9,14 +9,12 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) => {
     const [name, setName] = useState('');
     const [location, setLocation] = useState('');
     const [focusPrompt, setFocusPrompt] = useState('What is your main goal for today?');
-    const [apiKey, setApiKey] = useState('');
 
     const handleSubmit = () => {
         onComplete({
             name: name.trim(),
             location: location.trim(),
             focusPrompt: focusPrompt.trim(),
-            apiKey: apiKey.trim(),
         });
     };
 
@@ -69,27 +67,11 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ onComplete }) => {
                             className="w-full bg-white/10 p-3 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" 
                         />
                     </div>
-                     <div>
-                        <label htmlFor="onboarding-apikey" className="block text-sm font-medium text-white/80 mb-1">Google Gemini API Key (Optional)</label>
-                        <p className="text-xs text-white/50 mb-2">
-                            This enables the AI-powered Research feature. You can get a free key from Google AI Studio.
+                    <div>
+                        <p className="text-sm font-medium text-white/80">AI Features</p>
+                        <p className="text-xs text-white/50 mt-1">
+                           AI-powered features like Research and the AI Companion are enabled automatically if an API key is provided by the application environment.
                         </p>
-                        <input 
-                            id="onboarding-apikey" 
-                            type="password" 
-                            value={apiKey} 
-                            onChange={(e) => setApiKey(e.target.value)}
-                            placeholder="Enter your API Key"
-                            className="w-full bg-white/10 p-3 rounded placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)]" 
-                        />
-                         <a 
-                            href="https://aistudio.google.com/app/apikey" 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-sm text-[var(--text-highlight)] hover:underline mt-2 inline-block"
-                        >
-                            Get your Gemini API Key here &rarr;
-                        </a>
                     </div>
                 </div>
 

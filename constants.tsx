@@ -131,7 +131,6 @@ export const LOCAL_STORAGE_KEYS = {
     FOCUS_SESSION_DURATION: 'focusSessionDuration',
     USER_TODOS: 'userTodos',
     USER_THEME: 'userTheme',
-    GEMINI_API_KEY: 'geminiApiKey',
     RESEARCH_BACKEND: 'researchBackend',
     HAS_ONBOARDED: 'hasOnboarded',
     USER_SERVICE_GROUPS: 'userServiceGroups',
