@@ -205,7 +205,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
         <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">NEWS & ARTICLES (RSS)</h3>
         <div className="flex items-center space-x-2">
             <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
-                {ICONS.Refresh}
+                <div className="w-5 h-5">{ICONS.Refresh}</div>
             </button>
         </div>
       </div>

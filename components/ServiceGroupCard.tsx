@@ -18,7 +18,7 @@ const ServiceIcon: React.FC<{ name: string; icon: React.ReactNode }> = ({ name, 
       className="w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0 shadow-inner"
       style={{ backgroundColor: bgColor }}
     >
-      <div className="text-white transform group-hover:scale-110 transition-transform duration-200">
+      <div className="text-white w-6 h-6 transform group-hover:scale-110 transition-transform duration-200">
           {icon}
       </div>
     </div>
@@ -40,7 +40,7 @@ export const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: bool
         aria-expanded={!isCollapsed}
         aria-label={isCollapsed ? `Expand ${group.category} section` : `Collapse ${group.category} section`}
       >
-        <div className={`transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+        <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
             {ICONS.ChevronUp}
         </div>
       </button>

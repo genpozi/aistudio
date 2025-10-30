@@ -13,7 +13,7 @@ const AICompanionWidget: React.FC<AICompanionWidgetProps> = ({ onClick }) => {
       aria-label="Open AI Companion"
     >
       <div className="text-white/80 group-hover:text-white transition-colors">
-        {ICONS.ChatBubble}
+        <div className="w-6 h-6">{ICONS.ChatBubble}</div>
       </div>
       <span className="text-white text-sm font-semibold">Companion</span>
     </button>

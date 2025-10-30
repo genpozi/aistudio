@@ -46,7 +46,7 @@ const AICompanionModal: React.FC<AICompanionModalProps> = ({ isOpen, onClose, hi
             <div ref={modalRef} className="w-full max-w-2xl bg-black/50 backdrop-blur-xl border border-white/20 rounded-lg shadow-2xl text-white flex flex-col max-h-[80vh]">
                 <header className="flex items-center justify-between border-b border-white/20 p-4 flex-shrink-0">
                     <div className="flex items-center space-x-3">
-                         <div className="text-[var(--text-highlight)]">{ICONS.ChatBubble}</div>
+                         <div className="text-[var(--text-highlight)]"><div className="w-6 h-6">{ICONS.ChatBubble}</div></div>
                          <h2 className="text-2xl font-bold">AI Companion</h2>
                     </div>
                     <div className="flex items-center space-x-2">

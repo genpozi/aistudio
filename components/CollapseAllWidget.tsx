@@ -26,7 +26,7 @@ const CollapseAllWidget: React.FC<CollapseAllWidgetProps> = ({ areAllCollapsed, 
             aria-label={label}
             title={label}
         >
-            <span className="text-white/80 group-hover:text-white transition-colors">{icon}</span>
+            <span className="text-white/80 group-hover:text-white transition-colors"><div className="w-5 h-5">{icon}</div></span>
         </button>
     );
 };

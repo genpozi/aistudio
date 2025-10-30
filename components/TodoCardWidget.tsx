@@ -48,13 +48,13 @@ const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isColl
           aria-expanded={!isCollapsed}
           aria-label={isCollapsed ? `Expand To-Do List section` : `Collapse To-Do List section`}
         >
-          <div className={`transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+          <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
               {ICONS.ChevronUp}
           </div>
         </button>
       </div>
       <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
-        <div className="p-6 pt-4 flex flex-col h-full">
+        <div className="p-6 pt-4 flex flex-col">
           <div className="flex-grow overflow-y-auto max-h-60 custom-scrollbar pr-2 -mr-2 mb-4">
             {sortedTodos.length > 0 ? (
               <ul className="space-y-2">
@@ -92,7 +92,7 @@ const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isColl
                       className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity ml-2 flex-shrink-0"
                       aria-label={`Delete todo: ${todo.text}`}
                     >
-                      {ICONS.Trash}
+                      <div className="w-5 h-5">{ICONS.Trash}</div>
                     </button>
                   </li>
                 ))}

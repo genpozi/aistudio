@@ -1,4 +1,3 @@
-
 import React, { ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -73,7 +72,7 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: The ErrorBoundary was not a valid React class component. It must extend `React.Component` to use features like `state`, `props`, and lifecycle methods.
+// FIX: The ErrorBoundary class must extend `React.Component` to be a valid class component. This gives it access to `state`, `props`, and lifecycle methods, resolving the compilation errors.
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);

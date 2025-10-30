@@ -23,7 +23,7 @@ const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isColl
                 className="text-white/80 group-hover:text-white transition-colors flex items-center space-x-1.5 p-1 rounded-md hover:bg-white/10"
                 aria-label="Add new personal link"
             >
-                {ICONS.Plus}
+                <div className="w-4 h-4">{ICONS.Plus}</div>
                 <span className="text-sm font-semibold">Add</span> 
             </button>
             <button 
@@ -32,7 +32,7 @@ const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isColl
                 aria-expanded={!isCollapsed}
                 aria-label={isCollapsed ? `Expand Personal Links section` : `Collapse Personal Links section`}
             >
-                <div className={`transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+                <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
                     {ICONS.ChevronUp}
                 </div>
             </button>

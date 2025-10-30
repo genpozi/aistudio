@@ -158,7 +158,7 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                                         <span className="truncate">{link.name}</span>
                                     </div>
                                     <button onClick={() => handleDeleteLink(link.id)} className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity">
-                                        {ICONS.Trash}
+                                        <div className="w-5 h-5">{ICONS.Trash}</div>
                                     </button>
                                 </li>
                             ))}
@@ -226,7 +226,7 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                                         <span className="truncate text-sm">{feed.url}</span>
                                     </div>
                                     <button onClick={() => handleDeleteFeed(feed.id)} className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300 transition-opacity">
-                                        {ICONS.Trash}
+                                        <div className="w-5 h-5">{ICONS.Trash}</div>
                                     </button>
                                 </li>
                             ))}

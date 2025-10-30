@@ -37,7 +37,7 @@ const SearchWidget: React.FC<SearchWidgetProps> = ({ researchBackend, onOpenSett
     <form onSubmit={handleSearch} className="relative w-full flex items-center space-x-2">
       <div className="relative flex-grow">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/60">
-              {searchIcon}
+              <div className="w-6 h-6">{searchIcon}</div>
           </div>
           <input
               type="search"
