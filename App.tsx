@@ -533,12 +533,10 @@ const App: React.FC = () => {
                 onOpenSettings={() => openSettings('feeds')}
             />
           
-            {youtubeFeeds.length > 0 && (
-                <YouTubeWidget
-                    feedUrls={youtubeFeeds}
-                    onOpenSettings={() => openSettings('feeds')}
-                />
-            )}
+            <YouTubeWidget
+                feedUrls={youtubeFeeds}
+                onOpenSettings={() => openSettings('feeds')}
+            />
           </div>
 
 

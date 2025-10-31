@@ -128,6 +128,19 @@ const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOp
     if (error && items.length === 0) {
         return <div className="flex-grow flex items-center justify-center text-center p-4 min-h-[200px]"><p className="text-red-400/80 whitespace-pre-wrap">{error}</p></div>
     }
+    if (feedUrls.length === 0) {
+        return (
+            <div className="flex-grow flex flex-col items-center justify-center text-center min-h-[200px]">
+                <p className="text-white/70 mb-4">No YouTube feeds configured.</p>
+                <button onClick={onOpenSettings} className="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-lg">
+                    Configure Feeds
+                </button>
+            </div>
+        );
+    }
+    if (items.length === 0 && !error) {
+        return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">No videos found in configured feeds.</p></div>;
+    }
     return (
         <div className="flex overflow-x-auto space-x-4 pb-4 custom-scrollbar -mr-4 pr-4">
             {items.map((item, index) => (
