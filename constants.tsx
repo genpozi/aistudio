@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
@@ -39,20 +37,106 @@ export const ICONS = {
                     <stop offset="85%" stopColor="#6d28d9" />
                     <stop offset="100%" stopColor="#c026d3" />
                 </linearGradient>
+                <radialGradient id="darkBlueBgO" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="70%" stopColor="#3a4a6e" />
+                    <stop offset="100%" stopColor="#2c3752" />
+                </radialGradient>
             </defs>
-            <circle cx="12" cy="12" r="12" fill="white"/>
-            <text 
-                x="50%" 
-                y="50%" 
-                dominantBaseline="central" 
-                textAnchor="middle" 
-                fontSize="17" 
-                fontFamily="sans-serif" 
-                fontWeight="bold" 
+            <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgO)"/>
+            <text
+                x="50%"
+                y="53%"
+                dominantBaseline="central"
+                textAnchor="middle"
+                fontSize="22"
+                fontFamily="sans-serif"
+                fontWeight="bold"
                 fill="url(#ampersandRainbow)"
+                stroke="#fff"
+                strokeWidth="0.6"
+                paintOrder="stroke"
             >
-                &amp;
+                O
             </text>
+            <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
+            <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
+            <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
+        </svg>
+    ),
+    Z_LOGO: (
+        <svg viewBox="0 0 24 24">
+            <defs>
+                <linearGradient id="zRainbow" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#ef4444" />
+                    <stop offset="17%" stopColor="#f97316" />
+                    <stop offset="34%" stopColor="#eab308" />
+                    <stop offset="51%" stopColor="#22c55e" />
+                    <stop offset="68%" stopColor="#3b82f6" />
+                    <stop offset="85%" stopColor="#6d28d9" />
+                    <stop offset="100%" stopColor="#c026d3" />
+                </linearGradient>
+                <radialGradient id="darkBlueBgZ" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="70%" stopColor="#3a4a6e" />
+                    <stop offset="100%" stopColor="#2c3752" />
+                </radialGradient>
+            </defs>
+            <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgZ)"/>
+            <text
+                x="50%"
+                y="53%"
+                dominantBaseline="central"
+                textAnchor="middle"
+                fontSize="22"
+                fontFamily="sans-serif"
+                fontWeight="bold"
+                fill="url(#zRainbow)"
+                stroke="#fff"
+                strokeWidth="0.6"
+                paintOrder="stroke"
+            >
+                Z
+            </text>
+            <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
+            <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
+            <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
+        </svg>
+    ),
+    I_LOGO: (
+        <svg viewBox="0 0 24 24">
+            <defs>
+                <linearGradient id="iRainbow" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor="#ef4444" />
+                    <stop offset="17%" stopColor="#f97316" />
+                    <stop offset="34%" stopColor="#eab308" />
+                    <stop offset="51%" stopColor="#22c55e" />
+                    <stop offset="68%" stopColor="#3b82f6" />
+                    <stop offset="85%" stopColor="#6d28d9" />
+                    <stop offset="100%" stopColor="#c026d3" />
+                </linearGradient>
+                <radialGradient id="darkBlueBgI" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                    <stop offset="70%" stopColor="#3a4a6e" />
+                    <stop offset="100%" stopColor="#2c3752" />
+                </radialGradient>
+            </defs>
+            <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgI)"/>
+            <text
+                x="50%"
+                y="53%"
+                dominantBaseline="central"
+                textAnchor="middle"
+                fontSize="22"
+                fontFamily="sans-serif"
+                fontWeight="bold"
+                fill="url(#iRainbow)"
+                stroke="#fff"
+                strokeWidth="0.6"
+                paintOrder="stroke"
+            >
+                I
+            </text>
+            <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
+            <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
+            <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
         </svg>
     ),
     GOOGLE: {
@@ -84,20 +168,30 @@ export const ICONS = {
                         <stop offset="85%" stopColor="#6d28d9" />
                         <stop offset="100%" stopColor="#c026d3" />
                     </linearGradient>
+                    <radialGradient id="darkBlueBgP" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                        <stop offset="70%" stopColor="#3a4a6e" />
+                        <stop offset="100%" stopColor="#2c3752" />
+                    </radialGradient>
                 </defs>
-                <circle cx="12" cy="12" r="12" fill="white"/>
-                <text 
-                    x="50%" 
-                    y="50%" 
-                    dominantBaseline="central" 
-                    textAnchor="middle" 
-                    fontSize="17" 
-                    fontFamily="sans-serif" 
-                    fontWeight="700" 
+                <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgP)"/>
+                <text
+                    x="50%"
+                    y="53%"
+                    dominantBaseline="central"
+                    textAnchor="middle"
+                    fontSize="22"
+                    fontFamily="sans-serif"
+                    fontWeight="bold"
                     fill="url(#poziRainbow)"
+                    stroke="#fff"
+                    strokeWidth="0.6"
+                    paintOrder="stroke"
                 >
                     P
                 </text>
+                <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
+                <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
+                <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
             </svg>
         )
     }
@@ -193,6 +287,21 @@ export const AMPERSAND_SERVICES: Service[] = [
     { name: "Obsidian CoPilot", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
 ];
 
+export const Z_SERVICES: Service[] = [
+    { name: "CLOUDCASA #open #app", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "VIKUNJA TASK MANAGER #open", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
+    { name: "HULY PROJECT MANAGEMENT #open", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "AI+ IMMICH PHOTOS #open #app", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "PLANE PROJECT CONTROL #open #team", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+];
+
+export const I_SERVICES: Service[] = [
+    { name: "PAPERLESS DOCUMENT AI #open #app", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
+    { name: "VAULTWARDEN PASSWORDS #open #app #bitwarden", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
+    { name: "WORKSPACES KASM #open #virtual-workspaces", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "KARAKEEP HOARDER #open #app #browser-ext", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+];
+
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "AI TOOLS",
@@ -214,33 +323,9 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
     ],
   },
   {
-    category: "IN PROGRESS",
-    services: [
-      { name: "JAAZ CANVA AI", url: "https://8000--0199e4d7-fc95-7a8c-9647-8c615d5797aa.us-east-1-01.gitpod.dev/", icon: ICONS.Sparkles, iconKey: "Sparkles", inProduction: true },
-      { name: "MILES MUSIC TABS", url: "https://47777--0199e32c-3ad7-7553-997b-2393edb8f772.us-east-1-01.gitpod.dev/", icon: ICONS.Globe, iconKey: "Globe", inProduction: true },
-      { name: "POZIPLEXITY ANSWERS", url: "https://slash.pozi.plus/s/pozipedia", icon: ICONS.Document, iconKey: "Document", inProduction: true },
-      { name: "POZIPEDIA RESEARCH", url: "https://8501--0199d6f6-7bbe-7c39-ae2d-664f1939da23.us-east-1-01.gitpod.dev/", icon: ICONS.Sparkles, iconKey: "Sparkles", inProduction: true },
-      { name: "GLANCE DASHBOARD #open", url: "https://glance.pozi.plus", icon: ICONS.Globe, iconKey: "Globe", inProduction: true },
-    ],
-  },
-  {
     category: "WORK",
     services: [
-      { name: "CLOUDCASA #open #app", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
       { name: "COLANODE SERVER #open #app #team", url: "https://cola.pozi.work", icon: ICONS.Code, iconKey: "Code" },
-      { name: "VIKUNJA TASK MANAGER #open", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
-      { name: "HULY PROJECT MANAGEMENT #open", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-      { name: "AI+ IMMICH PHOTOS #open #app", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
-      { name: "PLANE PROJECT CONTROL #open #team", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    ],
-  },
-  {
-    category: "LIFE",
-    services: [
-      { name: "VAULTWARDEN PASSWORDS #open #app #bitwarden", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
-      { name: "WORKSPACES KASM #open #virtual-workspaces", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-      { name: "KARAKEEP HOARDER #open #app #browser-ext", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-      { name: "PAPERLESS DOCUMENT AI #open #app", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
     ],
   },
 ];

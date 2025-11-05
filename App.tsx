@@ -16,6 +16,7 @@ import FeedWidget from './components/FeedWidget';
 import FocusSessionOverlay from './components/FocusSessionOverlay';
 import GoogleBar from './components/GoogleBar';
 import Greeting from './components/Greeting';
+import IconBar from './components/IconBar';
 import LinksWidget from './components/LinksWidget';
 import OmniBar from './components/OmniBar';
 import OnboardingModal from './components/OnboardingModal';
@@ -33,11 +34,12 @@ import {
   BACKGROUND_IMAGES,
   DEFAULT_FEEDS,
   getIcon,
-  GOOGLE_SERVICES,
+  I_SERVICES,
+  ICONS,
   LOCAL_STORAGE_KEYS,
-  POZI_SERVICES,
   SERVICE_GROUPS,
   THEMES,
+  Z_SERVICES,
 } from './constants';
 import { TimeProvider } from './contexts/TimeContext';
 import useLocalStorage from './hooks/useLocalStorage';
@@ -140,11 +142,9 @@ const App: React.FC = () => {
       LINKS_WIDGET_CATEGORY_KEY,
       TODO_WIDGET_CATEGORY_KEY,
       ANNOUNCEMENT_WIDGET_CATEGORY_KEY,
-      'IN PROGRESS',
       'AI TOOLS',
       'SOCIAL & TOOLS',
       'WORK',
-      'LIFE'
   ];
   const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(
       LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES,
@@ -455,11 +455,15 @@ const App: React.FC = () => {
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         <div className={mainContentClass}>
-          <header className="flex justify-between items-start">
-            <div className="flex items-center space-x-2">
+          <header className="relative flex justify-between items-start">
+            <div className="flex flex-col items-start space-y-4">
               <GoogleBar />
+            </div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 flex space-x-4">
               <PoziBar />
               <AmpersandBar />
+              <IconBar triggerIcon={ICONS.Z_LOGO} services={Z_SERVICES} />
+              <IconBar triggerIcon={ICONS.I_LOGO} services={I_SERVICES} />
             </div>
             <div className="flex items-center space-x-2">
                 <Weather location={location} />
@@ -485,7 +489,6 @@ const App: React.FC = () => {
 
           {/* Locked Dashboard Rows */}
           <div className="w-full max-w-7xl mx-auto mt-8">
-            {/* Row 1 */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
                 <LinksWidget
                   links={links}
@@ -503,18 +506,7 @@ const App: React.FC = () => {
                     isCollapsed={collapsedCategories.has(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
                     onToggle={() => toggleCategoryCollapse(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
                 />
-                {serviceGroupsMap.has('IN PROGRESS') && (
-                    <ServiceGroupCard
-                        group={serviceGroupsMap.get('IN PROGRESS')!}
-                        isCollapsed={collapsedCategories.has('IN PROGRESS')}
-                        onToggle={() => toggleCategoryCollapse('IN PROGRESS')}
-                    />
-                )}
-            </div>
-
-            {/* Row 2 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start mt-10">
-                {['AI TOOLS', 'SOCIAL & TOOLS', 'WORK', 'LIFE'].map(category => 
+                {['AI TOOLS', 'SOCIAL & TOOLS', 'WORK'].map(category => 
                     serviceGroupsMap.has(category) && (
                         <ServiceGroupCard
                             key={category}
