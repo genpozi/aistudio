@@ -272,36 +272,29 @@ export const GOOGLE_SERVICES: Service[] = [
 ];
 
 export const POZI_SERVICES: Service[] = [
-    { name: "WORKSPACES", url: "https://spaces.stanz.info", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    { name: "POZICASA", url: "https://dash.stanz.info/#/", icon: ICONS.Lock, iconKey: "Lock" },
+    { name: "CLOUD-CASA", url: "https://c.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "KARAKEEP", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
     { name: "POZI AI STUDIO", url: "https://ai.pozi.plus/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    { name: "VAULTWARDEN", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
-    { name: "BLINK CREATIVE STUDIO", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    { name: "AFFINE CREATIVE PROJECTS", url: "https://affine.pozi.agency", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+    { name: "IMMICH PHOTOS", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "VIKUNJA TASKS", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
 ];
 
 export const AMPERSAND_SERVICES: Service[] = [
-    { name: "Fake News", url: "https://fake-news2.vercel.app", icon: ICONS.Document, iconKey: "Document" },
-    { name: "DashyDash", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    { name: "Cognita", url: "https://cognita-ashen.vercel.app", icon: ICONS.Brain, iconKey: "Brain" },
-    { name: "DockaDoodle", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
-    { name: "PoziCorder", url: "https://pozicorder.vercel.app", icon: ICONS.Play, iconKey: "Play" },
+    { name: "FAKE NEWS REPORT", url: "https://fake-news2.vercel.app", icon: ICONS.Document, iconKey: "Document" },
 ];
 
 export const Z_SERVICES: Service[] = [
-    { name: "CLOUDCASA", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
-    { name: "VIKUNJA TASK MANAGER", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
-    { name: "HULY PROJECT MANAGEMENT", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    { name: "AI+ IMMICH PHOTOS", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
-    { name: "PLANE PROJECT CONTROL", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "WORKSPACES", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
 ];
 
 export const I_SERVICES: Service[] = [
-    { name: "Obsidian CoPilot", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
-    { name: "PAPERLESS DOCUMENT AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
-    { name: "VAULTWARDEN PASSWORDS", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
-    { name: "WORKSPACES KASM", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    { name: "KARAKEEP HOARDER", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "NEXTCLOUD HOME", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "VAULTWARDEN", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
+    { name: "PAPERLESS-AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
+    { name: "HULY PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "PLANE PROJECTS", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "BLINKO STUDIO", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+    { name: "AFFINE STUDIO", url: "https://affine.pozi.agency", icon: ICONS.Sparkles, iconKey: "Sparkles" },
 ];
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
@@ -314,6 +307,10 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "SHARED EXPERIENCES", url: "https://share.stanz.info/", icon: ICONS.Globe, iconKey: "Globe" },
       { name: "POZIVERSE JUMP PAGES", url: "https://link.pozi.agency/", icon: ICONS.Globe, iconKey: "Globe" },
       { name: "COLANODE SERVER", url: "https://cola.pozi.work", icon: ICONS.Code, iconKey: "Code" },
+      { name: "OBSIDIAN-COPILOT", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
+      { name: "DOCK-a-DOODLE", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
+      { name: "DASHY-DASH", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+      { name: "POZICORDER", url: "https://pozicorder.vercel.app", icon: ICONS.Play, iconKey: "Play" },
     ],
   },
 ];
