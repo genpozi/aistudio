@@ -142,9 +142,7 @@ const App: React.FC = () => {
       LINKS_WIDGET_CATEGORY_KEY,
       TODO_WIDGET_CATEGORY_KEY,
       ANNOUNCEMENT_WIDGET_CATEGORY_KEY,
-      'AI TOOLS',
-      'SOCIAL & TOOLS',
-      'WORK',
+      'TOOLBOX',
   ];
   const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(
       LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES,
@@ -506,7 +504,7 @@ const App: React.FC = () => {
                     isCollapsed={collapsedCategories.has(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
                     onToggle={() => toggleCategoryCollapse(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
                 />
-                {['AI TOOLS', 'SOCIAL & TOOLS', 'WORK'].map(category => 
+                {['TOOLBOX'].map(category => 
                     serviceGroupsMap.has(category) && (
                         <ServiceGroupCard
                             key={category}
