@@ -1,10 +1,9 @@
 
-// FIX: Importing React directly and using Component from 'react' ensures correct inheritance of 'state', 'props', and 'setState' in strict TypeScript environments.
 import React, { Component, ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { DEFAULT_FEEDS, LOCAL_STORAGE_KEYS, SCHEMA_VERSION, SERVICE_GROUPS } from './constants';
-import type { StoredServiceGroup, UserFeed } from './types';
+import { LOCAL_STORAGE_KEYS, SCHEMA_VERSION, SERVICE_GROUPS } from './constants';
+import type { StoredServiceGroup } from './types';
 
 // --- Start of Data Migration Logic ---
 const runMigrations = () => {
@@ -14,32 +13,9 @@ const runMigrations = () => {
         if (storedVersion < SCHEMA_VERSION) {
             console.log(`Schema version mismatch. Upgrading from v${storedVersion} to v${SCHEMA_VERSION}.`);
 
-            // --- Migration v6: Full Sync of Collective & Poziverse (Legacy) ---
-            if (storedVersion < 6) {
-                console.log("Running migration to schema v6...");
-                const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
-                if (rawGroups) {
-                    try {
-                        const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
-                        const defaultCategories = new Set(SERVICE_GROUPS.map(g => g.category));
-                        const customGroups = userGroups.filter(g => !defaultCategories.has(g.category));
-                        const correctedDefaults: StoredServiceGroup[] = SERVICE_GROUPS.map(dg => ({
-                            category: dg.category,
-                            services: dg.services.map(s => ({
-                                name: s.name,
-                                url: s.url,
-                                iconKey: s.iconKey,
-                                inProduction: s.inProduction
-                            }))
-                        }));
-                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify([...correctedDefaults, ...customGroups]));
-                    } catch (e) { console.error("v6 migration error", e); }
-                }
-            }
-
-            // --- Migration v13: Full Sync of Locked 3x3 Layout (Expansion) ---
-            if (storedVersion < 13) {
-                console.log("Running migration to schema v13 (Restoring Locked Layout)...");
+            // Migration path for any version < 14 to sync the locked 3x3 layout and 0RELIANCE LAB updates
+            if (storedVersion < 14) {
+                console.log("Running migration to schema v14 (Updating 0RELIANCE LAB and Locked Layout)...");
                 const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
                 try {
                     const correctedDefaults: StoredServiceGroup[] = SERVICE_GROUPS.map(dg => ({
@@ -55,13 +31,14 @@ const runMigrations = () => {
                     if (rawGroups) {
                         const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
                         const defaultCategories = new Set(SERVICE_GROUPS.map(g => g.category));
+                        // Keep user-added custom categories, but refresh the default ones
                         const customGroups = userGroups.filter(g => !defaultCategories.has(g.category));
                         localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify([...correctedDefaults, ...customGroups]));
                     } else {
                         localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(correctedDefaults));
                     }
                 } catch (e) {
-                    console.error("v13 migration error", e);
+                    console.error("Migration error:", e);
                 }
             }
 
@@ -85,9 +62,8 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: Explicitly extending the imported 'Component' and specifying generics ensures that 'state', 'setState', and 'props' are correctly typed and inherited from the base class.
-// Using 'Component' directly from 'react' helps resolve property access issues on 'this' in certain TypeScript build environments.
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+// Fix: Explicitly use React.Component to ensure the class correctly inherits properties and methods like 'setState' and 'props'.
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   public state: ErrorBoundaryState = {
     hasError: false,
     error: null
@@ -110,14 +86,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       localStorage.clear();
       window.location.reload();
     } catch (e) {
-      // FIX: setState is inherited from the Component base class.
+      // Fix: Inheritance from React.Component provides access to this.setState.
       this.setState({ error: new Error("Recovery failed. Please clear site data manually.") });
     }
   }
 
   render() {
-    // FIX: Accessing state and props from this, ensuring types are resolved correctly via Component inheritance.
     const { hasError, error } = this.state;
+    // Fix: Inheritance from React.Component provides access to this.props.
     const { children } = this.props;
 
     if (hasError) {

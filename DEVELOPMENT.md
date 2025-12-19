@@ -1,3 +1,4 @@
+
 # DashyDash: Technical Standards
 
 ## 1. Grid Logic
@@ -14,8 +15,8 @@ Conformity is maintained via specific CSS class mappings in `ServiceGroupCard.ts
 - **Row 3 (Ecosystem)**: Uses an animated rainbow border (`animate-rainbow-slow`) and deep blue backgrounds.
 
 ## 3. Data Schema & Migrations
-- **Current Schema**: v13.
-- **Forced Sync**: v13 migration in `index.tsx` ensures that all users receive the "Locked 3x3" categories automatically without losing their existing `userLinks` or `userTodos`.
+- **Current Schema**: v14.
+- **Forced Sync**: v14 migration in `index.tsx` ensures that all users receive the "Locked 3x3" categories automatically without losing their existing `userLinks` or `userTodos`.
 - **Constants**: `SERVICE_GROUPS` in `constants.tsx` acts as the source of truth for all default link populations.
 
 ## 4. UI/UX Rules

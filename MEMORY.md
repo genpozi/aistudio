@@ -36,7 +36,7 @@ This document serves as the master blueprint for the DashyDash ecosystem. It tra
 | :--- | :--- | :--- |
 | **POZIVERSE** | Full Ecosystem Hub | World, 0Relai, Professionals, Directory |
 | **COLLECTIVE** | Agency Workspace | Hub, Pozi Agency |
-| **0RELIANCE LAB**| R&D Sandbox | World, 0Relai (Minus Professionals/Directory) |
+| **0RELIANCE LAB**| Research & Sandbox | World, Maeple, Documentation, Courses, Studio |
 
 ---
 
@@ -50,6 +50,7 @@ This document serves as the master blueprint for the DashyDash ecosystem. It tra
 ---
 
 ## ⚙️ SYSTEM REVISION LOG
-- **v13 (Current)**: Locked 3x3 grid, Unified Row 1 theme, Added REMEMBERY and 0RELIANCE LAB.
+- **v14 (Current)**: Updated 0RELIANCE LAB with Maeple, Docs, and Courses.
+- **v13**: Locked 3x3 grid, Unified Row 1 theme, Added REMEMBERY and 0RELIANCE LAB.
 - **Revision Lock**: Rows are restricted to max 3 cards. Column order is static.
 - **Master Password**: `maplewood` (Assigned for protected/announcement cards).
