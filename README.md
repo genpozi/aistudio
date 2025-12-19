@@ -1,20 +1,34 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# DashyDash by Pozi
 
-# Run and deploy your AI Studio app
+DashyDash is a high-performance, aesthetically-driven personal dashboard designed for absolute focus and organizational clarity. It follows a strict "Single Pane of Glass" philosophy for power users and self-hosters.
 
-This contains everything you need to run your app locally.
+## 🌟 The Completed Dashboard Architecture
 
-View your app in AI Studio: https://ai.studio/apps/drive/1_s2EaoWxi3PC_T_xtldhJHJJGIaGGj60
+The dashboard is now organized into a strictly enforced **Locked 3x3 Row Grid**:
 
-## Run Locally
+### 🏗 Row 1: The Productivity Suite (Amber Glow)
+- **Personal Links**: Your curated bookmarks.
+- **To-Do List**: Quick task management.
+- **Scratchpad**: A unified, persistent note-taking space.
 
-**Prerequisites:**  Node.js
+### 🛠 Row 2: The Infrastructure Stack (Cyan Glow)
+- **Widgets**: Micro-apps and development utilities.
+- **Toolbox**: Essential self-hosted services.
+- **Remembery**: Specialized knowledge vault (Karakeep, Paperless, Nextcloud).
 
+### 🌌 Row 3: The Ecosystem (Rainbow Glow)
+- **Poziverse**: The full entry point to the Poziverse world.
+- **Collective**: Collaborative and agency hubs.
+- **0Reliance Lab**: Research and development sandbox.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🧠 Intelligence Features
+- **OmniBar (`Ctrl+K`)**: Instant access to every link, service, and command.
+- **Research Engine**: Deep-web research powered by Gemini 3 Pro with citations.
+- **AI Companion**: Persistent sidebar for workspace assistance.
+
+## 🛠 Maintenance
+- For a full map of links and layout assignments, refer to `MEMORY.md`.
+- For technical implementation details and design standards, refer to `DEVELOPMENT.md`.
+
+---
+Built with ❤️ by Pozi. High Performance. Zero Bloat. Full Focus.

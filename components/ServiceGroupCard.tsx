@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ICONS } from '../constants';
 import type { ServiceGroup } from '../types';
@@ -25,8 +24,8 @@ export const ServiceGroupCard: React.FC<{
   isCollapsed: boolean, 
   onToggle: () => void
 }> = ({ group, isCollapsed, onToggle }) => {
-  const isVibrant = group.category === 'COLLECTIVE' || group.category === 'POZIVERSE';
-  const isSystem = group.category === 'WIDGETS' || group.category === 'TOOLBOX';
+  const isVibrant = group.category === 'COLLECTIVE' || group.category === 'POZIVERSE' || group.category === '0RELIANCE LAB';
+  const isSystem = group.category === 'WIDGETS' || group.category === 'TOOLBOX' || group.category === 'REMEMBERY';
 
   // Base glass classes
   let containerClasses = "bg-black/20 border-white/10 shadow-lg";

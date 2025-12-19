@@ -1,4 +1,3 @@
-
 import { GoogleGenAI } from '@google/genai';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
@@ -26,6 +25,7 @@ import { ServiceGroupCard } from './components/ServiceGroupCard';
 import SettingsModal, { SettingsData } from './components/SettingsModal';
 import SettingsWidget from './components/SettingsWidget';
 import TodoCardWidget from './components/TodoCardWidget';
+import NoteWidget from './components/NoteWidget';
 import Weather from './components/Weather';
 import YouTubeWidget from './components/YouTubeWidget';
 import {
@@ -53,6 +53,7 @@ import type {
   StoredServiceGroup,
   Todo,
   UserFeed,
+  DashboardNote,
 } from './types';
 
 export interface OnboardingData {
@@ -63,6 +64,7 @@ export interface OnboardingData {
 
 const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
 const TODO_WIDGET_CATEGORY_KEY = '__TODO__';
+const NOTES_WIDGET_CATEGORY_KEY = '__NOTES__';
 
 const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => {
   return groups.map((group) => ({
@@ -79,7 +81,7 @@ const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => 
 const defaultServiceGroups: ServiceGroup[] = [...SERVICE_GROUPS];
 
 const App: React.FC = () => {
-  const [name, setName] = useLocalStorage<string>(LOCAL_STORAGE_KEYS.USER_NAME, 'My Leige 🙇');
+  const [name, setName] = useLocalStorage<string>(LOCAL_STORAGE_KEYS.USER_NAME, 'Explorer');
   const [location, setLocation] = useLocalStorage<string>(LOCAL_STORAGE_KEYS.WEATHER_LOCATION, '');
   const [links, setLinks] = useLocalStorage<Link[]>(LOCAL_STORAGE_KEYS.USER_LINKS, []);
   const [feedUrls, setFeedUrls] = useLocalStorage<UserFeed[]>(LOCAL_STORAGE_KEYS.USER_FEEDS, DEFAULT_FEEDS);
@@ -92,7 +94,8 @@ const App: React.FC = () => {
   const [storedServiceGroups, setStoredServiceGroups] = useLocalStorage<StoredServiceGroup[]>(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, toStoredServiceGroups(defaultServiceGroups));
   const [chatHistory, setChatHistory] = useLocalStorage<ChatMessage[]>(LOCAL_STORAGE_KEYS.CHAT_HISTORY, []);
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
-  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, 'WIDGETS', 'TOOLBOX', 'COLLECTIVE', 'POZIVERSE']);
+  const [notes, setNotes] = useLocalStorage<DashboardNote[]>(LOCAL_STORAGE_KEYS.USER_NOTES, [{ id: 1, content: '', lastUpdated: Date.now() }]);
+  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, 'WIDGETS', 'TOOLBOX', 'REMEMBERY', 'COLLECTIVE', 'POZIVERSE', '0RELIANCE LAB']);
 
   const collapsedCategories = useMemo(() => new Set(collapsedKeys), [collapsedKeys]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -120,29 +123,35 @@ const App: React.FC = () => {
       services: group.services.map(s => ({ ...s, icon: getIcon(s.iconKey) })),
     }));
   }, [storedServiceGroups]);
+
+  // Helper to find a specific group by category name
+  const getGroup = (category: string) => hydratedServiceGroups.find(g => g.category === category);
   
-  const serviceGroupsMap = useMemo(() => {
-    const map = new Map<string, ServiceGroup>();
-    hydratedServiceGroups.forEach(g => map.set(g.category, g));
-    return map;
-  }, [hydratedServiceGroups]);
-
-  const searchableItems = useMemo<SearchableItem[]>(() => {
-    const services: SearchableItem[] = hydratedServiceGroups.flatMap(g => g.services.map(s => ({ type: 'service' as const, name: s.name, url: s.url, icon: s.icon, category: g.category })));
-    const userLinks: SearchableItem[] = links.map(l => ({ type: 'link' as const, name: l.name, url: l.url, icon: <Favicon link={l} />, category: 'Personal Links' }));
-    return [...services, ...userLinks];
-  }, [hydratedServiceGroups, links]);
-
   const [backgroundImage, setBackgroundImage] = useState('');
   const refreshBackgroundImage = useCallback(() => {
     setBackgroundImage(BACKGROUND_IMAGES[Math.floor(Math.random() * BACKGROUND_IMAGES.length)]);
   }, []);
 
+  const openSettings = (tab = 'general') => { setSettingsInitialTab(tab); setIsSettingsOpen(true); };
+
+  const searchableItems = useMemo<SearchableItem[]>(() => {
+    const services: SearchableItem[] = hydratedServiceGroups.flatMap(g => g.services.map(s => ({ type: 'service' as const, name: s.name, url: s.url, icon: s.icon, category: g.category })));
+    const userLinks: SearchableItem[] = links.map(l => ({ type: 'link' as const, name: l.name, url: l.url, icon: <Favicon link={l} />, category: 'Personal Links' }));
+    
+    const commands: SearchableItem[] = [
+        { type: 'command', name: 'Open Settings', icon: ICONS.Settings, category: 'System', perform: () => openSettings() },
+        { type: 'command', name: 'Refresh Background', icon: ICONS.Refresh, category: 'System', perform: refreshBackgroundImage },
+        { type: 'command', name: 'Start Focus Session', icon: ICONS.Play, category: 'Productivity', perform: () => { setFocusSessionEndTime(Date.now() + focusDuration * 60 * 1000); setIsFocusSessionActive(true); } },
+        { type: 'command', name: 'Open AI Companion', icon: ICONS.ChatBubble, category: 'Intelligence', perform: () => setIsCompanionOpen(true) },
+    ];
+
+    return [...services, ...userLinks, ...commands];
+  }, [hydratedServiceGroups, links, refreshBackgroundImage, focusDuration]);
+
   useEffect(() => { refreshBackgroundImage(); }, [refreshBackgroundImage]);
   useEffect(() => { document.documentElement.className = THEMES.find(t => t.id === theme)?.className || THEMES[0].className; }, [theme]);
 
-  const openSettings = (tab = 'general') => { setSettingsInitialTab(tab); setIsSettingsOpen(true); };
-  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, ...hydratedServiceGroups.map(g => g.category)], [hydratedServiceGroups]);
+  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, ...hydratedServiceGroups.map(g => g.category)], [hydratedServiceGroups]);
   
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
   const handleCollapseAll = () => setCollapsedKeys(allCategoryKeys);
@@ -175,12 +184,25 @@ const App: React.FC = () => {
     } catch (e) { setChatHistory([...newHistory, { role: 'model', text: `Error: ${e instanceof Error ? e.message : 'Unknown'}` }]); } finally { setIsResponding(false); }
   };
 
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsOmniBarOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, []);
+
   if (!hasOnboarded) return <OnboardingModal onComplete={d => { setName(d.name); setLocation(d.location); setFocusPrompt(d.focusPrompt); setHasOnboarded(true); }} />;
+
+  const lockedServiceCategories = ['WIDGETS', 'TOOLBOX', 'REMEMBERY', 'POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'];
 
   return (
     <TimeProvider>
       <div className="h-screen w-screen bg-cover bg-center bg-no-repeat text-white transition-all duration-1000" style={{ backgroundImage: `url(${backgroundImage})` }}>
-        <div className={`h-full w-full bg-black/40 backdrop-blur-sm flex flex-col p-4 md:p-8 overflow-y-auto custom-scrollbar transition-opacity duration-500 ${isFocusSessionActive ? 'opacity-0' : 'opacity-100'}`}>
+        <div className={`h-full w-full bg-black/45 backdrop-blur-[2px] flex flex-col p-4 md:p-8 overflow-y-auto custom-scrollbar transition-opacity duration-500 ${isFocusSessionActive ? 'opacity-0' : 'opacity-100'}`}>
           <header className="flex flex-col md:flex-row justify-between items-start w-full gap-8 mb-12">
             <div className="flex flex-col items-start space-y-4 flex-shrink-0">
               <PoziBar />
@@ -191,7 +213,7 @@ const App: React.FC = () => {
             <div className="flex flex-col items-center text-center flex-grow pt-2">
               <Clock />
               <Greeting name={name} focusPrompt={focusPrompt} onStartFocus={() => { setFocusSessionEndTime(Date.now() + focusDuration * 60 * 1000); setIsFocusSessionActive(true); }} />
-              <div className="w-full max-w-2xl mx-auto mt-8">
+              <div className="w-full max-w-2xl mx-auto mt-10">
                 <SearchWidget researchBackend={researchBackend} onOpenSettings={() => openSettings('research')} onResearchSubmit={handleResearchSubmit} />
               </div>
             </div>
@@ -204,7 +226,8 @@ const App: React.FC = () => {
 
           <main className="flex-grow">
             <div className="w-full max-w-7xl mx-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+                  {/* ROW 1: Amber Glow Cards */}
                   <LinksWidget 
                     links={links} 
                     onOpenSettings={() => openSettings('links')} 
@@ -217,25 +240,61 @@ const App: React.FC = () => {
                     isCollapsed={collapsedCategories.has(TODO_WIDGET_CATEGORY_KEY)} 
                     onToggle={() => toggleCategoryCollapse(TODO_WIDGET_CATEGORY_KEY)}
                   />
-                  {['WIDGETS', 'TOOLBOX', 'COLLECTIVE', 'POZIVERSE'].map(cat => serviceGroupsMap.has(cat) && (
+                  <NoteWidget 
+                    notes={notes}
+                    setNotes={setNotes}
+                    isCollapsed={collapsedCategories.has(NOTES_WIDGET_CATEGORY_KEY)}
+                    onToggle={() => toggleCategoryCollapse(NOTES_WIDGET_CATEGORY_KEY)}
+                  />
+
+                  {/* ROW 2: Cyan Glow Cards */}
+                  {['WIDGETS', 'TOOLBOX', 'REMEMBERY'].map(cat => {
+                    const group = getGroup(cat);
+                    return group ? (
                       <ServiceGroupCard 
-                        key={cat} 
-                        group={serviceGroupsMap.get(cat)!} 
-                        isCollapsed={collapsedCategories.has(cat)} 
-                        onToggle={() => toggleCategoryCollapse(cat)}
+                        key={group.category} 
+                        group={group} 
+                        isCollapsed={collapsedCategories.has(group.category)} 
+                        onToggle={() => toggleCategoryCollapse(group.category)}
+                      />
+                    ) : null;
+                  })}
+
+                  {/* ROW 3: Rainbow Glow Cards */}
+                  {['POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'].map(cat => {
+                    const group = getGroup(cat);
+                    return group ? (
+                      <ServiceGroupCard 
+                        key={group.category} 
+                        group={group} 
+                        isCollapsed={collapsedCategories.has(group.category)} 
+                        onToggle={() => toggleCategoryCollapse(group.category)}
+                      />
+                    ) : null;
+                  })}
+
+                  {/* Additional Custom Categories if any */}
+                  {hydratedServiceGroups
+                    .filter(g => !lockedServiceCategories.includes(g.category))
+                    .map(group => (
+                      <ServiceGroupCard 
+                        key={group.category} 
+                        group={group} 
+                        isCollapsed={collapsedCategories.has(group.category)} 
+                        onToggle={() => toggleCategoryCollapse(group.category)}
                       />
                   ))}
               </div>
             </div>
-            <div className="w-full max-w-7xl mx-auto mt-6 space-y-6">
+            <div className="w-full max-w-7xl mx-auto mt-10 space-y-8 pb-10">
               <FeedWidget feedUrls={rssFeeds} onOpenSettings={() => openSettings('feeds')} />
               <YouTubeWidget feedUrls={youtubeFeeds} onOpenSettings={() => openSettings('feeds')} />
             </div>
           </main>
 
-          <footer className="w-full flex justify-between items-end mt-8">
+          <footer className="w-full flex justify-between items-end mt-auto pt-8 pb-2">
             <Quote />
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <BackgroundSwitcher onRefresh={refreshBackgroundImage} />
               <AICompanionWidget onClick={() => setIsCompanionOpen(true)} />
               <SettingsWidget onOpenSettings={() => openSettings('general')} />

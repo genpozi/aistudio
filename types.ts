@@ -20,22 +20,18 @@ export interface UserFeed {
   type: 'rss' | 'youtube';
 }
 
-// Represents a single, normalized item from a parsed feed
 export interface FeedItem {
   title: string;
   link: string;
   pubDate: string;
   author: string;
-  source: string; // Manually added from the feed's main title
+  source: string;
   thumbnailUrl?: string;
 }
 
 export type IconKey = keyof typeof ICONS;
-// FIX: Create a new type for icon keys that are not nested objects, to be used in the icon selector.
 export type FlatIconKey = Exclude<IconKey, 'GOOGLE' | 'POZI'>;
 
-// The data structure that is safe to store in localStorage.
-// It uses a string `iconKey` instead of a ReactNode.
 export interface StoredService {
   name: string;
   url:string;
@@ -43,30 +39,27 @@ export interface StoredService {
   inProduction?: boolean;
 }
 
-// The runtime data structure, with the 'icon' ReactNode rehydrated.
 export interface Service extends StoredService {
   icon: React.ReactNode;
 }
 
-// The stored group structure.
 export interface StoredServiceGroup {
     category: string;
     services: StoredService[];
 }
 
-// The runtime group structure.
 export interface ServiceGroup {
   category: string;
   services: Service[];
 }
 
-// Unified type for all items searchable in the OmniBar
 export interface SearchableItem {
-  type: 'service' | 'link';
+  type: 'service' | 'link' | 'command' | 'action';
   name: string;
-  url: string;
+  url?: string;
   icon: React.ReactNode;
-  category?: string; // for services
+  category?: string;
+  perform?: () => void;
 }
 
 export interface WeatherInfo {
@@ -104,3 +97,9 @@ export interface ChatMessage {
 }
 
 export type FocusDuration = 25 | 45 | 60;
+
+export interface DashboardNote {
+    id: number;
+    content: string;
+    lastUpdated: number;
+}

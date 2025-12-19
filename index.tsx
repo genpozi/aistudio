@@ -1,4 +1,5 @@
 
+// FIX: Importing React directly and using Component from 'react' ensures correct inheritance of 'state', 'props', and 'setState' in strict TypeScript environments.
 import React, { Component, ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -36,24 +37,31 @@ const runMigrations = () => {
                 }
             }
 
-            // --- Migration v9: Sync New Premium RSS Feeds ---
-            if (storedVersion < 9) {
-                console.log("Running migration to schema v9 (RSS Refresh)...");
-                const rawFeeds = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_FEEDS);
-                if (rawFeeds) {
-                    try {
-                        const userFeeds = JSON.parse(rawFeeds) as UserFeed[];
-                        const existingUrls = new Set(userFeeds.map(f => f.url));
-                        const newDefaults = DEFAULT_FEEDS.filter(f => !existingUrls.has(f.url));
-                        
-                        if (newDefaults.length > 0) {
-                            localStorage.setItem(LOCAL_STORAGE_KEYS.USER_FEEDS, JSON.stringify([...userFeeds, ...newDefaults]));
-                            console.log(`Added ${newDefaults.length} new high-quality feeds.`);
-                        }
-                    } catch (e) { 
-                        console.error("v9 migration error", e);
-                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_FEEDS, JSON.stringify(DEFAULT_FEEDS));
+            // --- Migration v13: Full Sync of Locked 3x3 Layout (Expansion) ---
+            if (storedVersion < 13) {
+                console.log("Running migration to schema v13 (Restoring Locked Layout)...");
+                const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
+                try {
+                    const correctedDefaults: StoredServiceGroup[] = SERVICE_GROUPS.map(dg => ({
+                        category: dg.category,
+                        services: dg.services.map(s => ({
+                            name: s.name,
+                            url: s.url,
+                            iconKey: s.iconKey,
+                            inProduction: s.inProduction
+                        }))
+                    }));
+                    
+                    if (rawGroups) {
+                        const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
+                        const defaultCategories = new Set(SERVICE_GROUPS.map(g => g.category));
+                        const customGroups = userGroups.filter(g => !defaultCategories.has(g.category));
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify([...correctedDefaults, ...customGroups]));
+                    } else {
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(correctedDefaults));
                     }
+                } catch (e) {
+                    console.error("v13 migration error", e);
                 }
             }
 
@@ -77,15 +85,16 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: Explicitly extending from Component (imported directly from React) ensures that React class properties like state, setState, and props are correctly inherited and typed, resolving compiler errors where named exports might fail to resolve correctly in some environments.
+// FIX: Explicitly extending the imported 'Component' and specifying generics ensures that 'state', 'setState', and 'props' are correctly typed and inherited from the base class.
+// Using 'Component' directly from 'react' helps resolve property access issues on 'this' in certain TypeScript build environments.
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  public state: ErrorBoundaryState = {
+    hasError: false,
+    error: null
+  };
+
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    // Explicitly initialize state in constructor for reliable type inference across different environments.
-    this.state = {
-      hasError: false,
-      error: null
-    };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -101,13 +110,13 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       localStorage.clear();
       window.location.reload();
     } catch (e) {
-      // FIX: setState is now correctly typed as part of the Component base class.
+      // FIX: setState is inherited from the Component base class.
       this.setState({ error: new Error("Recovery failed. Please clear site data manually.") });
     }
   }
 
   render() {
-    // FIX: Accessing state and props correctly from the base Component class ensuring type safety for children, hasError, and error.
+    // FIX: Accessing state and props from this, ensuring types are resolved correctly via Component inheritance.
     const { hasError, error } = this.state;
     const { children } = this.props;
 

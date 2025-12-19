@@ -1,8 +1,7 @@
-
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
-export const SCHEMA_VERSION = 9;
+export const SCHEMA_VERSION = 13; // Forced migration for 3x3 layout expansion
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
@@ -26,6 +25,7 @@ export const ICONS = {
     Play: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     CollapseAll: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>,
     ExpandAll: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>,
+    Edit: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
     AMPERSAND: (
         <svg viewBox="0 0 24 24">
             <defs>
@@ -100,10 +100,10 @@ export const ICONS = {
             </g>
         </svg>,
         Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z"/></svg>,
-        Gmail: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>,
+        Gmail: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>,
         Calendar: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>,
-        Drive: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.5 14h5.5l6-10.5zM9.83 15L12 11.5 15 17h-8.5zM16.29 3.5L10.5 14h12z"/></svg>,
-        Keep: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V20H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>,
+        Drive: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.5 14h5.5l6-10.5zM9.83 15L12 11.5 15 17h-8.5zM16.29 3.5L10.5 14h12z"/></svg>,
+        Keep: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V20H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>,
     },
     POZI: {
         Logo: (
@@ -158,23 +158,19 @@ export const LOCAL_STORAGE_KEYS = {
     DATA_SCHEMA_VERSION: 'dataSchemaVersion',
     CHAT_HISTORY: 'chatHistory',
     COLLAPSED_CATEGORIES: 'collapsedCategories',
+    USER_NOTES: 'userNotes',
 };
 
 export const DEFAULT_FEEDS: UserFeed[] = [
-  { id: 1, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ', type: 'youtube' }, // MKBHD
-  { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6107grRI4m0o2-emgoDnAA', type: 'youtube' }, // SmarterEveryDay
-  { id: 5, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCY1kMZp36IQSyNx_9h4mpCg', type: 'youtube' }, // Adam Friedland Show
-  { id: 6, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCp68_L6SJYB7u89G1C3D6eQ', type: 'youtube' }, // Mark Rober
-  { id: 7, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA', type: 'youtube' }, // Veritasium
+  { id: 1, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ', type: 'youtube' },
+  { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6107grRI4m0o2-emgoDnAA', type: 'youtube' },
+  { id: 5, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCY1kMZp36IQSyNx_9h4mpCg', type: 'youtube' },
+  { id: 7, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA', type: 'youtube' },
   { id: 3, url: 'http://feeds.arstechnica.com/arstechnica/index', type: 'rss' },
   { id: 4, url: 'http://feeds.bbci.co.uk/news/rss.xml', type: 'rss' },
   { id: 8, url: 'https://www.theverge.com/rss/index.xml', type: 'rss' },
   { id: 9, url: 'https://www.wired.com/feed/rss', type: 'rss' },
   { id: 10, url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', type: 'rss' },
-  { id: 11, url: 'https://feeds.npr.org/1001/rss.xml', type: 'rss' },
-  { id: 12, url: 'https://www.scientificamerican.com/feed/', type: 'rss' },
-  { id: 13, url: 'https://techcrunch.com/feed/', type: 'rss' },
-  { id: 14, url: 'https://www.theguardian.com/world/rss', type: 'rss' },
 ];
 
 export const THEMES: Theme[] = [
@@ -185,15 +181,12 @@ export const THEMES: Theme[] = [
 
 export const GOOGLE_SERVICES: Service[] = [
     { name: "Gemini", url: "https://gemini.google.com", icon: ICONS.GOOGLE.Gemini, iconKey: "GOOGLE.Gemini" },
-    { name: "Google AI Studio", url: "https://aistudio.google.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    { name: "NotebookLM", url: "https://notebooklm.google.com/", icon: ICONS.Document, iconKey: "Document" },
     { name: "Gmail", url: "https://mail.google.com", icon: ICONS.GOOGLE.Gmail, iconKey: "GOOGLE.Gmail" },
     { name: "Calendar", url: "https://calendar.google.com", icon: ICONS.GOOGLE.Calendar, iconKey: "GOOGLE.Calendar" },
     { name: "Google Drive", url: "https://drive.google.com", icon: ICONS.GOOGLE.Drive, iconKey: "GOOGLE.Drive" },
     { name: "Keep", url: "https://keep.google.com", icon: ICONS.GOOGLE.Keep, iconKey: "GOOGLE.Keep" },
 ];
 
-// Simplified brand shelves to exactly one primary link each
 export const POZI_SERVICES: Service[] = [
     { name: "POZIVERSE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
 ];
@@ -210,7 +203,6 @@ export const I_SERVICES: Service[] = [
     { name: "Documentation", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
 ];
 
-// Main Dashboard Card Groups
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "WIDGETS",
@@ -218,7 +210,8 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "OBSIDIAN-COPILOT", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
       { name: "DOCK-a-DOODLE", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
       { name: "DASHY-DASH", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-      { name: "POZICORDER", url: "https://pozicorder.vercel.app", icon: ICONS.Play, iconKey: "Play" },
+      { name: "NGINX PROXY", url: "https://npm.pozi.agency", icon: ICONS.Lock, iconKey: "Lock" },
+      { name: "PORTAINER", url: "https://portainer.pozi.agency", icon: ICONS.Code, iconKey: "Code" },
     ],
   },
   {
@@ -227,26 +220,38 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
         { name: "VAULTWARDEN", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
         { name: "PAPERLESS-AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
         { name: "HULY PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "PLANE PROJECTS", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+        { name: "UPTIME KUMA", url: "https://status.pozi.agency", icon: ICONS.Refresh, iconKey: "Refresh" },
     ]
   },
   {
-    category: "COLLECTIVE",
+    category: "REMEMBERY",
     services: [
-        { name: "POZI DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "POZI PROFESSIONALS", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
-        { name: "POZITIVE LAUNCHPAD", url: "https://poziverse.0reliance.com/app/index.html", icon: ICONS.Play, iconKey: "Play" },
-        { name: "0RELIANCE COURSES", url: "https://692b041f9a99771f24f34110.blocks-app.diy/Landing", icon: ICONS.Brain, iconKey: "Brain" },
-        { name: "POZIVERSE WARP", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
+        { name: "KARAKEEP", url: "https://keep.pozi.life", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
+        { name: "PAPERLESS", url: "https://paperless.stanz.app/", icon: ICONS.Document, iconKey: "Document" },
+        { name: "NEXTCLOUD", url: "https://c.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
     ]
   },
   {
     category: "POZIVERSE",
     services: [
-        { name: "POZIVERSE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
-        { name: "0RELAI", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "MAEPLE", url: "https://maeple.0reliance.com", icon: ICONS.Code, iconKey: "Code" },
-        { name: "0RELIANCE", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
+        { name: "POZIVERSE WORLD", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
+        { name: "0RELAI STUDIO", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+        { name: "POZI PROFESSIONALS", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
+        { name: "POZI DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    ]
+  },
+  {
+    category: "COLLECTIVE",
+    services: [
+        { name: "COLLECTIVE HUB", url: "https://poziverse.0reliance.com/collective", icon: ICONS.Globe, iconKey: "Globe" },
+        { name: "POZI AGENCY", url: "https://pozi.agency", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    ]
+  },
+  {
+    category: "0RELIANCE LAB",
+    services: [
+        { name: "POZIVERSE WORLD", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
+        { name: "0RELAI STUDIO", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
     ]
   }
 ];
@@ -254,9 +259,15 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
 export const QUOTES = [
     { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
     { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
+    { text: "Simplicity is the ultimate sophistication.", author: "Leonardo da Vinci" },
+    { text: "Focus is a matter of deciding what things you're not going to do.", author: "John Carmack" },
 ];
 
 export const BACKGROUND_IMAGES = [
     'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=1920&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1434725039720-abb26e22ebe8?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=1920&auto=format&fit=crop',
 ];
