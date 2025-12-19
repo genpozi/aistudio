@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ICONS, CORS_PROXY_URL } from '../constants';
 import type { FeedItem, UserFeed } from '../types';
 
-// A simple utility to get text content from a DOM element, trying multiple selectors.
 const getText = (element: Element, selectors: string[]): string => {
   for (const selector of selectors) {
     const content = element.querySelector(selector)?.textContent;
@@ -11,7 +11,6 @@ const getText = (element: Element, selectors: string[]): string => {
   return '';
 };
 
-// Gets an attribute from an element, trying multiple selectors.
 const getAttribute = (element: Element, selectors: string[], attribute: string): string => {
     for (const selector of selectors) {
         const selectedElement = element.querySelector(selector);
@@ -22,55 +21,91 @@ const getAttribute = (element: Element, selectors: string[], attribute: string):
     return '';
 }
 
-// Parses an XML string into a structured feed object.
 const parseFeed = (xmlString: string): { feedTitle: string; items: Omit<FeedItem, 'source'>[] } => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xmlString, 'application/xml');
   const parserError = doc.querySelector('parsererror');
-  if (parserError) {
-    throw new Error('Failed to parse XML feed.');
-  }
+  if (parserError) throw new Error('Failed to parse XML feed.');
 
-  // RSS Feed Parsing
-  const feedTitle = doc.querySelector('channel > title')?.textContent ?? 'Untitled Feed';
-  const entries = Array.from(doc.querySelectorAll('item'));
-  const items = entries.map(item => ({
-    title: getText(item, ['title']),
-    link: getText(item, ['link']),
-    pubDate: getText(item, ['pubDate', 'dc\\:date']),
-    author: getText(item, ['author', 'dc\\:creator']),
-    thumbnailUrl: getAttribute(item, ['enclosure', 'media\\:content', 'media\\:thumbnail'], 'url'),
-  }));
+  const feedTitle = doc.querySelector('channel > title, feed > title')?.textContent ?? 'Untitled Feed';
+  
+  const entries = Array.from(doc.querySelectorAll('item, entry'));
+  const items = entries.map(item => {
+    let thumb = getAttribute(item, ['enclosure', 'media\\:content', 'media\\:thumbnail', 'thumbnail'], 'url');
+    
+    if (!thumb) {
+        const atomLink = Array.from(item.querySelectorAll('link[rel="enclosure"]')).find(l => l.getAttribute('type')?.startsWith('image/'));
+        if (atomLink) thumb = atomLink.getAttribute('href') || '';
+    }
+
+    return {
+        title: getText(item, ['title']),
+        link: item.querySelector('link')?.getAttribute('href') || getText(item, ['link']),
+        pubDate: getText(item, ['pubDate', 'updated', 'published', 'dc\\:date']),
+        author: getText(item, ['author > name', 'author', 'dc\\:creator']),
+        thumbnailUrl: thumb || '',
+    };
+  });
   return { feedTitle, items };
 };
 
-
-// Helper to calculate time since a date string
 const timeSince = (dateString: string): string => {
   try {
-    const date = new Date(dateString.replace(/-/g, '/')); // Improve date parsing compatibility
+    const date = new Date(dateString.replace(/-/g, '/'));
+    if (isNaN(date.getTime())) return 'recently';
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-
-    if (seconds < 60) {
-      return 'Just now';
-    }
-
+    if (seconds < 60) return 'Just now';
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) {
-      return `${minutes}m ago`;
-    }
-
+    if (minutes < 60) return `${minutes}m ago`;
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) {
-      return `${hours}h ago`;
-    }
-
+    if (hours < 24) return `${hours}h ago`;
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    if (days < 30) return `${days}d ago`;
+    return date.toLocaleDateString();
   } catch (e) {
-    return 'a while ago';
+    return 'recently';
   }
 };
+
+// --- START: Generative Placeholder Logic ---
+const PLACEHOLDER_STYLES = [
+    { name: 'Ocean', classes: 'from-cyan-900 via-blue-900 to-teal-900', icon: ICONS.Globe },
+    { name: 'Galaxy', classes: 'from-purple-900 via-indigo-950 to-blue-900', icon: ICONS.Brain },
+    { name: 'Sunset', classes: 'from-rose-900 via-orange-900 to-amber-900', icon: ICONS.Sparkles },
+    { name: 'Forest', classes: 'from-emerald-950 via-green-900 to-teal-950', icon: ICONS.Cloud },
+    { name: 'Lava', classes: 'from-red-950 via-rose-900 to-orange-950', icon: ICONS.Code },
+    { name: 'Monochrome', classes: 'from-slate-900 via-gray-800 to-zinc-950', icon: ICONS.Document },
+    { name: 'Neon', classes: 'from-violet-950 via-fuchsia-900 to-purple-950', icon: ICONS.Plus },
+];
+
+const getPlaceholderForTitle = (title: string) => {
+    // Simple hash to ensure same title always gets same style
+    let hash = 0;
+    for (let i = 0; i < title.length; i++) {
+        hash = title.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % PLACEHOLDER_STYLES.length;
+    return PLACEHOLDER_STYLES[index];
+};
+
+const PlaceholderCard: React.FC<{ title: string }> = ({ title }) => {
+    const style = useMemo(() => getPlaceholderForTitle(title), [title]);
+    return (
+        <div className={`w-full h-full bg-gradient-to-br ${style.classes} flex flex-col items-center justify-center relative overflow-hidden group-hover:scale-105 transition-transform duration-700`}>
+            {/* Subtle Pattern Overlay */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '16px 16px' }}></div>
+            
+            {/* Centered Floating Icon */}
+            <div className="w-12 h-12 text-white/20 relative z-10 drop-shadow-2xl transform group-hover:rotate-12 transition-transform duration-500">
+                {style.icon}
+            </div>
+            
+            {/* Visual Flare */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-white/10"></div>
+        </div>
+    );
+};
+// --- END: Generative Placeholder Logic ---
 
 interface FeedWidgetProps {
   className?: string;
@@ -81,137 +116,109 @@ interface FeedWidgetProps {
 const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSettings }) => {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const fetchFeeds = useCallback(async () => {
     if (!feedUrls || feedUrls.length === 0) {
       setItems([]);
       return;
     }
-
     setIsLoading(true);
-    setError(null);
-
+    
     const fetchAndParse = async (feed: UserFeed): Promise<{ feedTitle: string; items: Omit<FeedItem, 'source'>[] }> => {
       try {
         const response = await fetch(`${CORS_PROXY_URL}${feed.url}`);
-        if (!response.ok) {
-          throw new Error(`HTTP error ${response.status} for feed: ${feed.url}`);
-        }
+        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
         const text = await response.text();
         return parseFeed(text);
-      } catch (err) {
-        throw new Error(`Failed to fetch or parse feed ${feed.url}: ${err instanceof Error ? err.message : String(err)}`);
+      } catch (err) { 
+        console.warn(`Failed to fetch feed ${feed.url}`, err);
+        return { feedTitle: 'Unknown', items: [] };
       }
     };
 
-    const promises = feedUrls.map(fetchAndParse);
-    const results = await Promise.allSettled(promises);
-    
+    const results = await Promise.allSettled(feedUrls.map(fetchAndParse));
     const newItems: FeedItem[] = [];
-    let hasErrors = false;
     results.forEach(result => {
       if (result.status === 'fulfilled') {
         const { feedTitle, items } = result.value;
         items.forEach(item => {
-          newItems.push({
-            ...item,
-            source: feedTitle,
-          });
+            if (item.title && item.link) {
+                newItems.push({ ...item, source: feedTitle });
+            }
         });
-      } else { // result.status === 'rejected'
-        console.error("Feed fetch failed:", result.reason?.message || result.reason);
-        hasErrors = true;
       }
     });
 
-    if (hasErrors) {
-        setError("Some feeds could not be loaded. Please check the URLs and your network connection.");
-    }
-
-    // Sort all items by publication date, descending, safely handling invalid dates.
-    newItems.sort((a, b) => {
-        const dateA = new Date(a.pubDate);
-        const dateB = new Date(b.pubDate);
-        // Treat invalid dates as older than any valid date
-        const timeA = !isNaN(dateA.getTime()) ? dateA.getTime() : 0;
-        const timeB = !isNaN(dateB.getTime()) ? dateB.getTime() : 0;
-        return timeB - timeA;
-    });
-
-    setItems(newItems.slice(0, 10)); // Limit to latest 10 items
+    newItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    setItems(newItems.slice(0, 30)); // Show more items now that it's compact
     setIsLoading(false);
   }, [feedUrls]);
 
-  useEffect(() => {
-    fetchFeeds();
-  }, [fetchFeeds]);
-
-  const renderContent = () => {
-    if (isLoading) {
-      return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">Loading news...</p></div>;
-    }
-    if (error && items.length === 0) {
-        return <div className="flex-grow flex items-center justify-center text-center p-4 min-h-[200px]"><p className="text-red-400/80">{error}</p></div>
-    }
-    if (feedUrls.length === 0) {
-        return (
-            <div className="flex-grow flex flex-col items-center justify-center text-center min-h-[200px]">
-                <p className="text-white/70 mb-4">No RSS feeds configured.</p>
-                <button onClick={onOpenSettings} className="bg-white/10 hover:bg-white/20 text-white font-semibold py-2 px-4 rounded-lg">
-                    Configure Feeds
-                </button>
-            </div>
-        );
-    }
-    if (items.length === 0 && !error) {
-        return <div className="flex-grow flex items-center justify-center min-h-[200px]"><p className="text-white/70">No news items found.</p></div>
-    }
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4 custom-scrollbar -mr-4 pr-4">
-            {items.map((item, index) => (
-            <a 
-                key={`${item.link}-${index}`}
-                href={item.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="group block flex-shrink-0 bg-white/5 rounded-lg overflow-hidden border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)]"
-            >
-                {item.thumbnailUrl && (
-                    <div className="relative">
-                        <img src={item.thumbnailUrl} alt={item.title} className="w-full h-40 object-cover" />
-                    </div>
-                )}
-                <div className="p-4 flex flex-col h-36 justify-between">
-                    <div>
-                      <p className="text-white font-semibold text-base leading-tight group-hover:text-[var(--text-highlight)] transition-colors three-line-clamp">
-                          {item.title}
-                      </p>
-                    </div>
-                    <div className="flex justify-between items-center text-xs text-white/70 mt-2">
-                        <span className="bg-white/10 px-2 py-1 rounded-full font-semibold truncate max-w-[60%]">{item.source}</span>
-                        <span>{timeSince(item.pubDate)}</span>
-                    </div>
-                </div>
-            </a>
-            ))}
-        </div>
-    );
-  };
+  useEffect(() => { fetchFeeds(); }, [fetchFeeds]);
 
   return (
-    <div className={`bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-lg flex flex-col ${className || ''}`}>
-      <div className="bg-gradient-to-r from-black/40 to-black/10 px-4 py-3 flex justify-between items-center flex-shrink-0">
-        <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">NEWS & ARTICLES (RSS)</h3>
-        <div className="flex items-center space-x-2">
-            <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white disabled:opacity-50" aria-label="Refresh feeds">
-                <div className="w-5 h-5">{ICONS.Refresh}</div>
+    <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col ${className || ''}`}>
+      <div className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-purple-500/10">
+        <div className="flex items-center space-x-3">
+             <h3 className="text-purple-400 font-black text-lg uppercase tracking-wider drop-shadow-sm">WORLD NEWS & TECH</h3>
+             {isLoading && <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded animate-pulse font-bold tracking-tighter">SYNCING</span>}
+        </div>
+        <div className="flex items-center space-x-4">
+            <button onClick={onOpenSettings} className="text-white/40 hover:text-white transition-colors">
+                <div className="w-5 h-5">{ICONS.Plus}</div>
+            </button>
+            <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white transition-colors" title="Refresh Feeds">
+                <div className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}>{ICONS.Refresh}</div>
             </button>
         </div>
       </div>
-      <div className="px-4 pb-0 pt-3 flex-grow flex flex-col min-h-0">
-        {error && items.length > 0 && <p className="text-sm text-red-400/80 mb-2">{error}</p>}
-        {renderContent()}
+      
+      <div className="p-4 flex-grow overflow-hidden">
+        {isLoading && items.length === 0 ? (
+            <div className="flex items-center justify-center h-48 text-white/50 italic animate-pulse">Syncing Global Intelligence Network...</div>
+        ) : (
+            <div className="flex overflow-x-auto space-x-4 pb-4 custom-scrollbar snap-x">
+                {items.map((item, index) => (
+                <a 
+                    key={`${item.link}-${index}`}
+                    href={item.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="group relative flex-shrink-0 w-64 aspect-video bg-black/40 rounded-xl overflow-hidden border border-white/5 hover:border-purple-400/40 transition-all duration-300 shadow-xl snap-start"
+                >
+                    {/* Visual Content: Image or Generative Placeholder */}
+                    <div className="w-full h-full">
+                        {item.thumbnailUrl ? (
+                            <img 
+                                src={item.thumbnailUrl} 
+                                alt="" 
+                                loading="lazy"
+                                className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" 
+                            />
+                        ) : (
+                            <PlaceholderCard title={item.title} />
+                        )}
+                    </div>
+                    
+                    {/* Text Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/100 via-black/40 to-transparent p-4 flex flex-col justify-end">
+                        <div className="overflow-hidden">
+                            <p className="text-white text-xs font-bold line-clamp-2 drop-shadow-md group-hover:text-purple-300 transition-colors transform group-hover:translate-y-[-2px] duration-300">
+                                {item.title}
+                            </p>
+                        </div>
+                        <div className="flex justify-between items-center mt-2 text-[9px] text-white/50">
+                            <span className="font-bold uppercase tracking-widest truncate max-w-[65%] bg-purple-500/10 px-1.5 py-0.5 rounded text-purple-200/80">{item.source}</span>
+                            <span className="font-medium">{timeSince(item.pubDate)}</span>
+                        </div>
+                    </div>
+                    
+                    {/* Hover Glow Effect */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500 bg-gradient-to-tr from-purple-500/10 to-transparent"></div>
+                </a>
+                ))}
+            </div>
+        )}
       </div>
     </div>
   );

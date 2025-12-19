@@ -2,13 +2,13 @@
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 9;
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
-    Sparkles: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.456-2.456L12.75 18l1.197-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.197a3.375 3.375 0 002.456 2.456L20.25 18l-1.197.398a3.375 3.375 0 00-2.456-2.456z" /></svg>,
+    Sparkles: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456-2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.456-2.456L12.75 18l1.197-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.197a3.375 3.375 0 002.456 2.456L20.25 18l-1.197.398a3.375 3.375 0 00-2.456-2.456z" /></svg>,
     User: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>,
-    Globe: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.293-.293a1 1 0 011.414 0l.293.293M10 21v-4m4 4v-4m-4-2.293l.293-.293a1 1 0 011.414 0l.293.293m-4 0l-.293.293a1 1 0 000 1.414l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293" /></svg>,
+    Globe: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.293-.293a1 1 0 011.414 0l.293.293M10 21v-4m4 4v-4m-4-2.293l.293-.293a1 1 0 011.414 0l.293.293m-4 0l-.293.293a1 1 0 000 1.414l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293" /></svg>,
     Cloud: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>,
     Document: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
     CheckSquare: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
@@ -44,24 +44,7 @@ export const ICONS = {
                 </radialGradient>
             </defs>
             <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgO)"/>
-            <text
-                x="50%"
-                y="52%"
-                dominantBaseline="central"
-                textAnchor="middle"
-                fontSize="24"
-                fontFamily="sans-serif"
-                fontWeight="bold"
-                fill="url(#ampersandRainbow)"
-                stroke="#fff"
-                strokeWidth="0.5"
-                paintOrder="stroke"
-            >
-                O
-            </text>
-            <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
-            <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
-            <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
+            <text x="50%" y="52%" dominantBaseline="central" textAnchor="middle" fontSize="24" fontFamily="sans-serif" fontWeight="bold" fill="url(#ampersandRainbow)" stroke="#fff" strokeWidth="0.5" paintOrder="stroke">O</text>
         </svg>
     ),
     Z_LOGO: (
@@ -82,24 +65,7 @@ export const ICONS = {
                 </radialGradient>
             </defs>
             <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgZ)"/>
-            <text
-                x="50%"
-                y="52%"
-                dominantBaseline="central"
-                textAnchor="middle"
-                fontSize="24"
-                fontFamily="sans-serif"
-                fontWeight="bold"
-                fill="url(#zRainbow)"
-                stroke="#fff"
-                strokeWidth="0.5"
-                paintOrder="stroke"
-            >
-                Z
-            </text>
-            <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
-            <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
-            <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
+            <text x="50%" y="52%" dominantBaseline="central" textAnchor="middle" fontSize="24" fontFamily="sans-serif" fontWeight="bold" fill="url(#zRainbow)" stroke="#fff" strokeWidth="0.5" paintOrder="stroke">Z</text>
         </svg>
     ),
     I_LOGO: (
@@ -120,24 +86,7 @@ export const ICONS = {
                 </radialGradient>
             </defs>
             <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgI)"/>
-            <text
-                x="50%"
-                y="52%"
-                dominantBaseline="central"
-                textAnchor="middle"
-                fontSize="24"
-                fontFamily="sans-serif"
-                fontWeight="bold"
-                fill="url(#iRainbow)"
-                stroke="#fff"
-                strokeWidth="0.5"
-                paintOrder="stroke"
-            >
-                I
-            </text>
-            <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
-            <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
-            <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
+            <text x="50%" y="52%" dominantBaseline="central" textAnchor="middle" fontSize="24" fontFamily="sans-serif" fontWeight="bold" fill="url(#iRainbow)" stroke="#fff" strokeWidth="0.5" paintOrder="stroke">I</text>
         </svg>
     ),
     GOOGLE: {
@@ -150,9 +99,9 @@ export const ICONS = {
                 <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
             </g>
         </svg>,
-        Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z M6.83 8.8L12 17.75 17.17 8.8 12 0z"/></svg>,
+        Gemini: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.75l-5.17-8.95L12 0l5.17 8.8 5.17 8.95z"/></svg>,
         Gmail: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"/></svg>,
-        Calendar: <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2zm-8 4H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/></svg>,
+        Calendar: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>,
         Drive: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.71 3.5L1.5 14h5.5l6-10.5zM9.83 15L12 11.5 15 17h-8.5zM16.29 3.5L10.5 14h12z"/></svg>,
         Keep: <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1V20H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>,
     },
@@ -175,24 +124,7 @@ export const ICONS = {
                     </radialGradient>
                 </defs>
                 <circle cx="12" cy="12" r="12" fill="url(#darkBlueBgP)"/>
-                <text
-                    x="50%"
-                    y="52%"
-                    dominantBaseline="central"
-                    textAnchor="middle"
-                    fontSize="24"
-                    fontFamily="sans-serif"
-                    fontWeight="bold"
-                    fill="url(#poziRainbow)"
-                    stroke="#fff"
-                    strokeWidth="0.5"
-                    paintOrder="stroke"
-                >
-                    P
-                </text>
-                <circle cx="15.2" cy="8.1" r="0.6" fill="rgba(255, 255, 255, 0.8)" />
-                <circle cx="16.2" cy="9.6" r="0.4" fill="rgba(255, 255, 255, 0.7)" />
-                <circle cx="16.4" cy="6.7" r="0.3" fill="rgba(255, 255, 255, 0.6)" />
+                <text x="50%" y="52%" dominantBaseline="central" textAnchor="middle" fontSize="24" fontFamily="sans-serif" fontWeight="bold" fill="url(#poziRainbow)" stroke="#fff" strokeWidth="0.5" paintOrder="stroke">P</text>
             </svg>
         )
     }
@@ -229,31 +161,26 @@ export const LOCAL_STORAGE_KEYS = {
 };
 
 export const DEFAULT_FEEDS: UserFeed[] = [
-  { id: 1, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ', type: 'youtube' },
-  { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6107grRI4m0o2-emgoDnAA', type: 'youtube' },
+  { id: 1, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCBJycsmduvYEL83R_U4JriQ', type: 'youtube' }, // MKBHD
+  { id: 2, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UC6107grRI4m0o2-emgoDnAA', type: 'youtube' }, // SmarterEveryDay
+  { id: 5, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCY1kMZp36IQSyNx_9h4mpCg', type: 'youtube' }, // Adam Friedland Show
+  { id: 6, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCp68_L6SJYB7u89G1C3D6eQ', type: 'youtube' }, // Mark Rober
+  { id: 7, url: 'https://www.youtube.com/feeds/videos.xml?channel_id=UCHnyfMqiRRG1u-2MsSQLbXA', type: 'youtube' }, // Veritasium
   { id: 3, url: 'http://feeds.arstechnica.com/arstechnica/index', type: 'rss' },
   { id: 4, url: 'http://feeds.bbci.co.uk/news/rss.xml', type: 'rss' },
+  { id: 8, url: 'https://www.theverge.com/rss/index.xml', type: 'rss' },
+  { id: 9, url: 'https://www.wired.com/feed/rss', type: 'rss' },
+  { id: 10, url: 'https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml', type: 'rss' },
+  { id: 11, url: 'https://feeds.npr.org/1001/rss.xml', type: 'rss' },
+  { id: 12, url: 'https://www.scientificamerican.com/feed/', type: 'rss' },
+  { id: 13, url: 'https://techcrunch.com/feed/', type: 'rss' },
+  { id: 14, url: 'https://www.theguardian.com/world/rss', type: 'rss' },
 ];
 
 export const THEMES: Theme[] = [
-    {
-        id: 'chroma',
-        name: 'Chroma',
-        className: 'theme-chroma',
-        colors: { primary: '#16a3af', secondary: '#ffffff' },
-    },
-    {
-        id: 'cyberwave',
-        name: 'Cyberwave',
-        className: 'theme-cyberwave',
-        colors: { primary: '#c084fc', secondary: '#6366f1' },
-    },
-    {
-        id: 'solstice',
-        name: 'Solstice',
-        className: 'theme-solstice',
-        colors: { primary: '#fb923c', secondary: '#eab308' },
-    },
+    { id: 'chroma', name: 'Chroma', className: 'theme-chroma', colors: { primary: '#16a3af', secondary: '#ffffff' } },
+    { id: 'cyberwave', name: 'Cyberwave', className: 'theme-cyberwave', colors: { primary: '#c084fc', secondary: '#6366f1' } },
+    { id: 'solstice', name: 'Solstice', className: 'theme-solstice', colors: { primary: '#fb923c', secondary: '#eab308' } },
 ];
 
 export const GOOGLE_SERVICES: Service[] = [
@@ -266,31 +193,24 @@ export const GOOGLE_SERVICES: Service[] = [
     { name: "Keep", url: "https://keep.google.com", icon: ICONS.GOOGLE.Keep, iconKey: "GOOGLE.Keep" },
 ];
 
+// Simplified brand shelves to exactly one primary link each
 export const POZI_SERVICES: Service[] = [
-    { name: "POZI HOME", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
+    { name: "POZIVERSE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
 ];
 
 export const AMPERSAND_SERVICES: Service[] = [
-    { name: "0RELAI HOME", url: "https://0relai.0reliance.com", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+    { name: "0RELAI", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
 ];
 
 export const Z_SERVICES: Service[] = [
-    { name: "CLOUD CASA", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
+    { name: "Workspaces", url: "https://spaces.stanz.info/", icon: ICONS.Cloud, iconKey: "Cloud" },
 ];
 
 export const I_SERVICES: Service[] = [
-    { name: "POZIVERSE", url: "https://poziverse.0reliance.com", icon: ICONS.Globe, iconKey: "Globe" },
+    { name: "Documentation", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
 ];
 
-export const POZIVERSE_SERVICES: Service[] = [
-    { name: "POZIVERSE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
-    { name: "0RELAI", url: "https://0relai.0reliance.com/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-    { name: "MAEPLE", url: "https://maeple.0reliance.com", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    { name: "0RELIANCE", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
-    { name: "LAUNCHPAD", url: "https://poziverse.0reliance.com/app/index.html", icon: ICONS.Play, iconKey: "Play" },
-    { name: "COURSES", url: "https://692b041f9a99771f24f34110.blocks-app.diy/Landing", icon: ICONS.Brain, iconKey: "Brain" },
-];
-
+// Main Dashboard Card Groups
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "WIDGETS",
@@ -299,94 +219,44 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "DOCK-a-DOODLE", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
       { name: "DASHY-DASH", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
       { name: "POZICORDER", url: "https://pozicorder.vercel.app", icon: ICONS.Play, iconKey: "Play" },
-      { name: "FAKE NEWS REPORT", url: "https://fake-news2.vercel.app", icon: ICONS.Document, iconKey: "Document" },
-      { name: "POZI CAPTIONS", url: "https://pozi-captions.vercel.app/", icon: ICONS.Document, iconKey: "Document" },
-      { name: "PHOTOBOOTH", url: "https://photobooth-wine.vercel.app/", icon: ICONS.Cloud, iconKey: "Cloud" },
     ],
   },
   {
     category: "TOOLBOX",
     services: [
-        { name: "NEXTCLOUD HOME", url: "https://cloud.pozi.me", icon: ICONS.Cloud, iconKey: "Cloud" },
         { name: "VAULTWARDEN", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
         { name: "PAPERLESS-AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
         { name: "HULY PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
         { name: "PLANE PROJECTS", url: "https://plane.pozi.work/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "BLINKO STUDIO", url: "https://blinko.pozi.plus", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "AFFINE STUDIO", url: "https://affine.pozi.agency", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "CLOUD-CASA", url: "https://c.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
-        { name: "KARAKEEP", url: "https://keep.pozi.life", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "POZI AI STUDIO", url: "https://ai.pozi.plus/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "IMMICH PHOTOS", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
-        { name: "VIKUNJA TASKS", url: "https://vikunja.stanz.app", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
-        { name: "WORKSPACES", url: "https://spaces.stanz.info/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
     ]
   },
   {
     category: "COLLECTIVE",
     services: [
-        { name: "DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "POZI ME", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
-        { name: "TRADE ME", url: "https://trademe.collectable.life/", icon: ICONS.Globe, iconKey: "Globe" },
-        { name: "ROW CLUB", url: "https://rowingclub.us/", icon: ICONS.Globe, iconKey: "Globe" },
+        { name: "POZI DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+        { name: "POZI PROFESSIONALS", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
+        { name: "POZITIVE LAUNCHPAD", url: "https://poziverse.0reliance.com/app/index.html", icon: ICONS.Play, iconKey: "Play" },
+        { name: "0RELIANCE COURSES", url: "https://692b041f9a99771f24f34110.blocks-app.diy/Landing", icon: ICONS.Brain, iconKey: "Brain" },
+        { name: "POZIVERSE WARP", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
     ]
   },
   {
     category: "POZIVERSE",
-    services: POZIVERSE_SERVICES
+    services: [
+        { name: "POZIVERSE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
+        { name: "0RELAI", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+        { name: "MAEPLE", url: "https://maeple.0reliance.com", icon: ICONS.Code, iconKey: "Code" },
+        { name: "0RELIANCE", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
+    ]
   }
 ];
 
 export const QUOTES = [
     { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
     { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
-    { text: "Your time is limited, so don’t waste it living someone else’s life.", author: "Steve Jobs" },
-    { text: "Strive not to be a success, but rather to be of value.", author: "Albert Einstein" },
-    { text: "The future belongs to those who believe in the beauty of their dreams.", author: "Eleanor Roosevelt" },
-    { text: "Nature heals.", author: "Anonymous" },
-    { text: "Live what you love.", author: "Anonymous" },
-    { text: "Better to do something imperfectly than to do nothing flawlessly.", author: "Robert H. Schuller" },
-    { text: "Give whatever you are doing and whoever you are with the gift of your attention.", author: "Jim Rohn" },
-    { text: "Hard work never killed anybody, but why take a chance?", author: "Edgar Bergen" },
-    { text: "The brain is a wonderful organ; it starts working the moment you get up in the morning and does not stop until you get into the office.", author: "Robert Frost" },
-    { text: "I like work; it fascinates me. I can sit and look at it for hours.", author: "Jerome K. Jerome" },
-    { text: "I love deadlines. I like the whooshing sound they make as they fly by.", author: "Douglas Adams" },
-    { text: "Aim low, reach your goals, and avoid disappointment.", author: "Scott Adams" },
-    { text: "Meetings are indispensable when you don't want to do anything.", author: "John Kenneth Galbraith" },
-    { text: "A committee is a group of people who individually can do nothing but together can decide that nothing can be done.", author: "Fred Allen" },
-    { text: "Son, if you really want something in this life, you have to work for it. Now quiet! They're about to announce the lottery numbers.", author: "Homer Simpson (The Simpsons)" },
-    { text: "I choose a lazy person to do a hard job. Because a lazy person will find an easy way to do it.", author: "Bill Gates" },
-    { text: "It's not that I'm lazy, it's that I just don't care.", author: "Peter Gibbons (Office Space)" },
-    { text: "Doing nothing is very hard to do... you never know when you're finished.", author: "Leslie Nielsen" },
-    { text: "If A equals success, then the formula is A = X + Y + Z. Where X is work. Y is play. Z is keeping your mouth shut.", author: "Albert Einstein" },
-    { text: "Most people work just hard enough not to get fired and get paid just enough money not to quit.", author: "George Carlin" },
-    { text: "I always arrive late at the office, but I make up for it by leaving early.", author: "Charles Lamb" },
-    { text: "No man goes before his time—unless the boss leaves early.", author: "Groucho Marx" },
-    { text: "Work is the curse of the drinking classes.", author: "Oscar Wilde" },
-    { text: "The only thing that ever sat its way to success was a hen.", author: "Sarah Brown" },
-    { text: "Lisa, if you don't like your job, you don't strike. You just go in every day and do it really half-assed. That's the American way.", author: "Homer Simpson (The Simpsons)" },
-    { text: "By working faithfully eight hours a day, you may eventually get to be boss and work twelve hours a day.", author: "Robert Frost" },
-    { text: "Sometimes I'll start a sentence and I don't even know where it's going. I just hope I find it along the way.", author: "Michael Scott (The Office)" },
-    { text: "People often say that motivation doesn't last. Well, neither does bathing—that's why we recommend it daily.", author: "Zig Ziglar" },
-    { text: "The best way to appreciate your job is to imagine yourself without one.", author: "Oscar Wilde" },
-    { text: "If you think your boss is stupid, remember: you wouldn't have a job if he was any smarter.", author: "John Gotti" },
-    { text: "I'm a great believer in luck, and I find the harder I work the more I have of it.", author: "Thomas Jefferson" },
-    { text: "Never put off till tomorrow what you can do the day after tomorrow.", author: "Mark Twain" },
-    { text: "A meeting is an event at which the minutes are kept and the hours are lost.", author: "Unknown" },
-    { text: "I work for myself, which is fun. Except when I call in sick, I know I'm lying.", author: "Rita Rudner" },
-    { text: "One of the symptoms of an approaching nervous breakdown is the belief that one's work is terribly important.", author: "Bertrand Russell" },
-    { text: "The problem with the rat race is that even if you win, you're still a rat.", author: "Lily Tomlin" },
-    { text: "The reward for good work is more work.", author: "Francesca Elisia" },
-    { text: "Work is a necessity for man. Man invented the alarm clock.", author: "Pablo Picasso" },
-    { text: "I always give 100% at work: 13% Monday, 22% Tuesday, 26% Wednesday, 35% Thursday, 4% Friday.", author: "Anonymous" },
-    { text: "The successful warrior is the average man, with laser-like focus.", author: "Bruce Lee" },
 ];
 
 export const BACKGROUND_IMAGES = [
     'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=1920&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1447752875215-b2761acb3c5d?q=80&w=1920&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1920&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1920&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1433086966358-54859d0ed716?q=80&w=1920&auto=format&fit=crop',
 ];

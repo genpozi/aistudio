@@ -1,9 +1,9 @@
 
-import React, { ReactNode, ErrorInfo, Component } from 'react';
+import React, { ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { LOCAL_STORAGE_KEYS, SCHEMA_VERSION } from './constants';
-import type { StoredServiceGroup } from './types';
+import { DEFAULT_FEEDS, LOCAL_STORAGE_KEYS, SCHEMA_VERSION, SERVICE_GROUPS } from './constants';
+import type { StoredServiceGroup, UserFeed } from './types';
 
 // --- Start of Data Migration Logic ---
 const runMigrations = () => {
@@ -13,57 +13,61 @@ const runMigrations = () => {
         if (storedVersion < SCHEMA_VERSION) {
             console.log(`Schema version mismatch. Upgrading from v${storedVersion} to v${SCHEMA_VERSION}.`);
 
-            // --- Migration from v1 to v2 ---
-            // Goal: Remove non-serializable 'icon' property from services and ensure 'iconKey' exists.
-            if (storedVersion < 2) {
-                console.log("Running migration to schema v2 for 'userServiceGroups'...");
+            // --- Migration v6: Full Sync of Collective & Poziverse (Legacy) ---
+            if (storedVersion < 6) {
+                console.log("Running migration to schema v6...");
                 const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
                 if (rawGroups) {
                     try {
-                        const groups = JSON.parse(rawGroups);
-                        if (!Array.isArray(groups)) throw new Error("Service groups data is not an array.");
-
-                        const migratedGroups: StoredServiceGroup[] = groups.map((group: any) => ({
-                            category: group.category || "Untitled",
-                            services: (Array.isArray(group.services) ? group.services : []).map((service: any) => {
-                                // Create a new object with only the properties we want to keep.
-                                const migratedService = {
-                                    name: service.name || 'Unnamed Link',
-                                    url: service.url || '',
-                                    // Use existing iconKey, or default to 'Globe'. This is the core fix.
-                                    iconKey: typeof service.iconKey === 'string' ? service.iconKey : 'Globe',
-                                    inProduction: !!service.inProduction,
-                                };
-                                return migratedService;
-                            }),
+                        const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
+                        const defaultCategories = new Set(SERVICE_GROUPS.map(g => g.category));
+                        const customGroups = userGroups.filter(g => !defaultCategories.has(g.category));
+                        const correctedDefaults: StoredServiceGroup[] = SERVICE_GROUPS.map(dg => ({
+                            category: dg.category,
+                            services: dg.services.map(s => ({
+                                name: s.name,
+                                url: s.url,
+                                iconKey: s.iconKey,
+                                inProduction: s.inProduction
+                            }))
                         }));
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify([...correctedDefaults, ...customGroups]));
+                    } catch (e) { console.error("v6 migration error", e); }
+                }
+            }
 
-                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(migratedGroups));
-                        console.log("Successfully migrated service groups to v2 schema.");
-                    } catch (e) {
-                        console.error("Migration failed for 'userServiceGroups'. Data may be corrupt. If the app fails to load, the ErrorBoundary will offer a reset.", e);
-                        // Do not update schema version if a critical migration fails.
-                        return;
+            // --- Migration v9: Sync New Premium RSS Feeds ---
+            if (storedVersion < 9) {
+                console.log("Running migration to schema v9 (RSS Refresh)...");
+                const rawFeeds = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_FEEDS);
+                if (rawFeeds) {
+                    try {
+                        const userFeeds = JSON.parse(rawFeeds) as UserFeed[];
+                        const existingUrls = new Set(userFeeds.map(f => f.url));
+                        const newDefaults = DEFAULT_FEEDS.filter(f => !existingUrls.has(f.url));
+                        
+                        if (newDefaults.length > 0) {
+                            localStorage.setItem(LOCAL_STORAGE_KEYS.USER_FEEDS, JSON.stringify([...userFeeds, ...newDefaults]));
+                            console.log(`Added ${newDefaults.length} new high-quality feeds.`);
+                        }
+                    } catch (e) { 
+                        console.error("v9 migration error", e);
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_FEEDS, JSON.stringify(DEFAULT_FEEDS));
                     }
                 }
             }
 
-            // --- Future migrations would go here in `if (storedVersion < 3) { ... }` blocks ---
-
-            // If all migrations succeed, update the schema version.
             localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_SCHEMA_VERSION, String(SCHEMA_VERSION));
             console.log("All migrations completed successfully.");
         }
     } catch (e) {
-        console.error("A critical error occurred during the migration process:", e);
+        console.error("Critical error during migration:", e);
     }
 };
 
 runMigrations();
 // --- End of Data Migration Logic ---
 
-
-// --- Start of ErrorBoundary implementation ---
 interface ErrorBoundaryProps {
   children?: ReactNode;
 }
@@ -73,14 +77,16 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: Using the imported 'Component' class directly ensures proper TypeScript inference
-// for base class members like 'this.state', 'this.setState', and 'this.props'.
-class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  // Initialize state directly as a property.
-  state: ErrorBoundaryState = {
-    hasError: false,
-    error: null
-  };
+// FIX: Explicitly extending from React.Component ensures that React class properties like state, setState, and props are correctly inherited and typed, resolving compiler errors where named exports might fail to resolve correctly in some environments.
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    // Explicitly initialize state in constructor for reliable type inference across different environments.
+    this.state = {
+      hasError: false,
+      error: null
+    };
+  }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error: error };
@@ -92,70 +98,45 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   handleReset = () => {
     try {
-      console.warn("Attempting to recover from critical error by clearing localStorage.");
       localStorage.clear();
       window.location.reload();
     } catch (e) {
-      console.error("Failed to clear localStorage during recovery.", e);
-      // 'setState' is now correctly recognized as an inherited method of 'Component'.
-      this.setState({ error: new Error("Automatic recovery failed. Please clear your browser's site data and refresh manually.") });
+      // FIX: setState is now correctly typed as part of the React.Component base class.
+      this.setState({ error: new Error("Recovery failed. Please clear site data manually.") });
     }
   }
 
   render() {
-    // 'state' and 'props' are now correctly recognized as inherited properties of 'Component'.
     const { hasError, error } = this.state;
+    // FIX: Accessing props correctly from the base React.Component class.
     const { children } = this.props;
 
     if (hasError) {
       return (
-        <div 
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm text-white flex flex-col justify-center items-center z-[100] p-6 text-center"
-          style={{ fontFamily: 'sans-serif' }}
-        >
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm text-white flex flex-col justify-center items-center z-[100] p-6 text-center">
           <div className="max-w-xl bg-black/50 border border-orange-500/50 rounded-lg p-8 shadow-2xl">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-orange-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.43.992a6.759 6.759 0 0 1 0 1.658c-.007.379.137.753.43.992l1.003.827c.424.35.534.954.26 1.431l-1.296 2.247a1.125 1.125 0 0 1-1.37.49l-1.217-.456c-.355-.133-.75-.072-1.075.124a6.57 6.57 0 0 1-.22.127c-.332.183-.582.495-.645.87l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.063-.374-.313-.686-.645-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.075.124l-1.217.456a1.125 1.125 0 0 1-1.37-.49l-1.296-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-1.658c.007-.379-.137-.753-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.431l1.296-2.247a1.125 1.125 0 0 1 1.37-.49l1.217.456c.355.133.75.072 1.075-.124.072-.044.146-.087.22-.127.332-.183.582-.495-.645.87l.213-1.281Z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              </svg>
               <h1 className="text-3xl font-bold text-orange-400">A Quick Tune-Up is Needed!</h1>
-              <p className="mt-4 text-white/90">
-                Whoops! It looks like we've rolled out some awesome updates, but your dashboard's old settings are a bit confused by the new layout.
-              </p>
-              <p className="mt-2 text-white/90">
-                This is perfectly normal after an upgrade! Just hit the button below to get everything synced up and back in hyperspeed.
-              </p>
-              {error && (
-                <div className="mt-4 text-left bg-black/40 p-3 rounded-md">
-                    <p className="text-xs text-orange-300 font-mono break-words">{error.toString()}</p>
-                </div>
-              )}
-              <button 
-                onClick={this.handleReset} 
-                className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white text-lg px-6 py-3 rounded font-semibold transition-colors"
-              >
+              <p className="mt-4 text-white/90">Layout data mismatch detected. Click below to refresh your dashboard.</p>
+              {error && <p className="text-xs text-orange-300 font-mono mt-4 opacity-50">{error.toString()}</p>}
+              <button onClick={this.handleReset} className="mt-6 w-full bg-orange-500 hover:bg-orange-600 text-white text-lg px-6 py-3 rounded font-semibold transition-colors">
                 Let's Get Tuned Up!
               </button>
           </div>
         </div>
       );
     }
-
     return children || null;
   }
 }
-// --- End of ErrorBoundary implementation ---
 
 const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+if (rootElement) {
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
 }
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>
-);
