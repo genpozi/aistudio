@@ -1,12 +1,10 @@
+
 import { GoogleGenAI } from '@google/genai';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
-// FIX: Added the full implementation for the main App component, which was missing.
-// This resolves "not a module" errors and provides the central logic for the dashboard.
 import AICompanionModal from './components/AICompanionModal';
 import AICompanionWidget from './components/AICompanionWidget';
 import AmpersandBar from './components/AmpersandBar';
-import AnnouncementCard from './components/AnnouncementCard';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
 import Clock from './components/Clock';
 import CollapseAllWidget from './components/CollapseAllWidget';
@@ -82,7 +80,6 @@ const defaultServiceGroups: ServiceGroup[] = [
 // Special identifiers for widgets to be used in the collapsed state set.
 const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
 const TODO_WIDGET_CATEGORY_KEY = '__TODO__';
-const ANNOUNCEMENT_WIDGET_CATEGORY_KEY = '__ANNOUNCEMENT__';
 
 
 const App: React.FC = () => {
@@ -141,8 +138,10 @@ const App: React.FC = () => {
   const initialCollapsedKeys = [
       LINKS_WIDGET_CATEGORY_KEY,
       TODO_WIDGET_CATEGORY_KEY,
-      ANNOUNCEMENT_WIDGET_CATEGORY_KEY,
+      'WIDGETS',
       'TOOLBOX',
+      'COLLECTIVE',
+      'POZIVERSE',
   ];
   const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(
       LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES,
@@ -177,7 +176,6 @@ const App: React.FC = () => {
   // Migrate and filter feeds
   const { rssFeeds, youtubeFeeds } = useMemo(() => {
     const migratedFeeds = feedUrls.map(feed => {
-        // This check provides a seamless, one-time migration for users with old data
         if (!feed.type) {
             return {
                 ...feed,
@@ -194,20 +192,6 @@ const App: React.FC = () => {
   }, [feedUrls]);
 
 
-  const ai = useMemo(() => {
-    try {
-      // Per instructions, API key must come from environment.
-      if (process.env.API_KEY) {
-        return new GoogleGenAI({ apiKey: process.env.API_KEY });
-      }
-      return null;
-    } catch (e) {
-      console.error('Failed to initialize GoogleGenAI', e);
-      return null;
-    }
-  }, []);
-
-  // Hydrate service groups with icon components
   const hydratedServiceGroups = useMemo<ServiceGroup[]>(() => {
     return storedServiceGroups.map((group: StoredServiceGroup) => ({
       ...group,
@@ -218,7 +202,6 @@ const App: React.FC = () => {
     }));
   }, [storedServiceGroups]);
   
-  // Create a map for quick lookups
   const serviceGroupsMap = useMemo(() => {
     const map = new Map<string, ServiceGroup>();
     hydratedServiceGroups.forEach(group => {
@@ -227,7 +210,6 @@ const App: React.FC = () => {
     return map;
   }, [hydratedServiceGroups]);
 
-  // Create a unified list of all searchable items for the OmniBar
   const searchableItems = useMemo<SearchableItem[]>(() => {
     const serviceItems: SearchableItem[] = hydratedServiceGroups.flatMap(
       (group) =>
@@ -249,7 +231,6 @@ const App: React.FC = () => {
     return [...serviceItems, ...linkItems];
   }, [hydratedServiceGroups, links]);
 
-  // Background image logic
   const [backgroundImage, setBackgroundImage] = useState('');
   const refreshBackgroundImage = useCallback(() => {
     const randomImage =
@@ -261,13 +242,11 @@ const App: React.FC = () => {
     refreshBackgroundImage();
   }, [refreshBackgroundImage]);
 
-  // Theme logic
   useEffect(() => {
     const currentTheme = THEMES.find((t) => t.id === theme) || THEMES[0];
     document.documentElement.className = currentTheme.className;
   }, [theme]);
 
-  // Global keyboard listener for OmniBar
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
@@ -296,12 +275,10 @@ const App: React.FC = () => {
     setFocusSessionEndTime(null);
   };
   
-  // --- Collapse All Logic ---
   const allCategoryKeys = useMemo(() => 
     [
         LINKS_WIDGET_CATEGORY_KEY, 
         TODO_WIDGET_CATEGORY_KEY,
-        ANNOUNCEMENT_WIDGET_CATEGORY_KEY,
         ...hydratedServiceGroups.map(g => g.category)
     ],
     [hydratedServiceGroups]
@@ -327,13 +304,10 @@ const App: React.FC = () => {
       alert('Local AI (MCP) is not yet implemented.');
       return;
     }
-    if (!ai) {
-      setResearchError(
-        'Gemini API is not available. Ensure API_KEY is configured in your environment.',
-      );
-      setIsResearchModalOpen(true);
-      return;
-    }
+    
+    // Always initialize with the pre-configured API key from the environment.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    
     setIsResearchModalOpen(true);
     setIsResearchLoading(true);
     setResearchResult(null);
@@ -342,7 +316,7 @@ const App: React.FC = () => {
 
     try {
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         contents: query,
         config: {
           tools: [{ googleSearch: {} }],
@@ -350,6 +324,7 @@ const App: React.FC = () => {
       });
 
       setResearchResult(response.text);
+      // Extract grounding chunks safely using optional chaining.
       if (response.candidates?.[0]?.groundingMetadata?.groundingChunks) {
         setResearchSources(
           response.candidates[0].groundingMetadata
@@ -369,12 +344,9 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = async (message: string) => {
-    if (!ai) {
-      alert(
-        'Gemini API is not available. Ensure API_KEY is configured in your environment.',
-      );
-      return;
-    }
+    // Always initialize with the pre-configured API key from the environment.
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
     const newHistory: ChatMessage[] = [
       ...chatHistory,
       { role: 'user', text: message },
@@ -383,7 +355,7 @@ const App: React.FC = () => {
     setIsResponding(true);
 
     try {
-      const chat = ai.chats.create({ model: 'gemini-2.5-flash' });
+      const chat = ai.chats.create({ model: 'gemini-3-flash-preview' });
       const response = await chat.sendMessage({ message });
 
       setChatHistory([...newHistory, { role: 'model', text: response.text }]);
@@ -453,81 +425,82 @@ const App: React.FC = () => {
         style={{ backgroundImage: `url(${backgroundImage})` }}
       >
         <div className={mainContentClass}>
-          <header className="relative flex justify-between items-start">
-            <div className="flex flex-col items-start space-y-4">
-              <GoogleBar />
-            </div>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 flex space-x-4">
+          {/* Top section containing Sidebar, Clock/Greeting/Search, and Weather/Collapse */}
+          <header className="flex flex-col md:flex-row justify-between items-start w-full gap-8 mb-12">
+            {/* Sidebar Column: POZI icons stacked */}
+            <div className="flex flex-col items-start space-y-4 flex-shrink-0">
               <PoziBar />
               <AmpersandBar />
               <IconBar triggerIcon={ICONS.Z_LOGO} services={Z_SERVICES} />
               <IconBar triggerIcon={ICONS.I_LOGO} services={I_SERVICES} />
             </div>
-            <div className="flex items-center space-x-2">
+
+            {/* Central Column: Time, Header (Greeting), and Search Widget */}
+            <div className="flex flex-col items-center text-center flex-grow pt-2">
+              <Clock />
+              <Greeting name={name} focusPrompt={focusPrompt} onStartFocus={handleStartFocus} />
+              <div className="w-full max-w-2xl mx-auto mt-8">
+                <SearchWidget
+                  researchBackend={researchBackend}
+                  onOpenSettings={() => openSettings('research')}
+                  onResearchSubmit={handleResearchSubmit}
+                />
+              </div>
+            </div>
+
+            {/* Right Column: Weather, Collapse, and Google Shelf */}
+            <div className="flex flex-col items-end space-y-4 flex-shrink-0 pt-2">
                 <Weather location={location} />
                 <CollapseAllWidget
                     areAllCollapsed={areAllCollapsed}
                     onCollapseAll={handleCollapseAll}
                     onExpandAll={handleExpandAll}
                 />
+                <GoogleBar direction="down" />
             </div>
           </header>
 
-          <main className="flex-grow flex flex-col justify-center items-center text-center">
-            <Clock />
-            <Greeting name={name} focusPrompt={focusPrompt} onStartFocus={handleStartFocus} />
-            <div className="w-full max-w-4xl mx-auto mt-12">
-              <SearchWidget
-                researchBackend={researchBackend}
-                onOpenSettings={() => openSettings('research')}
-                onResearchSubmit={handleResearchSubmit}
+          <main className="flex-grow flex flex-col items-center">
+            {/* Widgets Section */}
+            <div className="w-full max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 items-start">
+                  <LinksWidget
+                    links={links}
+                    onOpenSettings={() => openSettings('links')}
+                    isCollapsed={collapsedCategories.has(LINKS_WIDGET_CATEGORY_KEY)}
+                    onToggle={() => toggleCategoryCollapse(LINKS_WIDGET_CATEGORY_KEY)}
+                  />
+                  <TodoCardWidget
+                    todos={todos}
+                    setTodos={setTodos}
+                    isCollapsed={collapsedCategories.has(TODO_WIDGET_CATEGORY_KEY)}
+                    onToggle={() => toggleCategoryCollapse(TODO_WIDGET_CATEGORY_KEY)}
+                  />
+                  {['WIDGETS', 'TOOLBOX', 'COLLECTIVE', 'POZIVERSE'].map(category => 
+                      serviceGroupsMap.has(category) && (
+                          <ServiceGroupCard
+                              key={category}
+                              group={serviceGroupsMap.get(category)!}
+                              isCollapsed={collapsedCategories.has(category)}
+                              onToggle={() => toggleCategoryCollapse(category)}
+                          />
+                      )
+                  )}
+              </div>
+            </div>
+            
+            <div className="w-full max-w-7xl mx-auto mt-6 space-y-6">
+              <FeedWidget
+                  feedUrls={rssFeeds}
+                  onOpenSettings={() => openSettings('feeds')}
+              />
+            
+              <YouTubeWidget
+                  feedUrls={youtubeFeeds}
+                  onOpenSettings={() => openSettings('feeds')}
               />
             </div>
           </main>
-
-          {/* Locked Dashboard Rows */}
-          <div className="w-full max-w-7xl mx-auto mt-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-                <LinksWidget
-                  links={links}
-                  onOpenSettings={() => openSettings('links')}
-                  isCollapsed={collapsedCategories.has(LINKS_WIDGET_CATEGORY_KEY)}
-                  onToggle={() => toggleCategoryCollapse(LINKS_WIDGET_CATEGORY_KEY)}
-                />
-                <TodoCardWidget
-                  todos={todos}
-                  setTodos={setTodos}
-                  isCollapsed={collapsedCategories.has(TODO_WIDGET_CATEGORY_KEY)}
-                  onToggle={() => toggleCategoryCollapse(TODO_WIDGET_CATEGORY_KEY)}
-                />
-                <AnnouncementCard
-                    isCollapsed={collapsedCategories.has(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
-                    onToggle={() => toggleCategoryCollapse(ANNOUNCEMENT_WIDGET_CATEGORY_KEY)}
-                />
-                {['TOOLBOX'].map(category => 
-                    serviceGroupsMap.has(category) && (
-                        <ServiceGroupCard
-                            key={category}
-                            group={serviceGroupsMap.get(category)!}
-                            isCollapsed={collapsedCategories.has(category)}
-                            onToggle={() => toggleCategoryCollapse(category)}
-                        />
-                    )
-                )}
-            </div>
-          </div>
-          
-          <div className="w-full max-w-7xl mx-auto mt-6 space-y-6">
-            <FeedWidget
-                feedUrls={rssFeeds}
-                onOpenSettings={() => openSettings('feeds')}
-            />
-          
-            <YouTubeWidget
-                feedUrls={youtubeFeeds}
-                onOpenSettings={() => openSettings('feeds')}
-            />
-          </div>
 
 
           <footer className="w-full flex justify-between items-end mt-8">

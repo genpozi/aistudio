@@ -1,4 +1,5 @@
-import React, { ReactNode, ErrorInfo } from 'react';
+
+import React, { ReactNode, ErrorInfo, Component } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { LOCAL_STORAGE_KEYS, SCHEMA_VERSION } from './constants';
@@ -64,7 +65,7 @@ runMigrations();
 
 // --- Start of ErrorBoundary implementation ---
 interface ErrorBoundaryProps {
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 interface ErrorBoundaryState {
@@ -72,12 +73,14 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: Corrected the ErrorBoundary class to be a valid React component by extending `React.Component`. This resolves errors related to accessing `state`, `props`, and `setState`.
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
+// FIX: Using the imported 'Component' class directly ensures proper TypeScript inference
+// for base class members like 'this.state', 'this.setState', and 'this.props'.
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  // Initialize state directly as a property.
+  state: ErrorBoundaryState = {
+    hasError: false,
+    error: null
+  };
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
     return { hasError: true, error: error };
@@ -94,12 +97,17 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       window.location.reload();
     } catch (e) {
       console.error("Failed to clear localStorage during recovery.", e);
+      // 'setState' is now correctly recognized as an inherited method of 'Component'.
       this.setState({ error: new Error("Automatic recovery failed. Please clear your browser's site data and refresh manually.") });
     }
   }
 
   render() {
-    if (this.state.hasError) {
+    // 'state' and 'props' are now correctly recognized as inherited properties of 'Component'.
+    const { hasError, error } = this.state;
+    const { children } = this.props;
+
+    if (hasError) {
       return (
         <div 
           className="fixed inset-0 bg-black/70 backdrop-blur-sm text-white flex flex-col justify-center items-center z-[100] p-6 text-center"
@@ -117,9 +125,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
               <p className="mt-2 text-white/90">
                 This is perfectly normal after an upgrade! Just hit the button below to get everything synced up and back in hyperspeed.
               </p>
-              {this.state.error && (
+              {error && (
                 <div className="mt-4 text-left bg-black/40 p-3 rounded-md">
-                    <p className="text-xs text-orange-300 font-mono break-words">{this.state.error.toString()}</p>
+                    <p className="text-xs text-orange-300 font-mono break-words">{error.toString()}</p>
                 </div>
               )}
               <button 
@@ -133,7 +141,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       );
     }
 
-    return this.props.children;
+    return children || null;
   }
 }
 // --- End of ErrorBoundary implementation ---

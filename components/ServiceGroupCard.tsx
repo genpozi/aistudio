@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ICONS } from '../constants';
 import type { ServiceGroup } from '../types';
@@ -30,42 +31,56 @@ const ServiceIcon: React.FC<{ name: string; icon: React.ReactNode }> = ({ name, 
  * Renders a single card for a category of services (e.g., "AI ENABLED", "WORK").
  * Services are displayed in a clean, readable vertical list.
  */
-export const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, onToggle: () => void }> = ({ group, isCollapsed, onToggle }) => (
-  <div className="bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-lg overflow-hidden transition-all duration-500">
-    <div className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center">
-      <h3 className="text-[var(--text-highlight)] font-bold text-lg uppercase tracking-wider">{group.category}</h3>
-      <button 
-        onClick={onToggle} 
-        className="text-white/60 hover:text-white transition-colors"
-        aria-expanded={!isCollapsed}
-        aria-label={isCollapsed ? `Expand ${group.category} section` : `Collapse ${group.category} section`}
-      >
-        <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
-            {ICONS.ChevronUp}
-        </div>
-      </button>
+export const ServiceGroupCard: React.FC<{ group: ServiceGroup, isCollapsed: boolean, onToggle: () => void }> = ({ group, isCollapsed, onToggle }) => {
+  // Check if this card should have the "vibrant" branding
+  const isVibrant = group.category === 'COLLECTIVE' || group.category === 'POZIVERSE';
+
+  // Specific styles for vibrant cards
+  const containerClasses = isVibrant 
+    ? 'bg-[#2c3752]/60 border-white/30 shadow-[0_0_20px_-5px_rgba(192,132,252,0.4)] ring-1 ring-white/10'
+    : 'bg-black/20 border-white/10 shadow-lg';
+    
+  const headerClasses = isVibrant
+    ? 'text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-yellow-400 to-purple-400 font-black'
+    : 'text-[var(--text-highlight)] font-bold';
+
+  return (
+    <div className={`backdrop-blur-md rounded-xl border overflow-hidden transition-all duration-500 ${containerClasses}`}>
+      <div className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center">
+        <h3 className={`text-lg uppercase tracking-wider ${headerClasses}`}>{group.category}</h3>
+        <button 
+          onClick={onToggle} 
+          className="text-white/60 hover:text-white transition-colors"
+          aria-expanded={!isCollapsed}
+          aria-label={isCollapsed ? `Expand ${group.category} section` : `Collapse ${group.category} section`}
+        >
+          <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+              {ICONS.ChevronUp}
+          </div>
+        </button>
+      </div>
+      <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
+          <div className="p-6 pt-4">
+          <div className="flex flex-col space-y-3">
+              {group.services.map((service, index) => (
+              <a
+                  key={service.name}
+                  href={service.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`group flex items-center space-x-4 p-3 rounded-xl border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)] ${index % 2 === 0 ? 'bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)]' : 'bg-black/10'}`}
+                  style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}
+              >
+                  <ServiceIcon name={service.name} icon={service.icon} />
+                  <span className="text-white text-base font-semibold leading-tight transition-colors group-hover:text-[var(--text-highlight)]">
+                  {service.name}
+                  {service.inProduction && <sup className="text-[var(--text-highlight)] ml-0.5">*</sup>}
+                  </span>
+              </a>
+              ))}
+          </div>
+          </div>
+      </div>
     </div>
-    <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
-        <div className="p-6 pt-4">
-        <div className="flex flex-col space-y-3">
-            {group.services.map((service, index) => (
-            <a
-                key={service.name}
-                href={service.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`group flex items-center space-x-4 p-3 rounded-xl border border-transparent hover:border-[var(--color-border-hover)] transition-all duration-300 transform active:scale-95 shadow-md hover:shadow-[0_0_20px_-5px_var(--color-glow)] ${index % 2 === 0 ? 'bg-gradient-to-br from-[var(--color-backdrop-start)] to-[var(--color-backdrop-end)]' : 'bg-black/10'}`}
-                style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}
-            >
-                <ServiceIcon name={service.name} icon={service.icon} />
-                <span className="text-white text-base font-semibold leading-tight transition-colors group-hover:text-[var(--text-highlight)]">
-                {service.name}
-                {service.inProduction && <sup className="text-[var(--text-highlight)] ml-0.5">*</sup>}
-                </span>
-            </a>
-            ))}
-        </div>
-        </div>
-    </div>
-  </div>
-);
+  );
+};
