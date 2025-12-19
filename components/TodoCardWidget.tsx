@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { Todo } from '../types';
 import { ICONS } from '../constants';
@@ -40,10 +39,10 @@ const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isColl
   const sortedTodos = [...todos].sort((a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1);
 
   return (
-    <div className="relative group/card h-full">
+    <div className="relative group/card">
       <div className="absolute -inset-[1px] rounded-xl bg-amber-500/20 opacity-0 group-hover/card:opacity-100 blur-[1px] transition-opacity duration-500"></div>
 
-      <div className="relative h-full bg-amber-900/10 backdrop-blur-xl rounded-xl border border-amber-500/20 shadow-[0_0_15px_-5px_rgba(245,158,11,0.2)] overflow-hidden transition-all duration-500">
+      <div className="relative bg-amber-900/10 backdrop-blur-xl rounded-xl border border-amber-500/20 shadow-[0_0_15px_-5px_rgba(245,158,11,0.2)] overflow-hidden transition-all duration-500">
         <div 
             className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center cursor-pointer select-none group/header"
             onClick={onToggle}

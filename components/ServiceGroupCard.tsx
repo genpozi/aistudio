@@ -42,11 +42,11 @@ export const ServiceGroupCard: React.FC<{
   }
 
   return (
-    <div className="relative group/card h-full">
+    <div className="relative group/card">
       {/* Animated Border Glow */}
       {borderGlow && <div className={borderGlow}></div>}
       
-      <div className={`relative h-full backdrop-blur-xl rounded-xl border overflow-hidden transition-all duration-500 ${containerClasses}`}>
+      <div className={`relative backdrop-blur-xl rounded-xl border overflow-hidden transition-all duration-500 ${containerClasses}`}>
         <div 
             className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center cursor-pointer select-none group/header"
             onClick={onToggle}
@@ -102,6 +102,7 @@ export const ServiceGroupCard: React.FC<{
         .animate-rainbow-slow {
           background-size: 200% 200%;
           animation: rainbow-border 6s linear infinite;
+          will-change: background-position, opacity;
         }
       `}</style>
     </div>

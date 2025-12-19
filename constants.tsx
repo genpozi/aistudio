@@ -1,13 +1,13 @@
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
-export const SCHEMA_VERSION = 14; // Incremented for 0RELIANCE LAB updates
+export const SCHEMA_VERSION = 19; // Incremented for POZIVERSE expansion
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
     Sparkles: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09-3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456-2.456zM16.898 20.553L16.5 21.75l-.398-1.197a3.375 3.375 0 00-2.456-2.456L12.75 18l1.197-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.197a3.375 3.375 0 002.456 2.456L20.25 18l-1.197.398a3.375 3.375 0 00-2.456-2.456z" /></svg>,
     User: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>,
-    Globe: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.293-.293a1 1 0 011.414 0l.293.293M10 21v-4m4 4v-4m-4-2.293l.293-.293a1 1 0 011.414 0l.293.293m-4 0l-.293.293a1 1 0 000 1.414l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293" /></svg>,
+    Globe: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2h10a2 2 0 002-2v-1a2 2 0 012-2h1.945M7.707 4.293l.293-.293a1 1 0 011.414 0l.293.293M10 21v-4m4 4v-4m-4-2.293l.293-.293a1 1 0 011.414 0l.293.293m-4 0l-.293.293a1 1 0 000 1.414l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293m0-1.414l.293-.293a1 1 0 011.414 0l.293.293" /></svg>,
     Cloud: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>,
     Document: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>,
     CheckSquare: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
@@ -210,17 +210,12 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
       { name: "OBSIDIAN-COPILOT", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
       { name: "DOCK-a-DOODLE", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
       { name: "DASHY-DASH", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-      { name: "NGINX PROXY", url: "https://npm.pozi.agency", icon: ICONS.Lock, iconKey: "Lock" },
-      { name: "PORTAINER", url: "https://portainer.pozi.agency", icon: ICONS.Code, iconKey: "Code" },
     ],
   },
   {
     category: "TOOLBOX",
     services: [
-        { name: "VAULTWARDEN", url: "https://vault.pozi.plus", icon: ICONS.Lock, iconKey: "Lock" },
-        { name: "PAPERLESS-AI", url: "https://paperless.stanz.app", icon: ICONS.Document, iconKey: "Document" },
-        { name: "HULY PROJECTS", url: "https://huly.pozi.agency/", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "UPTIME KUMA", url: "https://status.pozi.agency", icon: ICONS.Refresh, iconKey: "Refresh" },
+        { name: "COMING SOON", url: "#", icon: ICONS.Sparkles, iconKey: "Sparkles" },
     ]
   },
   {
@@ -229,6 +224,9 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
         { name: "KARAKEEP", url: "https://keep.pozi.life", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
         { name: "PAPERLESS", url: "https://paperless.stanz.app/", icon: ICONS.Document, iconKey: "Document" },
         { name: "NEXTCLOUD", url: "https://c.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
+        { name: "VIKUNJA TASKS & TODO", url: "https://vikunja.stanz.app/", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
+        { name: "POZI WORKSPACES", url: "https://spaces.stanz.info/#/login", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+        { name: "VAULTWARDEN (BITWARDEN)", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
     ]
   },
   {
@@ -238,23 +236,29 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
         { name: "0RELAI STUDIO", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
         { name: "POZI PROFESSIONALS", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
         { name: "POZI DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+        { name: "DOCUMENTATION", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
+        { name: "MAEPLE", url: "https://maeple.0reliance.com/", icon: ICONS.Code, iconKey: "Code" },
     ]
   },
   {
     category: "COLLECTIVE",
     services: [
-        { name: "COLLECTIVE HUB", url: "https://poziverse.0reliance.com/collective", icon: ICONS.Globe, iconKey: "Globe" },
-        { name: "POZI AGENCY", url: "https://pozi.agency", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+        { name: "0RELAI AI STUDIO", url: "https://openwebui.0reliance.com", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+        { name: "IMMICH MEDIA GALLERY", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
+        { name: "KARAKEEP INFO HOARDER", url: "https://keep.pozi.life", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
+        { name: "BLINKO NOTES & THINGS", url: "https://blinko.pozi.plus", icon: ICONS.Document, iconKey: "Document" },
+        { name: "PENPOT DESIGN SYSTEM", url: "https://pot.pozi.agency/", icon: ICONS.Code, iconKey: "Code" },
+        { name: "AFFINE CREATIVE STUDIO", url: "https://affine.pozi.agency/", icon: ICONS.Edit, iconKey: "Edit" },
+        { name: "VAULTWARDEN (BITWARDEN)", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
     ]
   },
   {
     category: "0RELIANCE LAB",
     services: [
-        { name: "POZIVERSE WORLD", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
-        { name: "MAEPLE", url: "https://maeple.0reliance.com/", icon: ICONS.Code, iconKey: "Code" },
-        { name: "DOCUMENTATION", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
-        { name: "COURSES", url: "https://692b041f9a99771f24f34110.blocks-app.diy/Landing", icon: ICONS.Briefcase, iconKey: "Briefcase" },
         { name: "0RELAI STUDIO", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
+        { name: "DOCUMENTATION", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
+        { name: "MAEPLE", url: "https://maeple.0reliance.com/", icon: ICONS.Code, iconKey: "Code" },
+        { name: "COURSES", url: "https://692b041f9a99771f24f34110.blocks-app.diy/Landing", icon: ICONS.Briefcase, iconKey: "Briefcase" },
     ]
   }
 ];

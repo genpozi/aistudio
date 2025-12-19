@@ -22,9 +22,9 @@ This document serves as the master blueprint for the DashyDash ecosystem. It tra
 
 | Card Name | Links | URIs |
 | :--- | :--- | :--- |
-| **WIDGETS** | Obsidian, Dock-a-Doodle, Dashy-Dash, NPM, Portainer | Various Internal/External |
-| **TOOLBOX** | Vaultwarden, Paperless-AI, Huly, Status | Various Internal/External |
-| **REMEMBERY** | Karakeep, Paperless, Nextcloud | `keep.pozi.life`, `paperless.stanz.app`, `c.stanz.app` |
+| **WIDGETS** | Obsidian-Copilot, Dock-a-Doodle, Dashy-Dash | `obsidian-copilot-ashy.vercel.app`, `docker-doodle.vercel.app`, `dash.stan.camp` |
+| **TOOLBOX** | COMING SOON | Placeholder Card |
+| **REMEMBERY** | Karakeep, Paperless, Nextcloud, Vikunja, Pozi Workspaces, Vaultwarden | `keep.pozi.life`, `paperless.stanz.app`, `c.stanz.app`, `vikunja.stanz.app`, `spaces.stanz.info`, `vault.pozi.plus` |
 
 ---
 
@@ -34,9 +34,9 @@ This document serves as the master blueprint for the DashyDash ecosystem. It tra
 
 | Card Name | Links | Included Services |
 | :--- | :--- | :--- |
-| **POZIVERSE** | Full Ecosystem Hub | World, 0Relai, Professionals, Directory |
-| **COLLECTIVE** | Agency Workspace | Hub, Pozi Agency |
-| **0RELIANCE LAB**| Research & Sandbox | World, Maeple, Documentation, Courses, Studio |
+| **POZIVERSE** | Ecosystem Hub | World, 0Relai, Professionals, Directory, Documentation, Maeple |
+| **COLLECTIVE** | Agency Workspace | 0RELAI AI Studio, Immich, Karakeep, Blinko, Penpot, Affine, Vaultwarden |
+| **0RELIANCE LAB**| Research Sandbox | Studio, Documentation, Maeple, Courses |
 
 ---
 
@@ -50,7 +50,12 @@ This document serves as the master blueprint for the DashyDash ecosystem. It tra
 ---
 
 ## ⚙️ SYSTEM REVISION LOG
-- **v14 (Current)**: Updated 0RELIANCE LAB with Maeple, Docs, and Courses.
+- **v19 (Current)**: Final Stabilization. Expanded POZIVERSE card with Documentation and Maeple duplicates. verified all URIs.
+- **v18**: Realignment of Row 2. Moved Vaultwarden/Uptime Kuma from Toolbox. Expanded Remembery with Vikunja and Workspaces.
+- **v17**: Overhauled COLLECTIVE category with a new 7-tool stack.
+- **v16**: Cleaned and reordered 0RELIANCE LAB (Studio, Docs, Maeple, Courses).
+- **v15**: Removed Huly, Paperless-AI, Nginx Proxy, and Portainer. Cleaned Row 2.
+- **v14**: Updated 0RELIANCE LAB with Maeple, Docs, and Courses.
 - **v13**: Locked 3x3 grid, Unified Row 1 theme, Added REMEMBERY and 0RELIANCE LAB.
 - **Revision Lock**: Rows are restricted to max 3 cards. Column order is static.
 - **Master Password**: `maplewood` (Assigned for protected/announcement cards).

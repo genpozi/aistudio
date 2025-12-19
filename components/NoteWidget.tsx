@@ -22,10 +22,10 @@ const NoteWidget: React.FC<NoteWidgetProps> = ({ notes, setNotes, isCollapsed, o
   }, [content, notes, setNotes]);
 
   return (
-    <div className="relative group/card h-full">
+    <div className="relative group/card">
       <div className="absolute -inset-[1px] rounded-xl bg-amber-500/20 opacity-0 group-hover/card:opacity-100 blur-[1px] transition-opacity duration-500"></div>
 
-      <div className="relative h-full bg-amber-900/10 backdrop-blur-xl rounded-xl border border-amber-500/20 shadow-[0_0_15px_-5px_rgba(245,158,11,0.2)] overflow-hidden transition-all duration-500">
+      <div className="relative bg-amber-900/10 backdrop-blur-xl rounded-xl border border-amber-500/20 shadow-[0_0_15px_-5px_rgba(245,158,11,0.2)] overflow-hidden transition-all duration-500">
         <div 
             className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center cursor-pointer select-none group/header"
             onClick={onToggle}
@@ -46,7 +46,7 @@ const NoteWidget: React.FC<NoteWidgetProps> = ({ notes, setNotes, isCollapsed, o
           </button>
         </div>
         <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
-          <div className="p-4 pt-2 h-full flex flex-col">
+          <div className="p-4 pt-2 flex flex-col">
             <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}

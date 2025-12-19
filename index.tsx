@@ -1,4 +1,3 @@
-
 import React, { Component, ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
@@ -8,14 +7,15 @@ import type { StoredServiceGroup } from './types';
 // --- Start of Data Migration Logic ---
 const runMigrations = () => {
     try {
-        const storedVersion = parseInt(localStorage.getItem(LOCAL_STORAGE_KEYS.DATA_SCHEMA_VERSION) || '1', 10);
+        const storedVersionStr = localStorage.getItem(LOCAL_STORAGE_KEYS.DATA_SCHEMA_VERSION);
+        const storedVersion = storedVersionStr ? parseInt(storedVersionStr, 10) : 1;
 
         if (storedVersion < SCHEMA_VERSION) {
             console.log(`Schema version mismatch. Upgrading from v${storedVersion} to v${SCHEMA_VERSION}.`);
 
-            // Migration path for any version < 14 to sync the locked 3x3 layout and 0RELIANCE LAB updates
-            if (storedVersion < 14) {
-                console.log("Running migration to schema v14 (Updating 0RELIANCE LAB and Locked Layout)...");
+            // Migration path for any version < 19: Refresh core categories while maintaining custom ones.
+            if (storedVersion < 19) {
+                console.log("Running migration to schema v19 (Ecosystem Realignment)...");
                 const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
                 try {
                     const correctedDefaults: StoredServiceGroup[] = SERVICE_GROUPS.map(dg => ({
@@ -31,22 +31,22 @@ const runMigrations = () => {
                     if (rawGroups) {
                         const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
                         const defaultCategories = new Set(SERVICE_GROUPS.map(g => g.category));
-                        // Keep user-added custom categories, but refresh the default ones
+                        // Keep user-added custom categories, but refresh the default ones to apply layout overhaul
                         const customGroups = userGroups.filter(g => !defaultCategories.has(g.category));
                         localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify([...correctedDefaults, ...customGroups]));
                     } else {
                         localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(correctedDefaults));
                     }
                 } catch (e) {
-                    console.error("Migration error:", e);
+                    console.error("Migration logic error:", e);
                 }
             }
 
             localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_SCHEMA_VERSION, String(SCHEMA_VERSION));
-            console.log("All migrations completed successfully.");
+            console.log("Migrations check completed.");
         }
     } catch (e) {
-        console.error("Critical error during migration:", e);
+        console.error("Critical error during data migration:", e);
     }
 };
 
@@ -62,15 +62,15 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// Fix: Explicitly use React.Component to ensure the class correctly inherits properties and methods like 'setState' and 'props'.
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  public state: ErrorBoundaryState = {
-    hasError: false,
-    error: null
-  };
-
+// Fix: Use imported 'Component' to correctly inherit state, setState, and props.
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
+    // Fix: Correctly initialize state on the inherited Component class.
+    this.state = {
+      hasError: false,
+      error: null
+    };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -86,14 +86,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       localStorage.clear();
       window.location.reload();
     } catch (e) {
-      // Fix: Inheritance from React.Component provides access to this.setState.
+      // Fix: Use setState from inherited Component class.
       this.setState({ error: new Error("Recovery failed. Please clear site data manually.") });
     }
   }
 
   render() {
+    // Fix: Access state and props from inherited Component class.
     const { hasError, error } = this.state;
-    // Fix: Inheritance from React.Component provides access to this.props.
     const { children } = this.props;
 
     if (hasError) {
