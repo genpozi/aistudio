@@ -1,5 +1,5 @@
 
-import React, { ReactNode, ErrorInfo } from 'react';
+import React, { Component, ReactNode, ErrorInfo } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { DEFAULT_FEEDS, LOCAL_STORAGE_KEYS, SCHEMA_VERSION, SERVICE_GROUPS } from './constants';
@@ -77,8 +77,8 @@ interface ErrorBoundaryState {
   error: Error | null;
 }
 
-// FIX: Explicitly extending from React.Component ensures that React class properties like state, setState, and props are correctly inherited and typed, resolving compiler errors where named exports might fail to resolve correctly in some environments.
-class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+// FIX: Explicitly extending from Component (imported directly from React) ensures that React class properties like state, setState, and props are correctly inherited and typed, resolving compiler errors where named exports might fail to resolve correctly in some environments.
+class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
     // Explicitly initialize state in constructor for reliable type inference across different environments.
@@ -101,14 +101,14 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       localStorage.clear();
       window.location.reload();
     } catch (e) {
-      // FIX: setState is now correctly typed as part of the React.Component base class.
+      // FIX: setState is now correctly typed as part of the Component base class.
       this.setState({ error: new Error("Recovery failed. Please clear site data manually.") });
     }
   }
 
   render() {
+    // FIX: Accessing state and props correctly from the base Component class ensuring type safety for children, hasError, and error.
     const { hasError, error } = this.state;
-    // FIX: Accessing props correctly from the base React.Component class.
     const { children } = this.props;
 
     if (hasError) {

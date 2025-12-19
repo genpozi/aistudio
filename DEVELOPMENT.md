@@ -13,15 +13,15 @@ State is handled through a "Single Source of Truth" in `App.tsx`.
 - **Synchronization**: `App.tsx` hydrates data on mount. Child widgets are strictly controlled via props (One-way data flow).
 - **Data Integrity**: `index.tsx` runs a migration engine (`runMigrations`) before React mounts. This ensures legacy `localStorage` keys are transformed to match the latest `SCHEMA_VERSION` in `constants.tsx`.
 
-### 1.2 The "Row-Sync" UI Logic
-Unlike standard dashboards where cards are independent, DashyDash utilizes a **Horizontal Synchronicity** model:
-- **Rows**: Defined by arrays in `WIDGET_ROWS`.
-- **Logic**: If a user clicks a Row Header, the system checks the `collapsedCategories` set. If even one item in that row is expanded, it collapses the entire group. If all are shut, it expands all.
-- **Individual Override**: The Chevron icons bypass row logic, allowing for asymmetric layouts if desired.
+### 1.2 The "Independent Flow" UI Logic
+The dashboard utilizes an independent card model for maximum flexibility:
+- **Card States**: Each card (Links, Todo, Service Groups) has its own unique ID used as a key in the `collapsedCategories` set.
+- **Independence**: Toggling a card only impacts its local `max-height` transition. This allows the layout to flow naturally within the 3-column grid without affecting siblings.
+- **Global Control**: A "Collapse All / Expand All" utility provides bulk state management for rapid workspace clearing.
 
 ### 1.3 AI Intelligence Layer
-- **Research Mode**: Uses `gemini-3-flash-preview` with `googleSearch` grounding. 
-- **AI Companion**: Uses a persistent `chat` session via `@google/genai`. 
+- **Research Mode**: Uses `gemini-3-pro-preview` with `googleSearch` grounding for deep retrieval. 
+- **AI Companion**: Uses a persistent `chat` session via `@google/genai` (powered by Gemini 3 Pro). 
 - **Grounding**: The system extracts `groundingChunks` and maps them to interactive UI citations in `ResearchModal.tsx`.
 
 ---

@@ -23,9 +23,8 @@ const ServiceIcon: React.FC<{ name: string; icon: React.ReactNode }> = ({ name, 
 export const ServiceGroupCard: React.FC<{ 
   group: ServiceGroup, 
   isCollapsed: boolean, 
-  onToggleIndividual: () => void,
-  onToggleRow: () => void
-}> = ({ group, isCollapsed, onToggleIndividual, onToggleRow }) => {
+  onToggle: () => void
+}> = ({ group, isCollapsed, onToggle }) => {
   const isVibrant = group.category === 'COLLECTIVE' || group.category === 'POZIVERSE';
   const isSystem = group.category === 'WIDGETS' || group.category === 'TOOLBOX';
 
@@ -51,17 +50,17 @@ export const ServiceGroupCard: React.FC<{
       <div className={`relative h-full backdrop-blur-xl rounded-xl border overflow-hidden transition-all duration-500 ${containerClasses}`}>
         <div 
             className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center cursor-pointer select-none group/header"
-            onClick={onToggleRow}
-            title="Click to toggle entire row"
+            onClick={onToggle}
+            title="Toggle card"
         >
             <h3 className={`text-lg uppercase tracking-wider font-black drop-shadow-sm transition-colors ${headerClasses} group-hover/header:opacity-80`}>
                 {group.category}
             </h3>
             <button 
-                onClick={(e) => { e.stopPropagation(); onToggleIndividual(); }} 
+                onClick={(e) => { e.stopPropagation(); onToggle(); }} 
                 className="text-white/60 hover:text-white transition-colors p-1"
                 aria-expanded={!isCollapsed}
-                title="Toggle this card only"
+                title="Toggle collapse"
             >
                 <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
                     {ICONS.ChevronUp}
@@ -72,7 +71,7 @@ export const ServiceGroupCard: React.FC<{
         <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
             <div className="p-6 pt-4">
                 <div className="flex flex-col space-y-3">
-                    {group.services.map((service, index) => (
+                    {group.services.map((service) => (
                     <a
                         key={service.name}
                         href={service.url}

@@ -7,11 +7,10 @@ interface TodoCardWidgetProps {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   isCollapsed: boolean;
-  onToggleIndividual: () => void;
-  onToggleRow: () => void;
+  onToggle: () => void;
 }
 
-const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isCollapsed, onToggleIndividual, onToggleRow }) => {
+const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isCollapsed, onToggle }) => {
   const [newTodoText, setNewTodoText] = useState('');
   const [justAddedTodoId, setJustAddedTodoId] = useState<number | null>(null);
 
@@ -47,15 +46,15 @@ const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isColl
       <div className="relative h-full bg-amber-900/10 backdrop-blur-xl rounded-xl border border-amber-500/20 shadow-[0_0_15px_-5px_rgba(245,158,11,0.2)] overflow-hidden transition-all duration-500">
         <div 
             className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center cursor-pointer select-none group/header"
-            onClick={onToggleRow}
-            title="Click to toggle entire row"
+            onClick={onToggle}
+            title="Toggle card"
         >
           <h3 className="text-amber-400 font-black text-lg uppercase tracking-wider drop-shadow-sm group-hover/header:text-amber-200 transition-colors">TO-DO LIST</h3>
           <button 
-            onClick={(e) => { e.stopPropagation(); onToggleIndividual(); }} 
+            onClick={(e) => { e.stopPropagation(); onToggle(); }} 
             className="text-white/60 hover:text-white transition-colors p-1"
             aria-expanded={!isCollapsed}
-            title="Toggle this card only"
+            title="Toggle collapse"
           >
             <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
                 {ICONS.ChevronUp}

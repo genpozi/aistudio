@@ -14,7 +14,7 @@ import FeedWidget from './components/FeedWidget';
 import FocusSessionOverlay from './components/FocusSessionOverlay';
 import GoogleBar from './components/GoogleBar';
 import Greeting from './components/Greeting';
-import IconBar from '././components/IconBar';
+import IconBar from './components/IconBar';
 import LinksWidget from './components/LinksWidget';
 import OmniBar from './components/OmniBar';
 import OnboardingModal from './components/OnboardingModal';
@@ -63,12 +63,6 @@ export interface OnboardingData {
 
 const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
 const TODO_WIDGET_CATEGORY_KEY = '__TODO__';
-
-// Logical row groupings for the 3-column layout
-const WIDGET_ROWS = [
-    [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, 'WIDGETS'],
-    ['TOOLBOX', 'COLLECTIVE', 'POZIVERSE']
-];
 
 const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => {
   return groups.map((group) => ({
@@ -150,41 +144,17 @@ const App: React.FC = () => {
   const openSettings = (tab = 'general') => { setSettingsInitialTab(tab); setIsSettingsOpen(true); };
   const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, ...hydratedServiceGroups.map(g => g.category)], [hydratedServiceGroups]);
   
-  // LOGIC CHECK: sound logic for omni-collapse is "if any are expanded, collapse them all. if all are collapsed, expand them all."
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
   const handleCollapseAll = () => setCollapsedKeys(allCategoryKeys);
   const handleExpandAll = () => setCollapsedKeys([]);
 
-  // Individual toggle function
   const toggleCategoryCollapse = (category: string) => {
     const newSet = new Set(collapsedCategories);
     newSet.has(category) ? newSet.delete(category) : newSet.add(category);
     setCollapsedKeys(Array.from(newSet));
   };
 
-  // Row synchronization function
-  const toggleRowCollapse = (key: string) => {
-    const row = WIDGET_ROWS.find(r => r.includes(key));
-    if (!row) {
-        toggleCategoryCollapse(key);
-        return;
-    }
-    
-    // If ANY item in the row is currently expanded, we collapse the whole row.
-    // Otherwise, we expand the whole row.
-    const isAnyExpandedInRow = row.some(k => !collapsedCategories.has(k));
-    const newSet = new Set(collapsedKeys);
-    
-    if (isAnyExpandedInRow) {
-        row.forEach(k => newSet.add(k));
-    } else {
-        row.forEach(k => newSet.delete(k));
-    }
-    setCollapsedKeys(Array.from(newSet));
-  };
-
   const handleResearchSubmit = async (query: string) => {
-    // FIX: Optimized for research complexity by using gemini-3-pro-preview.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     setIsResearchModalOpen(true); setIsResearchLoading(true); setResearchResult(null); setResearchSources(null); setResearchError(null);
     try {
@@ -195,7 +165,6 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = async (message: string) => {
-    // FIX: Upgraded to gemini-3-pro-preview for advanced conversational capabilities in the AI Companion.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const newHistory: ChatMessage[] = [...chatHistory, { role: 'user', text: message }];
     setChatHistory(newHistory); setIsResponding(true);
@@ -240,23 +209,20 @@ const App: React.FC = () => {
                     links={links} 
                     onOpenSettings={() => openSettings('links')} 
                     isCollapsed={collapsedCategories.has(LINKS_WIDGET_CATEGORY_KEY)} 
-                    onToggleIndividual={() => toggleCategoryCollapse(LINKS_WIDGET_CATEGORY_KEY)}
-                    onToggleRow={() => toggleRowCollapse(LINKS_WIDGET_CATEGORY_KEY)}
+                    onToggle={() => toggleCategoryCollapse(LINKS_WIDGET_CATEGORY_KEY)}
                   />
                   <TodoCardWidget 
                     todos={todos} 
                     setTodos={setTodos} 
                     isCollapsed={collapsedCategories.has(TODO_WIDGET_CATEGORY_KEY)} 
-                    onToggleIndividual={() => toggleCategoryCollapse(TODO_WIDGET_CATEGORY_KEY)}
-                    onToggleRow={() => toggleRowCollapse(TODO_WIDGET_CATEGORY_KEY)}
+                    onToggle={() => toggleCategoryCollapse(TODO_WIDGET_CATEGORY_KEY)}
                   />
                   {['WIDGETS', 'TOOLBOX', 'COLLECTIVE', 'POZIVERSE'].map(cat => serviceGroupsMap.has(cat) && (
                       <ServiceGroupCard 
                         key={cat} 
                         group={serviceGroupsMap.get(cat)!} 
                         isCollapsed={collapsedCategories.has(cat)} 
-                        onToggleIndividual={() => toggleCategoryCollapse(cat)}
-                        onToggleRow={() => toggleRowCollapse(cat)}
+                        onToggle={() => toggleCategoryCollapse(cat)}
                       />
                   ))}
               </div>
