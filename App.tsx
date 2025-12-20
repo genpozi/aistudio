@@ -49,7 +49,6 @@ import type {
   ResearchBackend,
   SearchableItem,
   ServiceGroup,
-  StoredService,
   StoredServiceGroup,
   Todo,
   UserFeed,
@@ -195,22 +194,40 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  if (!hasOnboarded) return <OnboardingModal onComplete={d => { setName(d.name); setLocation(d.location); setFocusPrompt(d.focusPrompt); setHasOnboarded(true); }} />;
-
   const lockedServiceCategories = ['WIDGETS', 'TOOLBOX', 'REMEMBERY', 'POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'];
+
+  // Refactored helper to render rows of service groups
+  const renderServiceGroupRows = (categories: string[]) => {
+    return categories.map(cat => {
+      const group = getGroup(cat);
+      return group ? (
+        <ServiceGroupCard 
+          key={group.category} 
+          group={group} 
+          isCollapsed={collapsedCategories.has(group.category)} 
+          onToggle={() => toggleCategoryCollapse(group.category)}
+        />
+      ) : null;
+    });
+  };
+
+  if (!hasOnboarded) return <OnboardingModal onComplete={d => { setName(d.name); setLocation(d.location); setFocusPrompt(d.focusPrompt); setHasOnboarded(true); }} />;
 
   return (
     <TimeProvider>
       <div className="h-screen w-screen bg-cover bg-center bg-no-repeat text-white transition-all duration-1000" style={{ backgroundImage: `url(${backgroundImage})` }}>
         <div className={`h-full w-full bg-black/45 backdrop-blur-[2px] flex flex-col p-4 md:p-8 overflow-y-auto custom-scrollbar transition-opacity duration-500 ${isFocusSessionActive ? 'opacity-0' : 'opacity-100'}`}>
           <header className="flex flex-col md:flex-row justify-between items-start w-full gap-8 mb-12">
-            <div className="flex flex-col items-start space-y-4 flex-shrink-0">
-              <PoziBar />
-              <AmpersandBar />
-              <IconBar triggerIcon={ICONS.Z_LOGO} services={Z_SERVICES} />
-              <IconBar triggerIcon={ICONS.I_LOGO} services={I_SERVICES} />
+            <div className="flex flex-col items-start space-y-4 flex-shrink-0 w-32">
+              {/* Left sidebar space (Reserved) */}
             </div>
             <div className="flex flex-col items-center text-center flex-grow pt-2">
+              <div className="mb-6 flex items-center space-x-4">
+                <PoziBar />
+                <AmpersandBar />
+                <IconBar triggerIcon={ICONS.Z_LOGO} services={Z_SERVICES} direction="down" />
+                <IconBar triggerIcon={ICONS.I_LOGO} services={I_SERVICES} direction="down" />
+              </div>
               <Clock />
               <Greeting name={name} focusPrompt={focusPrompt} onStartFocus={() => { setFocusSessionEndTime(Date.now() + focusDuration * 60 * 1000); setIsFocusSessionActive(true); }} />
               <div className="w-full max-w-2xl mx-auto mt-10">
@@ -248,30 +265,10 @@ const App: React.FC = () => {
                   />
 
                   {/* ROW 2: Cyan Glow Cards */}
-                  {['WIDGETS', 'TOOLBOX', 'REMEMBERY'].map(cat => {
-                    const group = getGroup(cat);
-                    return group ? (
-                      <ServiceGroupCard 
-                        key={group.category} 
-                        group={group} 
-                        isCollapsed={collapsedCategories.has(group.category)} 
-                        onToggle={() => toggleCategoryCollapse(group.category)}
-                      />
-                    ) : null;
-                  })}
+                  {renderServiceGroupRows(['WIDGETS', 'TOOLBOX', 'REMEMBERY'])}
 
                   {/* ROW 3: Rainbow Glow Cards */}
-                  {['POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'].map(cat => {
-                    const group = getGroup(cat);
-                    return group ? (
-                      <ServiceGroupCard 
-                        key={group.category} 
-                        group={group} 
-                        isCollapsed={collapsedCategories.has(group.category)} 
-                        onToggle={() => toggleCategoryCollapse(group.category)}
-                      />
-                    ) : null;
-                  })}
+                  {renderServiceGroupRows(['POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'])}
 
                   {/* Additional Custom Categories if any */}
                   {hydratedServiceGroups

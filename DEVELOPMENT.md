@@ -15,11 +15,12 @@ Conformity is maintained via specific CSS class mappings in `ServiceGroupCard.ts
 
 ## 3. Data Schema & Migrations
 - **Current Schema**: v19.
-- **Forced Sync**: The migration logic in `index.tsx` ensures that all users receive the latest "Locked 3x3" categories automatically without losing their existing `userLinks`, `userFeeds`, or `userTodos`.
+- **Forced Sync**: The migration logic in `migrations.ts` (called by `index.tsx`) ensures that all users receive the latest "Locked 3x3" categories automatically without losing their existing `userLinks`, `userFeeds`, or `userTodos`.
 - **Constants**: `SERVICE_GROUPS` in `constants.tsx` acts as the source of truth for all default link populations.
 
 ## 4. UI/UX Rules
-- No row should ever have more than 3 cards on desktop.
-- On mobile, cards stack vertically.
+- **Navigation Bars**: The top center icon bars (POZI, Ampersand, Z, I) utilize a vertical drop-down expansion pattern (`direction="down"`) to maintain a clean header aesthetic.
+- **Cards**: No row should ever have more than 3 cards on desktop.
+- **Mobile**: Cards stack vertically.
 - Avoid "blocking" links: Ensure cards have adequate vertical height or scrollable overflow when populated with more than 5 items.
 - Modals use `backdrop-blur-xl` and `z-50` to ensure they always float above the dashboard content.

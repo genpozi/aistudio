@@ -7,6 +7,7 @@ const AmpersandBar: React.FC = () => {
         <IconBar
             triggerIcon={ICONS.AMPERSAND}
             services={AMPERSAND_SERVICES}
+            direction="down"
         />
     );
 };

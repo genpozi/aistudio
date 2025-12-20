@@ -7,6 +7,7 @@ const PoziBar: React.FC = () => {
         <IconBar
             triggerIcon={ICONS.POZI.Logo}
             services={POZI_SERVICES}
+            direction="down"
         />
     );
 };
