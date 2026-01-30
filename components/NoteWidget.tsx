@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { DashboardNote } from '../types';
 import { ICONS } from '../constants';
 
@@ -11,14 +11,56 @@ interface NoteWidgetProps {
 
 const NoteWidget: React.FC<NoteWidgetProps> = ({ notes, setNotes, isCollapsed, onToggle }) => {
   const [content, setContent] = useState(notes[0]?.content || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastSavedContentRef = useRef<string>(notes[0]?.content || '');
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Detect when notes have been properly loaded from localStorage
+  useEffect(() => {
+    if (notes.length > 0 && notes[0] !== undefined) {
+      setIsInitialized(true);
+      console.log('NoteWidget: Notes initialized', notes[0]);
+    }
+  }, [notes]);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    // Clear previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Skip if content hasn't actually changed
+    if (content === lastSavedContentRef.current) {
+      return;
+    }
+
+    // Set new timeout with proper debouncing
+    setIsSaving(true);
+    setSaveError(null);
+    saveTimeoutRef.current = setTimeout(() => {
       if (content !== notes[0]?.content) {
+        try {
           setNotes(prev => [{ ...prev[0], content, lastUpdated: Date.now() }]);
+          lastSavedContentRef.current = content;
+          setIsSaving(false);
+        } catch (error) {
+          console.error('NoteWidget: Error saving note', error);
+          setSaveError('Failed to save note. Please try again.');
+          setIsSaving(false);
+        }
+      } else {
+        setIsSaving(false);
       }
     }, 1000);
-    return () => clearTimeout(timeout);
+
+    // Cleanup
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
   }, [content, notes, setNotes]);
 
   return (
@@ -47,15 +89,19 @@ const NoteWidget: React.FC<NoteWidgetProps> = ({ notes, setNotes, isCollapsed, o
         </div>
         <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
           <div className="p-4 pt-2 flex flex-col">
-            <textarea
+          <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Jot down some ideas..."
                 className="w-full h-48 bg-black/20 border border-amber-500/10 p-4 rounded-lg text-white placeholder:text-amber-100/30 focus:outline-none focus:ring-1 focus:ring-amber-500/40 transition-all resize-none custom-scrollbar font-medium"
                 spellCheck={false}
-            />
+                disabled={!isInitialized}
+          />
             <div className="mt-2 text-[10px] text-amber-400/50 flex justify-end font-bold italic">
-                Auto-saved
+                {isSaving && !saveError && 'Saving...'}
+                {!isSaving && !saveError && isInitialized && 'Auto-saved'}
+                {!isInitialized && 'Loading...'}
+                {saveError && <span className="text-red-400">{saveError}</span>}
             </div>
           </div>
         </div>

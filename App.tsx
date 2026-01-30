@@ -145,7 +145,7 @@ const App: React.FC = () => {
     ];
 
     return [...services, ...userLinks, ...commands];
-  }, [hydratedServiceGroups, links, refreshBackgroundImage, focusDuration]);
+  }, [hydratedServiceGroups, links, focusDuration]);
 
   useEffect(() => { refreshBackgroundImage(); }, [refreshBackgroundImage]);
   useEffect(() => { document.documentElement.className = THEMES.find(t => t.id === theme)?.className || THEMES[0].className; }, [theme]);
