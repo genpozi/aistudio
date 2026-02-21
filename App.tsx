@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 import AICompanionModal from './components/AICompanionModal';
 import AICompanionWidget from './components/AICompanionWidget';
-import AmpersandBar from './components/AmpersandBar';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
 import Clock from './components/Clock';
 import CollapseAllWidget from './components/CollapseAllWidget';
@@ -11,13 +10,10 @@ import CustomizeModal from './components/CustomizeModal';
 import Favicon from './components/Favicon';
 import FeedWidget from './components/FeedWidget';
 import FocusSessionOverlay from './components/FocusSessionOverlay';
-import GoogleBar from './components/GoogleBar';
 import Greeting from './components/Greeting';
-import IconBar from './components/IconBar';
 import LinksWidget from './components/LinksWidget';
 import OmniBar from './components/OmniBar';
 import OnboardingModal from './components/OnboardingModal';
-import PoziBar from './components/PoziBar';
 import Quote from './components/Quote';
 import ResearchModal from './components/ResearchModal';
 import SearchWidget from './components/SearchWidget';
@@ -32,12 +28,10 @@ import {
   BACKGROUND_IMAGES,
   DEFAULT_FEEDS,
   getIcon,
-  I_SERVICES,
   ICONS,
   LOCAL_STORAGE_KEYS,
   SERVICE_GROUPS,
   THEMES,
-  Z_SERVICES,
 } from './constants';
 import { TimeProvider } from './contexts/TimeContext';
 import useLocalStorage from './hooks/useLocalStorage';
@@ -145,7 +139,7 @@ const App: React.FC = () => {
     ];
 
     return [...services, ...userLinks, ...commands];
-  }, [hydratedServiceGroups, links, focusDuration]);
+  }, [hydratedServiceGroups, links, refreshBackgroundImage, focusDuration]);
 
   useEffect(() => { refreshBackgroundImage(); }, [refreshBackgroundImage]);
   useEffect(() => { document.documentElement.className = THEMES.find(t => t.id === theme)?.className || THEMES[0].className; }, [theme]);
@@ -222,12 +216,6 @@ const App: React.FC = () => {
               {/* Left sidebar space (Reserved) */}
             </div>
             <div className="flex flex-col items-center text-center flex-grow pt-2">
-              <div className="mb-6 flex items-center space-x-4">
-                <PoziBar />
-                <AmpersandBar />
-                <IconBar triggerIcon={ICONS.Z_LOGO} services={Z_SERVICES} direction="down" />
-                <IconBar triggerIcon={ICONS.I_LOGO} services={I_SERVICES} direction="down" />
-              </div>
               <Clock />
               <Greeting name={name} focusPrompt={focusPrompt} onStartFocus={() => { setFocusSessionEndTime(Date.now() + focusDuration * 60 * 1000); setIsFocusSessionActive(true); }} />
               <div className="w-full max-w-2xl mx-auto mt-10">
@@ -237,7 +225,6 @@ const App: React.FC = () => {
             <div className="flex flex-col items-end space-y-4 flex-shrink-0 pt-2">
                 <Weather location={location} />
                 <CollapseAllWidget areAllCollapsed={areAllCollapsed} onCollapseAll={handleCollapseAll} onExpandAll={handleExpandAll} />
-                <GoogleBar direction="down" />
             </div>
           </header>
 
