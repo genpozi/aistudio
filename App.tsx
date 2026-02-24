@@ -88,7 +88,7 @@ const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useLocalStorage<ChatMessage[]>(LOCAL_STORAGE_KEYS.CHAT_HISTORY, []);
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [notes, setNotes] = useLocalStorage<DashboardNote[]>(LOCAL_STORAGE_KEYS.USER_NOTES, [{ id: 1, content: '', lastUpdated: Date.now() }]);
-  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, 'TOOLBOX', 'POZIVERSE']);
+  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, 'TOOLBOX', 'PROJECT SPACE']);
 
   const collapsedCategories = useMemo(() => new Set(collapsedKeys), [collapsedKeys]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -204,7 +204,19 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  const lockedServiceCategories = ['TOOLBOX', 'POZIVERSE'];
+  const lockedServiceCategories = ['TOOLBOX', 'PROJECT SPACE'];
+
+  const handleDeleteService = (category: string, serviceName: string) => {
+    setStoredServiceGroups(prev => prev.map(group => {
+      if (group.category === category) {
+        return {
+          ...group,
+          services: group.services.filter(s => s.name !== serviceName)
+        };
+      }
+      return group;
+    }));
+  };
 
   // Refactored helper to render rows of service groups
   const renderServiceGroupRows = (categories: string[]) => {
@@ -216,6 +228,8 @@ const App: React.FC = () => {
           group={group} 
           isCollapsed={collapsedCategories.has(group.category)} 
           onToggle={() => toggleCategoryCollapse(group.category)}
+          onOpenSettings={() => setIsCustomizeModalOpen(true)}
+          onDeleteService={(serviceName) => handleDeleteService(group.category, serviceName)}
         />
       ) : null;
     });
@@ -253,6 +267,7 @@ const App: React.FC = () => {
                     onOpenSettings={() => openSettings('links')} 
                     isCollapsed={collapsedCategories.has(LINKS_WIDGET_CATEGORY_KEY)} 
                     onToggle={() => toggleCategoryCollapse(LINKS_WIDGET_CATEGORY_KEY)}
+                    onDeleteLink={(id) => setLinks(links.filter(l => l.id !== id))}
                   />
                   <TodoCardWidget 
                     todos={todos} 
@@ -271,7 +286,7 @@ const App: React.FC = () => {
                   {renderServiceGroupRows(['TOOLBOX'])}
 
                   {/* ROW 3: Rainbow Glow Cards */}
-                  {renderServiceGroupRows(['POZIVERSE'])}
+                  {renderServiceGroupRows(['PROJECT SPACE'])}
 
                   {/* Additional Custom Categories if any */}
                   {(hydratedServiceGroups || [])
@@ -282,6 +297,8 @@ const App: React.FC = () => {
                         group={group} 
                         isCollapsed={collapsedCategories.has(group.category)} 
                         onToggle={() => toggleCategoryCollapse(group.category)}
+                        onOpenSettings={() => setIsCustomizeModalOpen(true)}
+                        onDeleteService={(serviceName) => handleDeleteService(group.category, serviceName)}
                       />
                   ))}
               </div>

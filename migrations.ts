@@ -54,6 +54,69 @@ export const runMigrations = () => {
                 }
             }
 
+            // Migration path for any version < 22: Clear TOOLBOX and PROJECT SPACE
+            if (storedVersion < 22) {
+                console.log("Running migration to schema v22 (Clear TOOLBOX and PROJECT SPACE)...");
+                const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
+                try {
+                    if (rawGroups) {
+                        const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
+                        const updatedGroups = userGroups.map(g => {
+                            if (g.category === 'TOOLBOX' || g.category === 'PROJECT SPACE' || g.category === 'POZIVERSE') {
+                                return { ...g, category: g.category === 'POZIVERSE' ? 'PROJECT SPACE' : g.category, services: [] };
+                            }
+                            return g;
+                        });
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(updatedGroups));
+                    }
+                } catch (e) {
+                    console.error("Migration logic error:", e);
+                }
+            }
+
+            // Migration path for any version < 23: Force clear TOOLBOX and PROJECT SPACE and remove duplicates
+            if (storedVersion < 23) {
+                console.log("Running migration to schema v23 (Force clear TOOLBOX and PROJECT SPACE and remove duplicates)...");
+                const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
+                try {
+                    if (rawGroups) {
+                        const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
+                        const updatedGroups: StoredServiceGroup[] = [];
+                        const seenCategories = new Set<string>();
+
+                        for (const g of userGroups) {
+                            let cat = g.category;
+                            if (cat === 'POZIVERSE') {
+                                cat = 'PROJECT SPACE';
+                            }
+                            
+                            if (seenCategories.has(cat)) {
+                                continue; // Skip duplicates
+                            }
+                            seenCategories.add(cat);
+
+                            if (cat === 'TOOLBOX' || cat === 'PROJECT SPACE') {
+                                updatedGroups.push({ ...g, category: cat, services: [] });
+                            } else {
+                                updatedGroups.push({ ...g, category: cat });
+                            }
+                        }
+
+                        // Ensure TOOLBOX and PROJECT SPACE exist
+                        if (!seenCategories.has('TOOLBOX')) {
+                            updatedGroups.unshift({ category: 'TOOLBOX', services: [] });
+                        }
+                        if (!seenCategories.has('PROJECT SPACE')) {
+                            updatedGroups.unshift({ category: 'PROJECT SPACE', services: [] });
+                        }
+
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(updatedGroups));
+                    }
+                } catch (e) {
+                    console.error("Migration logic error:", e);
+                }
+            }
+
             localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_SCHEMA_VERSION, String(SCHEMA_VERSION));
             console.log("Migrations check completed.");
         }

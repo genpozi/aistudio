@@ -22,9 +22,11 @@ const ServiceIcon: React.FC<{ name: string; icon: React.ReactNode }> = ({ name, 
 export const ServiceGroupCard: React.FC<{ 
   group: ServiceGroup, 
   isCollapsed: boolean, 
-  onToggle: () => void
-}> = ({ group, isCollapsed, onToggle }) => {
-  const isVibrant = group.category === 'POZIVERSE';
+  onToggle: () => void,
+  onOpenSettings: () => void,
+  onDeleteService: (serviceName: string) => void
+}> = ({ group, isCollapsed, onToggle, onOpenSettings, onDeleteService }) => {
+  const isVibrant = group.category === 'PROJECT SPACE';
   const isSystem = group.category === 'TOOLBOX';
 
   // Base glass classes
@@ -55,40 +57,71 @@ export const ServiceGroupCard: React.FC<{
             <h3 className={`text-lg uppercase tracking-wider font-black drop-shadow-sm transition-colors ${headerClasses} group-hover/header:opacity-80`}>
                 {group.category}
             </h3>
-            <button 
-                onClick={(e) => { e.stopPropagation(); onToggle(); }} 
-                className="text-white/60 hover:text-white transition-colors p-1"
-                aria-expanded={!isCollapsed}
-                title="Toggle collapse"
-            >
-                <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
-                    {ICONS.ChevronUp}
-                </div>
-            </button>
+            <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                <button
+                    onClick={onOpenSettings}
+                    className={`transition-colors flex items-center space-x-1.5 p-1 rounded-md ${isVibrant ? 'text-purple-300/80 hover:text-purple-200 hover:bg-purple-400/10' : isSystem ? 'text-cyan-400/80 hover:text-cyan-300 hover:bg-cyan-400/10' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                    aria-label={`Add new link to ${group.category}`}
+                >
+                    <div className="w-4 h-4">{ICONS.Plus}</div>
+                    <span className="text-sm font-semibold opacity-90 group-hover:opacity-100">Add</span> 
+                </button>
+                <button 
+                    onClick={onToggle} 
+                    className="text-white/60 hover:text-white transition-colors p-1"
+                    aria-expanded={!isCollapsed}
+                    title="Toggle collapse"
+                >
+                    <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+                        {ICONS.ChevronUp}
+                    </div>
+                </button>
+            </div>
         </div>
         
         <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
             <div className="p-6 pt-4">
-                <div className="flex flex-col space-y-3">
-                    {(group.services || []).map((service) => (
-                    <a
-                        key={service.name}
-                        href={service.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`group/link flex items-center space-x-4 p-3 rounded-xl border border-transparent transition-all duration-300 transform active:scale-95 shadow-md
-                            ${isVibrant ? 'bg-white/5 hover:bg-white/15 hover:border-white/30' : 
-                              isSystem ? 'bg-cyan-400/5 hover:bg-cyan-400/15 hover:border-cyan-400/30' : 
-                              'bg-black/10 hover:bg-black/20 hover:border-white/20'}
-                        `}
-                    >
-                        <ServiceIcon name={service.name} icon={service.icon} />
-                        <span className="text-white text-base font-semibold leading-tight group-hover/link:text-white">
-                            {service.name}
-                        </span>
-                    </a>
-                    ))}
-                </div>
+                {(group.services || []).length > 0 ? (
+                    <div className="flex flex-col space-y-3">
+                        {(group.services || []).map((service) => (
+                        <a
+                            key={service.name}
+                            href={service.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`group/link flex items-center justify-between p-3 rounded-xl border border-transparent transition-all duration-300 transform active:scale-95 shadow-md
+                                ${isVibrant ? 'bg-white/5 hover:bg-white/15 hover:border-white/30' : 
+                                  isSystem ? 'bg-cyan-400/5 hover:bg-cyan-400/15 hover:border-cyan-400/30' : 
+                                  'bg-black/10 hover:bg-black/20 hover:border-white/20'}
+                            `}
+                        >
+                            <div className="flex items-center space-x-4">
+                                <ServiceIcon name={service.name} icon={service.icon} />
+                                <span className="text-white text-base font-semibold leading-tight group-hover/link:text-white">
+                                    {service.name}
+                                </span>
+                            </div>
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    if (window.confirm(`Delete link "${service.name}" from ${group.category}?`)) {
+                                        onDeleteService(service.name);
+                                    }
+                                }}
+                                className="opacity-0 group-hover/link:opacity-100 p-2 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                                title="Delete link"
+                            >
+                                <div className="w-4 h-4">{ICONS.Trash}</div>
+                            </button>
+                        </a>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-4 text-white/70 italic">
+                        No links here yet. Click "Add" to get started!
+                    </div>
+                )}
             </div>
         </div>
       </div>

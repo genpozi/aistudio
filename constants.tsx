@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
-export const SCHEMA_VERSION = 21; // Incremented to remove WIDGETS, COLLECTIVE, 0RELIANCE LAB, and REMEMBERY
+export const SCHEMA_VERSION = 23; // Incremented to clear TOOLBOX and PROJECT SPACE and remove duplicates
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
@@ -188,7 +188,7 @@ export const GOOGLE_SERVICES: Service[] = [
 ];
 
 export const POZI_SERVICES: Service[] = [
-    { name: "POZIVERSE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
+    { name: "PROJECT SPACE", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
 ];
 
 export const AMPERSAND_SERVICES: Service[] = [
@@ -206,20 +206,11 @@ export const I_SERVICES: Service[] = [
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
     category: "TOOLBOX",
-    services: [
-        { name: "COMING SOON", url: "#", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    ]
+    services: []
   },
   {
-    category: "POZIVERSE",
-    services: [
-        { name: "POZIVERSE WORLD", url: "https://poziverse.0reliance.com/", icon: ICONS.Globe, iconKey: "Globe" },
-        { name: "0RELAI STUDIO", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "POZI PROFESSIONALS", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
-        { name: "POZI DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "DOCUMENTATION", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
-        { name: "MAEPLE", url: "https://maeple.stan.camp", icon: ICONS.Code, iconKey: "Code" },
-    ]
+    category: "PROJECT SPACE",
+    services: []
   }
 ];
 

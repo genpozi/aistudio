@@ -8,9 +8,10 @@ interface LinksWidgetProps {
   onOpenSettings: () => void;
   isCollapsed: boolean;
   onToggle: () => void;
+  onDeleteLink: (id: number) => void;
 }
 
-const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isCollapsed, onToggle }) => {
+const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isCollapsed, onToggle, onDeleteLink }) => {
   const safeLinks = links || [];
   const hasLinks = safeLinks.length > 0;
 
@@ -56,15 +57,30 @@ const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isColl
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group flex items-center space-x-4 p-3 rounded-xl border border-transparent bg-amber-400/5 hover:bg-amber-400/15 hover:border-amber-400/30 transition-all duration-300 transform active:scale-95 shadow-md"
+                    className="group flex items-center justify-between p-3 rounded-xl border border-transparent bg-amber-400/5 hover:bg-amber-400/15 hover:border-amber-400/30 transition-all duration-300 transform active:scale-95 shadow-md"
                     style={{ textShadow: '0 1px 3px rgba(0,0,0,0.4)' }}
                   >
-                    <div className="w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0 shadow-inner bg-black/40">
-                      <div className="w-6 h-6 transform group-hover:scale-110 transition-transform duration-200">
-                        <Favicon link={link} className="w-full h-full object-contain" />
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 flex items-center justify-center rounded-lg flex-shrink-0 shadow-inner bg-black/40">
+                        <div className="w-6 h-6 transform group-hover:scale-110 transition-transform duration-200">
+                          <Favicon link={link} className="w-full h-full object-contain" />
+                        </div>
                       </div>
+                      <span className="text-white text-base font-semibold leading-tight group-hover:text-amber-200 transition-colors">{link.name}</span>
                     </div>
-                    <span className="text-white text-base font-semibold leading-tight group-hover:text-amber-200 transition-colors">{link.name}</span>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (window.confirm(`Delete link "${link.name}"?`)) {
+                          onDeleteLink(link.id);
+                        }
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-2 text-white/40 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"
+                      title="Delete link"
+                    >
+                      <div className="w-4 h-4">{ICONS.Trash}</div>
+                    </button>
                   </a>
                 ))}
               </div>
