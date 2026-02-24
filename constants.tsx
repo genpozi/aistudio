@@ -140,7 +140,7 @@ export const getIcon = (iconKey: string): React.ReactNode => {
     return React.isValidElement(current) ? current : ICONS.Globe;
 };
 
-export const CORS_PROXY_URL = 'https://corsproxy.io/?';
+export const CORS_PROXY_URL = 'https://api.codetabs.com/v1/proxy?quest=';
 
 export const LOCAL_STORAGE_KEYS = {
     USER_NAME: 'userName',
