@@ -117,6 +117,23 @@ export const runMigrations = () => {
                 }
             }
 
+            // Migration path for any version < 24: Collapse calculator by default
+            if (storedVersion < 24) {
+                console.log("Running migration to schema v24 (Collapse calculator by default)...");
+                const rawCollapsed = localStorage.getItem(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES);
+                try {
+                    if (rawCollapsed) {
+                        const collapsed = JSON.parse(rawCollapsed) as string[];
+                        if (!collapsed.includes('__CALCULATOR__')) {
+                            collapsed.push('__CALCULATOR__');
+                            localStorage.setItem(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, JSON.stringify(collapsed));
+                        }
+                    }
+                } catch (e) {
+                    console.error("Migration logic error:", e);
+                }
+            }
+
             localStorage.setItem(LOCAL_STORAGE_KEYS.DATA_SCHEMA_VERSION, String(SCHEMA_VERSION));
             console.log("Migrations check completed.");
         }

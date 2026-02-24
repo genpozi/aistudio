@@ -49,16 +49,26 @@ const TodoCardWidget: React.FC<TodoCardWidgetProps> = ({ todos, setTodos, isColl
             title="Toggle card"
         >
           <h3 className="text-amber-400 font-black text-lg uppercase tracking-wider drop-shadow-sm group-hover/header:text-amber-200 transition-colors">TO-DO LIST</h3>
-          <button 
-            onClick={(e) => { e.stopPropagation(); onToggle(); }} 
-            className="text-white/60 hover:text-white transition-colors p-1"
-            aria-expanded={!isCollapsed}
-            title="Toggle collapse"
-          >
-            <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
-                {ICONS.ChevronUp}
-            </div>
-          </button>
+          <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setTodos(todos.filter(t => !t.completed))}
+              className="text-amber-400/80 hover:text-amber-300 transition-colors flex items-center space-x-1.5 p-1 rounded-md hover:bg-amber-400/10"
+              aria-label="Clear completed todos"
+            >
+              <div className="w-4 h-4">{ICONS.Trash}</div>
+              <span className="text-sm font-semibold opacity-90 group-hover:opacity-100">Clear</span> 
+            </button>
+            <button 
+              onClick={onToggle} 
+              className="text-white/60 hover:text-white transition-colors p-1"
+              aria-expanded={!isCollapsed}
+              title="Toggle collapse"
+            >
+              <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+                  {ICONS.ChevronUp}
+              </div>
+            </button>
+          </div>
         </div>
         <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
           <div className="p-6 pt-4 flex flex-col">

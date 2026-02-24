@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import AICompanionModal from './components/AICompanionModal';
 import AICompanionWidget from './components/AICompanionWidget';
 import BackgroundSwitcher from './components/BackgroundSwitcher';
+import CalculatorWidget from './components/CalculatorWidget';
 import Clock from './components/Clock';
 import CollapseAllWidget from './components/CollapseAllWidget';
 import CustomizeModal from './components/CustomizeModal';
@@ -58,6 +59,7 @@ export interface OnboardingData {
 const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
 const TODO_WIDGET_CATEGORY_KEY = '__TODO__';
 const NOTES_WIDGET_CATEGORY_KEY = '__NOTES__';
+const CALCULATOR_WIDGET_CATEGORY_KEY = '__CALCULATOR__';
 
 const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => {
   return groups.map((group) => ({
@@ -88,7 +90,7 @@ const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useLocalStorage<ChatMessage[]>(LOCAL_STORAGE_KEYS.CHAT_HISTORY, []);
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [notes, setNotes] = useLocalStorage<DashboardNote[]>(LOCAL_STORAGE_KEYS.USER_NOTES, [{ id: 1, content: '', lastUpdated: Date.now() }]);
-  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, 'TOOLBOX', 'PROJECT SPACE']);
+  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, CALCULATOR_WIDGET_CATEGORY_KEY, 'TOOLBOX', 'PROJECT SPACE']);
 
   const collapsedCategories = useMemo(() => new Set(collapsedKeys), [collapsedKeys]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -150,7 +152,7 @@ const App: React.FC = () => {
   useEffect(() => { refreshBackgroundImage(); }, [refreshBackgroundImage]);
   useEffect(() => { document.documentElement.className = THEMES.find(t => t.id === theme)?.className || THEMES[0].className; }, [theme]);
 
-  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, ...(hydratedServiceGroups || []).map(g => g.category)], [hydratedServiceGroups]);
+  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, CALCULATOR_WIDGET_CATEGORY_KEY, ...(hydratedServiceGroups || []).map(g => g.category)], [hydratedServiceGroups]);
   
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
   const handleCollapseAll = () => setCollapsedKeys(allCategoryKeys);
@@ -254,7 +256,21 @@ const App: React.FC = () => {
             </div>
             <div className="flex flex-col items-end space-y-4 flex-shrink-0 pt-2">
                 <Weather location={location} />
-                <CollapseAllWidget areAllCollapsed={areAllCollapsed} onCollapseAll={handleCollapseAll} onExpandAll={handleExpandAll} />
+                <div className="flex flex-col space-y-2">
+                  <CollapseAllWidget areAllCollapsed={areAllCollapsed} onCollapseAll={handleCollapseAll} onExpandAll={handleExpandAll} />
+                  <button
+                    onClick={() => { setFocusSessionEndTime(Date.now() + focusDuration * 60 * 1000); setIsFocusSessionActive(true); }}
+                    className="group flex items-center justify-between px-4 py-2 rounded-full bg-cyan-500/20 backdrop-blur-md border border-cyan-500/30 hover:border-cyan-400 transition-all duration-300 transform active:scale-95 shadow-lg hover:shadow-[0_0_15px_-5px_rgba(34,211,238,0.4)]"
+                    title="Start Focus Session"
+                  >
+                    <span className="text-cyan-100 group-hover:text-white text-xs font-bold tracking-widest transition-colors mr-3">
+                      START TIMER
+                    </span>
+                    <div className="w-5 h-5 text-cyan-400 group-hover:text-cyan-300 transition-colors">
+                      {ICONS.Timer}
+                    </div>
+                  </button>
+                </div>
             </div>
           </header>
 
@@ -282,10 +298,12 @@ const App: React.FC = () => {
                     onToggle={() => toggleCategoryCollapse(NOTES_WIDGET_CATEGORY_KEY)}
                   />
 
-                  {/* ROW 2: Cyan Glow Cards */}
+                  {/* ROW 2: Utility & Projects */}
                   {renderServiceGroupRows(['TOOLBOX'])}
-
-                  {/* ROW 3: Rainbow Glow Cards */}
+                  <CalculatorWidget 
+                    isCollapsed={collapsedCategories.has(CALCULATOR_WIDGET_CATEGORY_KEY)} 
+                    onToggle={() => toggleCategoryCollapse(CALCULATOR_WIDGET_CATEGORY_KEY)}
+                  />
                   {renderServiceGroupRows(['PROJECT SPACE'])}
 
                   {/* Additional Custom Categories if any */}

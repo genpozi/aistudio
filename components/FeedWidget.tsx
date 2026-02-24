@@ -117,7 +117,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchFeeds = useCallback(async () => {
+  const fetchFeeds = useCallback(async (signal?: AbortSignal) => {
     if (!feedUrls || feedUrls.length === 0) {
       setItems([]);
       return;
@@ -126,35 +126,51 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
     
     const fetchAndParse = async (feed: UserFeed): Promise<{ feedTitle: string; items: Omit<FeedItem, 'source'>[] }> => {
       try {
-        const response = await fetch(`${CORS_PROXY_URL}${feed.url}`);
+        const response = await fetch(`${CORS_PROXY_URL}${feed.url}`, { signal });
         if (!response.ok) throw new Error(`HTTP error ${response.status}`);
         const text = await response.text();
         return parseFeed(text);
       } catch (err) { 
+        if (err instanceof Error && err.name === 'AbortError') throw err;
         console.warn(`Failed to fetch feed ${feed.url}`, err);
         return { feedTitle: 'Unknown', items: [] };
       }
     };
 
-    const results = await Promise.allSettled(feedUrls.map(fetchAndParse));
-    const newItems: FeedItem[] = [];
-    results.forEach(result => {
-      if (result.status === 'fulfilled') {
-        const { feedTitle, items } = result.value;
-        items.forEach(item => {
-            if (item.title && item.link) {
-                newItems.push({ ...item, source: feedTitle });
-            }
-        });
-      }
-    });
+    try {
+      const results = await Promise.allSettled(feedUrls.map(fetchAndParse));
+      
+      if (signal?.aborted) return;
 
-    newItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-    setItems(newItems.slice(0, 30)); // Show more items now that it's compact
-    setIsLoading(false);
+      const newItems: FeedItem[] = [];
+      results.forEach(result => {
+        if (result.status === 'fulfilled') {
+          const { feedTitle, items } = result.value;
+          items.forEach(item => {
+              if (item.title && item.link) {
+                  newItems.push({ ...item, source: feedTitle });
+              }
+          });
+        }
+      });
+
+      newItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+      setItems(newItems.slice(0, 30));
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return;
+      console.error("Failed to fetch feeds:", err);
+    } finally {
+      if (!signal?.aborted) {
+        setIsLoading(false);
+      }
+    }
   }, [feedUrls]);
 
-  useEffect(() => { fetchFeeds(); }, [fetchFeeds]);
+  useEffect(() => { 
+    const controller = new AbortController();
+    fetchFeeds(controller.signal); 
+    return () => controller.abort();
+  }, [fetchFeeds]);
 
   return (
     <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col ${className || ''}`}>
@@ -167,7 +183,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
             <button onClick={onOpenSettings} className="text-white/40 hover:text-white transition-colors">
                 <div className="w-5 h-5">{ICONS.Plus}</div>
             </button>
-            <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white transition-colors" title="Refresh Feeds">
+            <button onClick={() => fetchFeeds()} disabled={isLoading} className="text-white/60 hover:text-white transition-colors" title="Refresh Feeds">
                 <div className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}>{ICONS.Refresh}</div>
             </button>
         </div>

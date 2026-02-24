@@ -25,7 +25,7 @@ export const ServiceGroupCard: React.FC<{
   onToggle: () => void,
   onOpenSettings: () => void,
   onDeleteService: (serviceName: string) => void
-}> = ({ group, isCollapsed, onToggle, onOpenSettings, onDeleteService }) => {
+}> = React.memo(({ group, isCollapsed, onToggle, onOpenSettings, onDeleteService }) => {
   const isVibrant = group.category === 'PROJECT SPACE';
   const isSystem = group.category === 'TOOLBOX';
 
@@ -41,6 +41,7 @@ export const ServiceGroupCard: React.FC<{
   } else if (isSystem) {
     containerClasses = "bg-cyan-900/10 border-cyan-500/30 shadow-[0_0_15px_-5px_rgba(6,182,212,0.3)]";
     headerClasses = "text-cyan-400";
+    borderGlow = "absolute -inset-[1px] rounded-xl bg-cyan-500/20 opacity-0 group-hover/card:opacity-100 blur-[1px] transition-opacity duration-500";
   }
 
   return (
@@ -140,4 +141,4 @@ export const ServiceGroupCard: React.FC<{
       `}</style>
     </div>
   );
-};
+});

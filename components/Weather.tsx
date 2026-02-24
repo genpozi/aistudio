@@ -26,11 +26,15 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
     const [displayLocation, setDisplayLocation] = useState(location);
 
     useEffect(() => {
+        const controller = new AbortController();
+        
         const fetchWeather = async (loc: string) => {
             setError(null);
             setIsLoading(true);
             try {
-                const response = await fetch(`https://wttr.in/${encodeURIComponent(loc)}?format=j1`);
+                const response = await fetch(`https://wttr.in/${encodeURIComponent(loc)}?format=j1`, {
+                    signal: controller.signal
+                });
                 if (!response.ok) {
                     throw new Error('Location data unavailable.');
                 }
@@ -40,6 +44,9 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
                 // Update display location with the name from the API, especially if we used coordinates
                 setDisplayLocation(data.nearest_area[0].areaName[0].value);
             } catch (err) {
+                if (err instanceof Error && err.name === 'AbortError') {
+                    return; // Ignore aborted requests
+                }
                 if (err instanceof Error) {
                     setError(err.message);
                 } else {
@@ -47,7 +54,9 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
                 }
                 console.error("Failed to fetch weather:", err);
             } finally {
-                setIsLoading(false);
+                if (!controller.signal.aborted) {
+                    setIsLoading(false);
+                }
             }
         };
 
@@ -58,10 +67,12 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
             // No location is set, try to autodetect.
             navigator.geolocation.getCurrentPosition(
                 (position) => {
+                    if (controller.signal.aborted) return;
                     const { latitude, longitude } = position.coords;
                     fetchWeather(`${latitude},${longitude}`);
                 },
                 (err) => {
+                    if (controller.signal.aborted) return;
                     // Geolocation failed or was denied. End loading and let renderContent show the prompt.
                     console.warn("Geolocation permission denied or failed:", err.message);
                     setIsLoading(false);
@@ -70,6 +81,8 @@ const Weather: React.FC<{ location: string }> = ({ location }) => {
                 }
             );
         }
+
+        return () => controller.abort();
     }, [location]);
 
     const renderContent = () => {

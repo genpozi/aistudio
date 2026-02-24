@@ -35,8 +35,9 @@ const SearchWidget: React.FC<SearchWidgetProps> = ({ researchBackend, onOpenSett
 
   return (
     <form onSubmit={handleSearch} className="relative w-full flex items-center space-x-2">
-      <div className="relative flex-grow">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/60">
+      <div className="relative flex-grow group/search">
+          <div className="absolute -inset-[1px] rounded-lg bg-[var(--text-highlight)] opacity-0 group-focus-within/search:opacity-30 blur-[4px] transition-opacity duration-500"></div>
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/60 z-10">
               <div className="w-6 h-6">{searchIcon}</div>
           </div>
           <input
@@ -44,7 +45,7 @@ const SearchWidget: React.FC<SearchWidgetProps> = ({ researchBackend, onOpenSett
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={placeholderText}
-              className="w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg py-4 pl-14 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-[var(--color-border-hover)] transition-all text-lg"
+              className="relative w-full bg-black/20 backdrop-blur-md border border-white/10 rounded-lg py-4 pl-14 pr-4 text-white placeholder:text-white/50 focus:outline-none focus:ring-1 focus:ring-[var(--color-border-hover)] transition-all text-lg z-10"
               aria-label={placeholderText}
           />
       </div>

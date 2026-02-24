@@ -65,31 +65,51 @@ const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOp
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchFeeds = useCallback(async () => {
+  const fetchFeeds = useCallback(async (signal?: AbortSignal) => {
     if (!feedUrls.length) { setItems([]); return; }
     setIsLoading(true);
     const allItems: FeedItem[] = [];
-    for (const feed of feedUrls) {
-        try {
-            const response = await fetch(`${CORS_PROXY_URL}${feed.url}`);
-            if (!response.ok) continue;
-            const text = await response.text();
-            const { feedTitle, items } = parseYouTubeFeed(text);
-            allItems.push(...items.map(item => ({ ...item, source: feedTitle })));
-        } catch (err) { console.error("YouTube error:", err); }
+    
+    try {
+        for (const feed of feedUrls) {
+            if (signal?.aborted) break;
+            try {
+                const response = await fetch(`${CORS_PROXY_URL}${feed.url}`, { signal });
+                if (!response.ok) continue;
+                const text = await response.text();
+                const { feedTitle, items } = parseYouTubeFeed(text);
+                allItems.push(...items.map(item => ({ ...item, source: feedTitle })));
+            } catch (err) { 
+                if (err instanceof Error && err.name === 'AbortError') throw err;
+                console.error("YouTube error:", err); 
+            }
+        }
+        
+        if (signal?.aborted) return;
+        
+        allItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+        setItems(allItems.slice(0, 15));
+    } catch (err) {
+        if (err instanceof Error && err.name === 'AbortError') return;
+        console.error("Failed to fetch YouTube feeds:", err);
+    } finally {
+        if (!signal?.aborted) {
+            setIsLoading(false);
+        }
     }
-    allItems.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
-    setItems(allItems.slice(0, 15));
-    setIsLoading(false);
   }, [feedUrls]);
 
-  useEffect(() => { fetchFeeds(); }, [fetchFeeds]);
+  useEffect(() => { 
+    const controller = new AbortController();
+    fetchFeeds(controller.signal); 
+    return () => controller.abort();
+  }, [fetchFeeds]);
 
   return (
     <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col ${className || ''}`}>
       <div className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center flex-shrink-0">
         <h3 className="text-purple-400 font-black text-lg uppercase tracking-wider drop-shadow-sm">YOUTUBE FEEDS</h3>
-        <button onClick={fetchFeeds} disabled={isLoading} className="text-white/60 hover:text-white transition-colors">
+        <button onClick={() => fetchFeeds()} disabled={isLoading} className="text-white/60 hover:text-white transition-colors">
             {ICONS.Refresh}
         </button>
       </div>

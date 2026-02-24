@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
-export const SCHEMA_VERSION = 23; // Incremented to clear TOOLBOX and PROJECT SPACE and remove duplicates
+export const SCHEMA_VERSION = 24; // Incremented to collapse calculator by default
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
@@ -19,6 +19,8 @@ export const ICONS = {
     Search: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
     Settings: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066 2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
     Plus: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>,
+    Calculator: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 15.75V18m-3-2.25V18m-3-2.25V18M6.75 12h10.5a.75.75 0 01.75.75v5.25a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75v-5.25a.75.75 0 01.75-.75zm0-4.5h10.5a.75.75 0 01.75.75v1.5a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V8.25a.75.75 0 01.75-.75zM6.75 3h10.5a.75.75 0 01.75.75v1.5a.75.75 0 01-.75.75H6.75a.75.75 0 01-.75-.75V3.75A.75.75 0 016.75 3z" /></svg>,
+    Timer: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     ChevronUp: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" /></svg>,
     Brain: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3c0-1.657-2.015-3-4.5-3s-4.5 1.343-4.5 3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12c0-1.657-2.015-3-4.5-3S5 10.343 5 12v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V15c0 1.657 2.015 3 4.5 3s4.5-1.343 4.5-3v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M14 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 13.5V12" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18z" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 21v-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12h-1.5" /><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12H3" /></svg>,
     ChatBubble: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.76 9.76 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.455.09-.934.09-1.425 0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /><path strokeLinecap="round" strokeLinejoin="round" d="M3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25" /></svg>,
@@ -159,6 +161,7 @@ export const LOCAL_STORAGE_KEYS = {
     CHAT_HISTORY: 'chatHistory',
     COLLAPSED_CATEGORIES: 'collapsedCategories',
     USER_NOTES: 'userNotes',
+    CALCULATOR_STATE: 'calculatorState',
 };
 
 export const DEFAULT_FEEDS: UserFeed[] = [

@@ -12,15 +12,22 @@ interface GreetingProps {
 const Greeting: React.FC<GreetingProps> = ({ name, focusPrompt, onStartFocus }) => {
   const [focus, setFocus] = useLocalStorage(LOCAL_STORAGE_KEYS.DAILY_FOCUS, '');
   const [isEditing, setIsEditing] = useState(() => !focus);
-  const time = useTime();
+  const [hour, setHour] = useState(() => new Date().getHours());
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Update hour only once per minute to avoid unnecessary re-renders
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setHour(new Date().getHours());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
   const greetingText = useMemo(() => {
-    const hour = time.getHours();
     if (hour < 12) return `Good morning, ${name}`;
     if (hour < 18) return `Good afternoon, ${name}`;
     return `Good evening, ${name}`;
-  }, [name, time.getHours()]);
+  }, [name, hour]);
   
   const handleFocusSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
