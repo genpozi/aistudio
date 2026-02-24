@@ -228,4 +228,10 @@ export const BACKGROUND_IMAGES = [
     'https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=1920&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1434725039720-abb26e22ebe8?q=80&w=1920&auto=format&fit=crop',
     'https://images.unsplash.com/photo-1493246507139-91e8bef99c02?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1501854140801-50d01698950b?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1920&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1511497584788-876760111969?q=80&w=1920&auto=format&fit=crop',
 ];

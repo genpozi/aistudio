@@ -126,7 +126,7 @@ const App: React.FC = () => {
   // Helper to find a specific group by category name
   const getGroup = (category: string) => hydratedServiceGroups.find(g => g.category === category);
   
-  const [backgroundImage, setBackgroundImage] = useState('');
+  const [backgroundImage, setBackgroundImage] = useState(() => BACKGROUND_IMAGES[Math.floor(Math.random() * BACKGROUND_IMAGES.length)]);
   const refreshBackgroundImage = useCallback(() => {
     setBackgroundImage(BACKGROUND_IMAGES[Math.floor(Math.random() * BACKGROUND_IMAGES.length)]);
   }, []);
@@ -239,7 +239,7 @@ const App: React.FC = () => {
 
   return (
     <TimeProvider>
-      <div className="h-screen w-screen bg-cover bg-center bg-no-repeat text-white transition-all duration-1000" style={{ backgroundImage: `url(${backgroundImage})` }}>
+      <div className="h-screen w-screen bg-slate-950 bg-cover bg-center bg-no-repeat text-white transition-all duration-1000" style={{ backgroundImage: backgroundImage ? `url(${backgroundImage})` : 'none' }}>
         <div className={`h-full w-full bg-black/45 backdrop-blur-[2px] flex flex-col p-4 md:p-8 overflow-y-auto custom-scrollbar transition-opacity duration-500 ${isFocusSessionActive ? 'opacity-0' : 'opacity-100'}`}>
           <header className="flex flex-col md:flex-row justify-between items-start w-full gap-8 mb-12">
             <div className="flex flex-col items-start space-y-4 flex-shrink-0 w-32">
