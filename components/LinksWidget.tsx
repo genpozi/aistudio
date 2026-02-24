@@ -11,7 +11,8 @@ interface LinksWidgetProps {
 }
 
 const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isCollapsed, onToggle }) => {
-  const hasLinks = links.length > 0;
+  const safeLinks = links || [];
+  const hasLinks = safeLinks.length > 0;
 
   return (
     <div className="relative group/card">
@@ -49,7 +50,7 @@ const LinksWidget: React.FC<LinksWidgetProps> = ({ links, onOpenSettings, isColl
           <div className="p-6 pt-4">
             {hasLinks ? (
               <div className="flex flex-col space-y-3">
-                {links.map((link) => (
+                {safeLinks.map((link) => (
                   <a
                     key={link.id}
                     href={link.url}

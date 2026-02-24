@@ -9,9 +9,9 @@ export const runMigrations = () => {
         if (storedVersion < SCHEMA_VERSION) {
             console.log(`Schema version mismatch. Upgrading from v${storedVersion} to v${SCHEMA_VERSION}.`);
 
-            // Migration path for any version < 19: Refresh core categories while maintaining custom ones.
-            if (storedVersion < 19) {
-                console.log("Running migration to schema v19 (Ecosystem Realignment)...");
+            // Migration path for any version < 20: Refresh core categories while maintaining custom ones.
+            if (storedVersion < 20) {
+                console.log("Running migration to schema v20 (Card Cleanup & Maeple Update)...");
                 const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
                 try {
                     const correctedDefaults: StoredServiceGroup[] = SERVICE_GROUPS.map(dg => ({
@@ -32,6 +32,22 @@ export const runMigrations = () => {
                         localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify([...correctedDefaults, ...customGroups]));
                     } else {
                         localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(correctedDefaults));
+                    }
+                } catch (e) {
+                    console.error("Migration logic error:", e);
+                }
+            }
+
+            // Migration path for any version < 21: Remove WIDGETS, COLLECTIVE, 0RELIANCE LAB, and REMEMBERY
+            if (storedVersion < 21) {
+                console.log("Running migration to schema v21 (Remove specific categories)...");
+                const rawGroups = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS);
+                try {
+                    if (rawGroups) {
+                        const userGroups = JSON.parse(rawGroups) as StoredServiceGroup[];
+                        const categoriesToRemove = new Set(['WIDGETS', 'COLLECTIVE', '0RELIANCE LAB', 'REMEMBERY']);
+                        const updatedGroups = userGroups.filter(g => !categoriesToRemove.has(g.category));
+                        localStorage.setItem(LOCAL_STORAGE_KEYS.USER_SERVICE_GROUPS, JSON.stringify(updatedGroups));
                     }
                 } catch (e) {
                     console.error("Migration logic error:", e);

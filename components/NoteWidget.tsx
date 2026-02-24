@@ -10,12 +10,15 @@ interface NoteWidgetProps {
 }
 
 const NoteWidget: React.FC<NoteWidgetProps> = ({ notes, setNotes, isCollapsed, onToggle }) => {
-  const [content, setContent] = useState(notes[0]?.content || '');
+  const [content, setContent] = useState((notes && notes[0]?.content) || '');
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (content !== notes[0]?.content) {
-          setNotes(prev => [{ ...prev[0], content, lastUpdated: Date.now() }]);
+      if (content !== (notes && notes[0]?.content)) {
+          setNotes(prev => {
+            const currentNote = prev && prev[0] ? prev[0] : { id: 1, content: '', lastUpdated: Date.now() };
+            return [{ ...currentNote, content, lastUpdated: Date.now() }];
+          });
       }
     }, 1000);
     return () => clearTimeout(timeout);

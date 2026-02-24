@@ -72,7 +72,7 @@ const ResearchModal: React.FC<ResearchModalProps> = ({ isOpen, isLoading, error,
                                 <div className="mt-8 pt-4 border-t border-white/20">
                                     <h3 className="text-lg font-semibold text-[var(--text-highlight)] mb-3">Sources</h3>
                                     <ul className="space-y-2">
-                                        {sources.map((source, index) => (
+                                        {(sources || []).map((source, index) => (
                                             <li key={index} className="flex items-start space-x-2">
                                                 <span className="text-[var(--text-highlight)] mt-1">&#8226;</span>
                                                 <a 

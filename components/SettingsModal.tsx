@@ -151,7 +151,7 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                             <button type="submit" className="bg-[var(--text-highlight)] px-4 rounded font-semibold">Add</button>
                         </form>
                         <ul className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-2">
-                            {links.map(link => (
+                            {(links || []).map(link => (
                                 <li key={link.id} className="group flex items-center justify-between bg-white/5 p-2 rounded">
                                     <div className="flex items-center space-x-3 truncate">
                                         <Favicon link={link} className="w-5 h-5" />
@@ -219,7 +219,7 @@ const SettingsModal: React.FC<SettingsModalProps> = (props) => {
                             <button type="submit" className="bg-[var(--text-highlight)] px-4 py-2 rounded font-semibold">Add</button>
                         </form>
                         <ul className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-2">
-                            {feedUrls.map(feed => (
+                            {(feedUrls || []).map(feed => (
                                 <li key={feed.id} className="group flex items-center justify-between bg-white/5 p-2 rounded">
                                     <div className="flex items-center space-x-3 truncate">
                                         <span className={`text-xs uppercase font-bold px-2 py-0.5 rounded-full ${feed.type === 'rss' ? 'bg-orange-500/50' : 'bg-red-500/50'}`}>{feed.type}</span>

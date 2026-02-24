@@ -88,7 +88,7 @@ const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useLocalStorage<ChatMessage[]>(LOCAL_STORAGE_KEYS.CHAT_HISTORY, []);
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [notes, setNotes] = useLocalStorage<DashboardNote[]>(LOCAL_STORAGE_KEYS.USER_NOTES, [{ id: 1, content: '', lastUpdated: Date.now() }]);
-  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, 'WIDGETS', 'TOOLBOX', 'REMEMBERY', 'COLLECTIVE', 'POZIVERSE', '0RELIANCE LAB']);
+  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, 'TOOLBOX', 'POZIVERSE']);
 
   const collapsedCategories = useMemo(() => new Set(collapsedKeys), [collapsedKeys]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -106,14 +106,20 @@ const App: React.FC = () => {
   const [focusSessionEndTime, setFocusSessionEndTime] = useState<number | null>(null);
 
   const { rssFeeds, youtubeFeeds } = useMemo(() => {
-    const migrated = feedUrls.map(f => ({ ...f, type: f.type || (f.url.includes('youtube.com') ? 'youtube' : 'rss') }));
+    const migrated = (feedUrls || []).map(f => {
+      if (typeof f === 'string') {
+        const urlStr = f as unknown as string;
+        return { id: Date.now() + Math.random(), url: urlStr, type: urlStr.includes('youtube.com') ? 'youtube' : 'rss' } as UserFeed;
+      }
+      return { ...f, type: f.type || (f.url && f.url.includes('youtube.com') ? 'youtube' : 'rss') } as UserFeed;
+    });
     return { rssFeeds: migrated.filter(f => f.type === 'rss'), youtubeFeeds: migrated.filter(f => f.type === 'youtube') };
   }, [feedUrls]);
 
   const hydratedServiceGroups = useMemo<ServiceGroup[]>(() => {
-    return storedServiceGroups.map(group => ({
+    return (storedServiceGroups || []).map(group => ({
       ...group,
-      services: group.services.map(s => ({ ...s, icon: getIcon(s.iconKey) })),
+      services: (group.services || []).map(s => ({ ...s, icon: getIcon(s.iconKey) })),
     }));
   }, [storedServiceGroups]);
 
@@ -128,8 +134,8 @@ const App: React.FC = () => {
   const openSettings = (tab = 'general') => { setSettingsInitialTab(tab); setIsSettingsOpen(true); };
 
   const searchableItems = useMemo<SearchableItem[]>(() => {
-    const services: SearchableItem[] = hydratedServiceGroups.flatMap(g => g.services.map(s => ({ type: 'service' as const, name: s.name, url: s.url, icon: s.icon, category: g.category })));
-    const userLinks: SearchableItem[] = links.map(l => ({ type: 'link' as const, name: l.name, url: l.url, icon: <Favicon link={l} />, category: 'Personal Links' }));
+    const services: SearchableItem[] = (hydratedServiceGroups || []).flatMap(g => (g.services || []).map(s => ({ type: 'service' as const, name: s.name, url: s.url, icon: s.icon, category: g.category })));
+    const userLinks: SearchableItem[] = (links || []).map(l => ({ type: 'link' as const, name: l.name, url: l.url, icon: <Favicon link={l} />, category: 'Personal Links' }));
     
     const commands: SearchableItem[] = [
         { type: 'command', name: 'Open Settings', icon: ICONS.Settings, category: 'System', perform: () => openSettings() },
@@ -144,7 +150,7 @@ const App: React.FC = () => {
   useEffect(() => { refreshBackgroundImage(); }, [refreshBackgroundImage]);
   useEffect(() => { document.documentElement.className = THEMES.find(t => t.id === theme)?.className || THEMES[0].className; }, [theme]);
 
-  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, ...hydratedServiceGroups.map(g => g.category)], [hydratedServiceGroups]);
+  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, ...(hydratedServiceGroups || []).map(g => g.category)], [hydratedServiceGroups]);
   
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
   const handleCollapseAll = () => setCollapsedKeys(allCategoryKeys);
@@ -157,7 +163,12 @@ const App: React.FC = () => {
   };
 
   const handleResearchSubmit = async (query: string) => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) {
+      setResearchError('API key is missing. Please configure your Gemini API key.');
+      return;
+    }
+    const ai = new GoogleGenAI({ apiKey });
     setIsResearchModalOpen(true); setIsResearchLoading(true); setResearchResult(null); setResearchSources(null); setResearchError(null);
     try {
       const response = await ai.models.generateContent({ model: 'gemini-3-pro-preview', contents: query, config: { tools: [{ googleSearch: {} }] } });
@@ -167,7 +178,12 @@ const App: React.FC = () => {
   };
 
   const handleSendMessage = async (message: string) => {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = process.env.GEMINI_API_KEY || process.env.API_KEY;
+    if (!apiKey) {
+      setChatHistory([...chatHistory, { role: 'user', text: message }, { role: 'model', text: 'Error: API key is missing. Please configure your Gemini API key.' }]);
+      return;
+    }
+    const ai = new GoogleGenAI({ apiKey });
     const newHistory: ChatMessage[] = [...chatHistory, { role: 'user', text: message }];
     setChatHistory(newHistory); setIsResponding(true);
     try {
@@ -188,7 +204,7 @@ const App: React.FC = () => {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, []);
 
-  const lockedServiceCategories = ['WIDGETS', 'TOOLBOX', 'REMEMBERY', 'POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'];
+  const lockedServiceCategories = ['TOOLBOX', 'POZIVERSE'];
 
   // Refactored helper to render rows of service groups
   const renderServiceGroupRows = (categories: string[]) => {
@@ -252,13 +268,13 @@ const App: React.FC = () => {
                   />
 
                   {/* ROW 2: Cyan Glow Cards */}
-                  {renderServiceGroupRows(['WIDGETS', 'TOOLBOX', 'REMEMBERY'])}
+                  {renderServiceGroupRows(['TOOLBOX'])}
 
                   {/* ROW 3: Rainbow Glow Cards */}
-                  {renderServiceGroupRows(['POZIVERSE', 'COLLECTIVE', '0RELIANCE LAB'])}
+                  {renderServiceGroupRows(['POZIVERSE'])}
 
                   {/* Additional Custom Categories if any */}
-                  {hydratedServiceGroups
+                  {(hydratedServiceGroups || [])
                     .filter(g => !lockedServiceCategories.includes(g.category))
                     .map(group => (
                       <ServiceGroupCard 

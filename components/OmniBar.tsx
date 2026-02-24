@@ -104,8 +104,8 @@ const OmniBar: React.FC<OmniBarProps> = ({ isOpen, onClose, items }) => {
                     />
                 </div>
                 <ul ref={resultsRef} className="overflow-y-auto custom-scrollbar flex-grow py-2">
-                    {filteredItems.length > 0 ? (
-                        filteredItems.map((item, index) => (
+                    {(filteredItems || []).length > 0 ? (
+                        (filteredItems || []).map((item, index) => (
                             <li 
                                 key={`${item.url || item.perform?.toString()}-${item.name}-${index}`}
                                 data-index={index}

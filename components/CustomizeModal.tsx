@@ -223,7 +223,7 @@ const CustomizeModal: React.FC<CustomizeModalProps> = ({ isOpen, onClose, curren
                                     </button>
                                 </div>
                                 <div className="space-y-2">
-                                    {group.services.map((service, serviceIndex) => {
+                                    {(group.services || []).map((service, serviceIndex) => {
                                          const isDraggingService = draggedItem?.groupIndex === groupIndex && draggedItem.serviceIndex === serviceIndex;
                                          const isDragOverService = dragOverItem?.groupIndex === groupIndex && dragOverItem.serviceIndex === serviceIndex;
                                          const serviceDropIndicator = isDragOverService ? `drop-indicator-${dragOverItem.position}` : '';

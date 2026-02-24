@@ -24,8 +24,8 @@ export const ServiceGroupCard: React.FC<{
   isCollapsed: boolean, 
   onToggle: () => void
 }> = ({ group, isCollapsed, onToggle }) => {
-  const isVibrant = group.category === 'COLLECTIVE' || group.category === 'POZIVERSE' || group.category === '0RELIANCE LAB';
-  const isSystem = group.category === 'WIDGETS' || group.category === 'TOOLBOX' || group.category === 'REMEMBERY';
+  const isVibrant = group.category === 'POZIVERSE';
+  const isSystem = group.category === 'TOOLBOX';
 
   // Base glass classes
   let containerClasses = "bg-black/20 border-white/10 shadow-lg";
@@ -70,7 +70,7 @@ export const ServiceGroupCard: React.FC<{
         <div className={`transition-[max-height] duration-500 ease-in-out ${isCollapsed ? 'max-h-0' : 'max-h-[1000px]'}`}>
             <div className="p-6 pt-4">
                 <div className="flex flex-col space-y-3">
-                    {group.services.map((service) => (
+                    {(group.services || []).map((service) => (
                     <a
                         key={service.name}
                         href={service.url}

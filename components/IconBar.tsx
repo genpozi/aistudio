@@ -45,7 +45,7 @@ const IconBar: React.FC<IconBarProps> = ({ triggerIcon, services, direction = 'r
                         : 'items-center space-x-2 ml-2 pr-1.5'
                     }
                 `}>
-                    {services.map((service, index) => (
+                    {(services || []).map((service, index) => (
                         <a
                             key={service.name}
                             href={service.url}

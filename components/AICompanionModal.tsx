@@ -67,7 +67,7 @@ const AICompanionModal: React.FC<AICompanionModalProps> = ({ isOpen, onClose, hi
 
                 <div className="p-6 overflow-y-auto custom-scrollbar flex-grow">
                     <div className="space-y-6">
-                        {history.map((msg, index) => (
+                        {(history || []).map((msg, index) => (
                             <div key={index} className={`flex items-start gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                 <div className={`p-3 rounded-xl max-w-lg ${msg.role === 'user' ? 'bg-[var(--text-highlight)] text-white' : 'bg-white/10'}`}>
                                     <p className="whitespace-pre-wrap">{msg.text}</p>

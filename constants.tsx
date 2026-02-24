@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Service, ServiceGroup, Theme, UserFeed } from './types';
 
-export const SCHEMA_VERSION = 19; // Incremented for POZIVERSE expansion
+export const SCHEMA_VERSION = 21; // Incremented to remove WIDGETS, COLLECTIVE, 0RELIANCE LAB, and REMEMBERY
 
 export const ICONS = {
     Code: <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>,
@@ -205,28 +205,9 @@ export const I_SERVICES: Service[] = [
 
 export const SERVICE_GROUPS: ServiceGroup[] = [
   {
-    category: "WIDGETS",
-    services: [
-      { name: "OBSIDIAN-COPILOT", url: "https://obsidian-copilot-ashy.vercel.app", icon: ICONS.Document, iconKey: "Document" },
-      { name: "DOCK-a-DOODLE", url: "https://docker-doodle.vercel.app", icon: ICONS.Code, iconKey: "Code" },
-      { name: "DASHY-DASH", url: "https://dash.stan.camp", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    ],
-  },
-  {
     category: "TOOLBOX",
     services: [
         { name: "COMING SOON", url: "#", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-    ]
-  },
-  {
-    category: "REMEMBERY",
-    services: [
-        { name: "KARAKEEP", url: "https://keep.pozi.life", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
-        { name: "PAPERLESS", url: "https://paperless.stanz.app/", icon: ICONS.Document, iconKey: "Document" },
-        { name: "NEXTCLOUD", url: "https://c.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
-        { name: "VIKUNJA TASKS & TODO", url: "https://vikunja.stanz.app/", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
-        { name: "POZI WORKSPACES", url: "https://spaces.stanz.info/#/login", icon: ICONS.Briefcase, iconKey: "Briefcase" },
-        { name: "VAULTWARDEN (BITWARDEN)", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
     ]
   },
   {
@@ -237,28 +218,7 @@ export const SERVICE_GROUPS: ServiceGroup[] = [
         { name: "POZI PROFESSIONALS", url: "https://www.pozi.me", icon: ICONS.User, iconKey: "User" },
         { name: "POZI DIRECTORY", url: "https://www.pozi.services", icon: ICONS.Briefcase, iconKey: "Briefcase" },
         { name: "DOCUMENTATION", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
-        { name: "MAEPLE", url: "https://maeple.0reliance.com/", icon: ICONS.Code, iconKey: "Code" },
-    ]
-  },
-  {
-    category: "COLLECTIVE",
-    services: [
-        { name: "0RELAI AI STUDIO", url: "https://openwebui.0reliance.com", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "IMMICH MEDIA GALLERY", url: "https://photos.stanz.app", icon: ICONS.Cloud, iconKey: "Cloud" },
-        { name: "KARAKEEP INFO HOARDER", url: "https://keep.pozi.life", icon: ICONS.CheckSquare, iconKey: "CheckSquare" },
-        { name: "BLINKO NOTES & THINGS", url: "https://blinko.pozi.plus", icon: ICONS.Document, iconKey: "Document" },
-        { name: "PENPOT DESIGN SYSTEM", url: "https://pot.pozi.agency/", icon: ICONS.Code, iconKey: "Code" },
-        { name: "AFFINE CREATIVE STUDIO", url: "https://affine.pozi.agency/", icon: ICONS.Edit, iconKey: "Edit" },
-        { name: "VAULTWARDEN (BITWARDEN)", url: "https://vault.pozi.plus/", icon: ICONS.Lock, iconKey: "Lock" },
-    ]
-  },
-  {
-    category: "0RELIANCE LAB",
-    services: [
-        { name: "0RELAI STUDIO", url: "https://0relai.0reliance.com/", icon: ICONS.Sparkles, iconKey: "Sparkles" },
-        { name: "DOCUMENTATION", url: "https://doc.0reliance.com/", icon: ICONS.Document, iconKey: "Document" },
-        { name: "MAEPLE", url: "https://maeple.0reliance.com/", icon: ICONS.Code, iconKey: "Code" },
-        { name: "COURSES", url: "https://692b041f9a99771f24f34110.blocks-app.diy/Landing", icon: ICONS.Briefcase, iconKey: "Briefcase" },
+        { name: "MAEPLE", url: "https://maeple.stan.camp", icon: ICONS.Code, iconKey: "Code" },
     ]
   }
 ];
