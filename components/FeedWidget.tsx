@@ -111,15 +111,17 @@ interface FeedWidgetProps {
   className?: string;
   feedUrls: UserFeed[];
   onOpenSettings: () => void;
+  isCollapsed: boolean;
+  onToggle: () => void;
 }
 
-const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSettings }) => {
+const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSettings, isCollapsed, onToggle }) => {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchFeeds = useCallback(async (signal?: AbortSignal) => {
-    if (!feedUrls || feedUrls.length === 0) {
-      setItems([]);
+    if (!feedUrls || feedUrls.length === 0 || isCollapsed) {
+      if (!isCollapsed) setItems([]);
       return;
     }
     setIsLoading(true);
@@ -164,7 +166,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
         setIsLoading(false);
       }
     }
-  }, [feedUrls]);
+  }, [feedUrls, isCollapsed]);
 
   useEffect(() => { 
     const controller = new AbortController();
@@ -173,23 +175,36 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
   }, [fetchFeeds]);
 
   return (
-    <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col ${className || ''}`}>
-      <div className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-purple-500/10">
+    <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col transition-all duration-500 ${isCollapsed ? 'min-h-0' : ''} ${className || ''}`}>
+      <div 
+        className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center flex-shrink-0 border-b border-purple-500/10 cursor-pointer select-none group/header"
+        onClick={onToggle}
+      >
         <div className="flex items-center space-x-3">
-             <h3 className="text-purple-400 font-black text-lg uppercase tracking-wider drop-shadow-sm">WORLD NEWS & TECH</h3>
+             <h3 className="text-purple-400 font-black text-lg uppercase tracking-wider drop-shadow-sm group-hover/header:text-purple-300 transition-colors">WORLD NEWS & TECH</h3>
              {isLoading && <span className="text-[10px] bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded animate-pulse font-bold tracking-tighter">SYNCING</span>}
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4" onClick={(e) => e.stopPropagation()}>
             <button onClick={onOpenSettings} className="text-white/40 hover:text-white transition-colors">
                 <div className="w-5 h-5">{ICONS.Plus}</div>
             </button>
             <button onClick={() => fetchFeeds()} disabled={isLoading} className="text-white/60 hover:text-white transition-colors" title="Refresh Feeds">
                 <div className={`w-5 h-5 ${isLoading ? 'animate-spin' : ''}`}>{ICONS.Refresh}</div>
             </button>
+            <button 
+              onClick={onToggle} 
+              className="text-white/60 hover:text-white transition-colors p-1"
+              aria-expanded={!isCollapsed}
+              title="Toggle collapse"
+            >
+              <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+                {ICONS.ChevronUp}
+              </div>
+            </button>
         </div>
       </div>
       
-      <div className="p-4 flex-grow overflow-hidden">
+      <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0' : 'max-h-[1000px] opacity-100 p-4'}`}>
         {isLoading && items.length === 0 ? (
             <div className="flex items-center justify-center h-48 text-white/50 italic animate-pulse">Syncing Global Intelligence Network...</div>
         ) : (
@@ -209,6 +224,7 @@ const FeedWidget: React.FC<FeedWidgetProps> = ({ className, feedUrls, onOpenSett
                                 src={item.thumbnailUrl} 
                                 alt="" 
                                 loading="lazy"
+                                referrerPolicy="no-referrer"
                                 className="w-full h-full object-cover opacity-60 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" 
                             />
                         ) : (

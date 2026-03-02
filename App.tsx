@@ -60,6 +60,8 @@ const LINKS_WIDGET_CATEGORY_KEY = '__LINKS__';
 const TODO_WIDGET_CATEGORY_KEY = '__TODO__';
 const NOTES_WIDGET_CATEGORY_KEY = '__NOTES__';
 const CALCULATOR_WIDGET_CATEGORY_KEY = '__CALCULATOR__';
+const FEEDS_WIDGET_CATEGORY_KEY = '__FEEDS__';
+const YOUTUBE_WIDGET_CATEGORY_KEY = '__YOUTUBE__';
 
 const toStoredServiceGroups = (groups: ServiceGroup[]): StoredServiceGroup[] => {
   return groups.map((group) => ({
@@ -90,7 +92,16 @@ const App: React.FC = () => {
   const [chatHistory, setChatHistory] = useLocalStorage<ChatMessage[]>(LOCAL_STORAGE_KEYS.CHAT_HISTORY, []);
   const [todos, setTodos] = useLocalStorage<Todo[]>(LOCAL_STORAGE_KEYS.USER_TODOS, []);
   const [notes, setNotes] = useLocalStorage<DashboardNote[]>(LOCAL_STORAGE_KEYS.USER_NOTES, [{ id: 1, content: '', lastUpdated: Date.now() }]);
-  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, CALCULATOR_WIDGET_CATEGORY_KEY, 'TOOLBOX', 'PROJECT SPACE']);
+  const [collapsedKeys, setCollapsedKeys] = useLocalStorage<string[]>(LOCAL_STORAGE_KEYS.COLLAPSED_CATEGORIES, [
+    LINKS_WIDGET_CATEGORY_KEY, 
+    TODO_WIDGET_CATEGORY_KEY, 
+    NOTES_WIDGET_CATEGORY_KEY, 
+    CALCULATOR_WIDGET_CATEGORY_KEY, 
+    FEEDS_WIDGET_CATEGORY_KEY,
+    YOUTUBE_WIDGET_CATEGORY_KEY,
+    'TOOLBOX', 
+    'PROJECT SPACE'
+  ]);
 
   const collapsedCategories = useMemo(() => new Set(collapsedKeys), [collapsedKeys]);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -152,7 +163,15 @@ const App: React.FC = () => {
   useEffect(() => { refreshBackgroundImage(); }, [refreshBackgroundImage]);
   useEffect(() => { document.documentElement.className = THEMES.find(t => t.id === theme)?.className || THEMES[0].className; }, [theme]);
 
-  const allCategoryKeys = useMemo(() => [LINKS_WIDGET_CATEGORY_KEY, TODO_WIDGET_CATEGORY_KEY, NOTES_WIDGET_CATEGORY_KEY, CALCULATOR_WIDGET_CATEGORY_KEY, ...(hydratedServiceGroups || []).map(g => g.category)], [hydratedServiceGroups]);
+  const allCategoryKeys = useMemo(() => [
+    LINKS_WIDGET_CATEGORY_KEY, 
+    TODO_WIDGET_CATEGORY_KEY, 
+    NOTES_WIDGET_CATEGORY_KEY, 
+    CALCULATOR_WIDGET_CATEGORY_KEY, 
+    FEEDS_WIDGET_CATEGORY_KEY,
+    YOUTUBE_WIDGET_CATEGORY_KEY,
+    ...(hydratedServiceGroups || []).map(g => g.category)
+  ], [hydratedServiceGroups]);
   
   const areAllCollapsed = collapsedCategories.size >= allCategoryKeys.length;
   const handleCollapseAll = () => setCollapsedKeys(allCategoryKeys);
@@ -322,8 +341,18 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="w-full max-w-7xl mx-auto mt-10 space-y-8 pb-10">
-              <FeedWidget feedUrls={rssFeeds} onOpenSettings={() => openSettings('feeds')} />
-              <YouTubeWidget feedUrls={youtubeFeeds} onOpenSettings={() => openSettings('feeds')} />
+              <FeedWidget 
+                feedUrls={rssFeeds} 
+                onOpenSettings={() => openSettings('feeds')} 
+                isCollapsed={collapsedCategories.has(FEEDS_WIDGET_CATEGORY_KEY)}
+                onToggle={() => toggleCategoryCollapse(FEEDS_WIDGET_CATEGORY_KEY)}
+              />
+              <YouTubeWidget 
+                feedUrls={youtubeFeeds} 
+                onOpenSettings={() => openSettings('feeds')} 
+                isCollapsed={collapsedCategories.has(YOUTUBE_WIDGET_CATEGORY_KEY)}
+                onToggle={() => toggleCategoryCollapse(YOUTUBE_WIDGET_CATEGORY_KEY)}
+              />
             </div>
           </main>
 

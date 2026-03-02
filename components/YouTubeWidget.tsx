@@ -59,14 +59,19 @@ interface YouTubeWidgetProps {
   className?: string;
   feedUrls: UserFeed[];
   onOpenSettings: () => void;
+  isCollapsed: boolean;
+  onToggle: () => void;
 }
 
-const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOpenSettings }) => {
+const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOpenSettings, isCollapsed, onToggle }) => {
   const [items, setItems] = useState<FeedItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchFeeds = useCallback(async (signal?: AbortSignal) => {
-    if (!feedUrls.length) { setItems([]); return; }
+    if (!feedUrls.length || isCollapsed) { 
+      if (!isCollapsed) setItems([]); 
+      return; 
+    }
     setIsLoading(true);
     const allItems: FeedItem[] = [];
     
@@ -97,7 +102,7 @@ const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOp
             setIsLoading(false);
         }
     }
-  }, [feedUrls]);
+  }, [feedUrls, isCollapsed]);
 
   useEffect(() => { 
     const controller = new AbortController();
@@ -106,14 +111,29 @@ const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOp
   }, [fetchFeeds]);
 
   return (
-    <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col ${className || ''}`}>
-      <div className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center flex-shrink-0">
-        <h3 className="text-purple-400 font-black text-lg uppercase tracking-wider drop-shadow-sm">YOUTUBE FEEDS</h3>
-        <button onClick={() => fetchFeeds()} disabled={isLoading} className="text-white/60 hover:text-white transition-colors">
-            {ICONS.Refresh}
-        </button>
+    <div className={`bg-purple-900/10 backdrop-blur-xl rounded-xl border border-purple-500/20 shadow-lg flex flex-col transition-all duration-500 ${isCollapsed ? 'min-h-0' : ''} ${className || ''}`}>
+      <div 
+        className="bg-gradient-to-r from-black/40 to-black/10 px-6 py-4 flex justify-between items-center flex-shrink-0 cursor-pointer select-none group/header"
+        onClick={onToggle}
+      >
+        <h3 className="text-purple-400 font-black text-lg uppercase tracking-wider drop-shadow-sm group-hover/header:text-purple-300 transition-colors">YOUTUBE FEEDS</h3>
+        <div className="flex items-center space-x-4" onClick={(e) => e.stopPropagation()}>
+            <button onClick={() => fetchFeeds()} disabled={isLoading} className="text-white/60 hover:text-white transition-colors">
+                {ICONS.Refresh}
+            </button>
+            <button 
+              onClick={onToggle} 
+              className="text-white/60 hover:text-white transition-colors p-1"
+              aria-expanded={!isCollapsed}
+              title="Toggle collapse"
+            >
+              <div className={`w-5 h-5 transform transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`}>
+                {ICONS.ChevronUp}
+              </div>
+            </button>
+        </div>
       </div>
-      <div className="p-6 pt-3 flex-grow">
+      <div className={`transition-all duration-500 ease-in-out overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0' : 'max-h-[1000px] opacity-100 p-6 pt-3'}`}>
         {isLoading ? (
             <div className="flex items-center justify-center h-48 text-white/50 italic">Fetching latest videos...</div>
         ) : (
@@ -126,7 +146,7 @@ const YouTubeWidget: React.FC<YouTubeWidgetProps> = ({ className, feedUrls, onOp
                     rel="noopener noreferrer" 
                     className="group relative flex-shrink-0 w-64 aspect-video bg-black/40 rounded-xl overflow-hidden border border-transparent hover:border-purple-400/40 transition-all duration-300"
                 >
-                    {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />}
+                    {item.thumbnailUrl && <img src={item.thumbnailUrl} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-4 flex flex-col justify-end">
                         <p className="text-white text-xs font-bold line-clamp-2 drop-shadow-md group-hover:text-purple-300 transition-colors">{item.title}</p>
                         <div className="flex justify-between items-center mt-2 text-[9px] text-white/60">
